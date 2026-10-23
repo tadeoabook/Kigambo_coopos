@@ -14,12 +14,8 @@ class MainActivity : Activity() {
         s.javaScriptEnabled = true
         s.domStorageEnabled = true
         s.databaseEnabled = true
-        s.javaScriptCanOpenWindowsAutomatically = true
-        // FIX FOR ERR_CACHE_MISS
         s.cacheMode = WebSettings.LOAD_NO_CACHE
-        s.setAppCacheEnabled(false)
         
-        // USE NETLIFY - NOT web.app - web.app blocks WebView!
         w.loadUrl("https://kigambo-coopos.netlify.app/")
         setContentView(w)
     }
