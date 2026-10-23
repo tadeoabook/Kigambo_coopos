@@ -2,17 +2,35 @@ package com.kigambo.coopos
 
 import android.app.Activity
 import android.os.Bundle
-import android.widget.TextView
-import android.view.Gravity
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.graphics.Color
 
 class MainActivity : Activity() {
+    private lateinit var webView: WebView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val tv = TextView(this)
-        tv.text = "Kigambo CoopOS - WORKING!"
-        tv.textSize = 24f
-        tv.gravity = Gravity.CENTER
-        tv.setPadding(50,300,50,50)
-        setContentView(tv)
+
+        webView = WebView(this)
+        webView.setBackgroundColor(Color.WHITE)
+        webView.webViewClient = WebViewClient()
+        webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
+        webView.settings.allowFileAccess = true
+        webView.settings.setSupportZoom(false)
+
+        // Load your LIVE site with all 4 dashboards
+        webView.loadUrl("https://kigambo-coopos.web.app")
+
+        setContentView(webView)
+    }
+
+    override fun onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
     }
 }
