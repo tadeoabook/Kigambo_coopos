@@ -18,9 +18,6 @@ class MainActivity : Activity() {
         s.databaseEnabled = true
         s.cacheMode = WebSettings.LOAD_DEFAULT
         s.allowFileAccess = true
-        s.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        
-        // Use netlify which is faster than web.app in WebView
         webView.loadUrl("https://kigambo-coopos.netlify.app")
         setContentView(webView)
     }
