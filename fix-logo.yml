@@ -1,0 +1,21 @@
+name: Fix Logo
+on: [push]
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y imagemagick
+      - run: |
+          for d in app/src/main/res/mipmap-*; do convert logo.png -resize 192x192 $d/ic_launcher.png; cp $d/ic_launcher.png $d/ic_launcher_round.png; done
+          convert logo.png -resize 48x48 app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert logo.png -resize 72x72 app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert logo.png -resize 96x96 app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert logo.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert logo.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          cp app/src/main/res/mipmap-mdpi/ic_launcher.png app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-hdpi/ic_launcher.png app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-xhdpi/ic_launcher.png app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-xxhdpi/ic_launcher.png app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          cp app/src/main/res/mipmap-xxxhdpi/ic_launcher.png app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          git config user.name "Kigambo"; git config user.email "info@kigambo.ug"; git add app/src/main/res/mipmap-*/ic_launcher*.png; git commit -m "Official: KIGAMBO THE GREATER COFFEE FARMERS COOPERATIVE SOCIETY LIMITED" || true; git push
