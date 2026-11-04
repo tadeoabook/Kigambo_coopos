@@ -1,147 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kigambo CoopOS - Role Login</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kigambo Dev</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<style>
+body{font-family:Arial;padding:20px;background:#f5f5f5}
+.box{background:#fff;padding:20px;border-radius:12px;max-width:400px;margin:20px auto}
+input{width:100%;padding:12px;margin:8px 0;box-sizing:border-box;border:1px solid #ddd;border-radius:8px}
+button{width:100%;padding:12px;background:#000;color:#fff;border:0;border-radius:8px;font-weight:bold}
+#error{color:red;margin-top:10px}
+</style>
+</head>
+<body>
 
-// TODO: REPLACE WITH YOUR REAL CONFIG FROM Firebase Console > Project Settings > Your apps
+<div id="loginBox" class="box">
+  <h2>Kigambo Dev Login</h2>
+  <input id="email" type="email" placeholder="Email - tadeoabooki@gmail.com">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login with Email</button>
+  <p id="error"></p>
+</div>
+
+<div id="devBox" class="box" style="display:none">
+  <h2>Welcome Dev ✅</h2>
+  <p id="userEmail"></p>
+  <p>You are now logged in as developer.</p>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<script>
 const firebaseConfig = {
-  apiKey: "AIzaSy_REPLACE_ME",
+  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
   authDomain: "kigambo-coopos.firebaseapp.com",
   projectId: "kigambo-coopos",
-  storageBucket: "kigambo-coopos.appspot.com",
-  messagingSenderId: "REPLACE",
-  appId: "REPLACE"
+  storageBucket: "kigambo-coopos.firebasestorage.app",
+  messagingSenderId: "711731991766",
+  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
 };
+firebase.initializeApp(firebaseConfig);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-window.app = { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, doc, getDoc, setDoc, collection, addDoc, getDocs, updateDoc, serverTimestamp, createUserWithEmailAndPassword };
-</script>
-<style>body{font-family:system-ui}</style>
-</head>
-<body class="bg-gray-100 min-h-screen">
-<div id="loading" class="p-8 text-center">Loading CoopOS...</div>
-
-<!-- LOGIN -->
-<div id="loginPage" class="hidden min-h-screen flex items-center justify-center p-4">
-  <div class="bg-white w-full max-w-sm rounded-2xl shadow p-6">
-    <h1 class="text-2xl font-bold text-center">🌾 Kigambo CoopOS</h1>
-    <p class="text-center text-sm text-gray-500 mb-6">Role-Based Login</p>
-    <input id="email" type="email" placeholder="Email" class="w-full border p-3 rounded-xl mb-3" value="tadeoabooki@gmail.com">
-    <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-xl mb-3">
-    <button onclick="login()" class="w-full bg-green-600 text-white p-3 rounded-xl font-bold">LOGIN</button>
-    <p id="loginError" class="text-red-500 text-sm mt-3 hidden"></p>
-    <div class="mt-4 text-xs text-gray-400">
-      Main Admin: tadeoabooki@gmail.com<br>
-      Test your roles after setup
-    </div>
-  </div>
-</div>
-
-<!-- DASHBOARDS -->
-<div id="mainPage" class="hidden p-4 max-w-4xl mx-auto">
-  <div class="flex justify-between items-center mb-4">
-    <h2 id="roleTitle" class="font-bold text-lg"></h2>
-    <button onclick="logout()" class="bg-red-500 text-white px-3 py-1 rounded">Logout</button>
-  </div>
-  <div id="roleContent"></div>
-</div>
-
-<script type="module">
-const { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, doc, getDoc, setDoc, collection, addDoc, getDocs, updateDoc, serverTimestamp, createUserWithEmailAndPassword } = window.app;
-
-window.login = async () => {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const errEl = document.getElementById('loginError');
-  errEl.classList.add('hidden');
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch(e){ errEl.textContent = e.message; errEl.classList.remove('hidden'); }
-};
-
-window.logout = async () => { await signOut(auth); location.reload(); };
-
-onAuthStateChanged(auth, async (user) => {
-  document.getElementById('loading').classList.add('hidden');
-  if(!user){ document.getElementById('loginPage').classList.remove('hidden'); return; }
-  
-  // Get role
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-  let roleData = userDoc.exists() ? userDoc.data() : null;
-  
-  // Auto make tadeoabooki@gmail.com main_admin if first login
-  if(!roleData && user.email === "tadeoabooki@gmail.com"){
-    roleData = { email: user.email, role: "main_admin", coopId: "all", displayName: "Tadeo Main Admin" };
-    await setDoc(doc(db, "users", user.uid), { ...roleData, createdAt: serverTimestamp() });
-  }
-  if(!roleData){ alert("User has no role! Ask Main Admin to create role in Firestore users collection"); await signOut(auth); return; }
-
-  document.getElementById('loginPage').classList.add('hidden');
-  document.getElementById('mainPage').classList.remove('hidden');
-  renderDashboard(roleData, user);
-});
-
-async function renderDashboard(roleData, user){
-  document.getElementById('roleTitle').textContent = `${roleData.role.toUpperCase()} - ${roleData.email}`;
-  const content = document.getElementById('roleContent');
-
-  if(roleData.role === 'main_admin'){
-    const coopsSnap = await getDocs(collection(db, "coops"));
-    let coopsList = "";
-    coopsSnap.forEach(d=>{ const c=d.data(); coopsList+=`<div class="bg-white p-3 rounded-xl mb-2 flex justify-between"><div><b>${c.name}</b><br><span class="text-xs">${d.id} - ${c.district||''} - ${c.members||0} members</span></div><button onclick="editCoop('${d.id}')" class="text-blue-600 text-sm">Edit</button></div>`; });
-    
-    content.innerHTML = `
-      <div class="bg-white rounded-2xl p-4 mb-4">
-        <h3 class="font-bold mb-3">+ Create New Coop Account (Inside App)</h3>
-        <input id="coopName" placeholder="Real Coop Name e.g. Kigambo Dairy" class="w-full border p-2 rounded mb-2">
-        <input id="coopDistrict" placeholder="District e.g. Mbarara" class="w-full border p-2 rounded mb-2">
-        <input id="managerEmail" placeholder="Manager Email" class="w-full border p-2 rounded mb-2">
-        <input id="managerPass" placeholder="Manager Temp Password" class="w-full border p-2 rounded mb-2" type="password">
-        <input id="coopMembers" placeholder="Members e.g. 350" type="number" class="w-full border p-2 rounded mb-2">
-        <button onclick="createCoop()" class="w-full bg-green-600 text-white p-2 rounded-xl">CREATE COOP ACCOUNT NOW</button>
-        <p id="createStatus" class="text-sm mt-2"></p>
-      </div>
-      <div class="bg-white rounded-2xl p-4 mb-4">
-        <h3 class="font-bold mb-2">Existing Coops (${coopsSnap.size}) - Click Edit to change real names</h3>
-        ${coopsList || '<p class="text-sm text-gray-500">No coops yet. Create first one above!</p>'}
-      </div>
-      <div class="bg-white rounded-2xl p-4">
-        <h3 class="font-bold">Quick Role Creator</h3>
-        <p class="text-xs text-gray-500 mb-2">Create Security / Huller staff accounts</p>
-        <input id="staffEmail" placeholder="Staff Email" class="w-full border p-2 rounded mb-2">
-        <select id="staffRole" class="w-full border p-2 rounded mb-2"><option value="coop_manager">Coop Manager</option><option value="huller_controller">Huller Controller</option><option value="security">Security / Gate</option></select>
-        <input id="staffCoop" placeholder="Coop ID (e.g. mbarara-central) or all" class="w-full border p-2 rounded mb-2">
-        <input id="staffPass" placeholder="Temp Password" class="w-full border p-2 rounded mb-2" type="password">
-        <button onclick="createStaff()" class="w-full bg-blue-600 text-white p-2 rounded-xl">Create Staff Account</button>
-      </div>
-    `;
-  } else if(roleData.role === 'coop_manager'){
-    content.innerHTML = `<div class="bg-white p-4 rounded-2xl"><h3 class="font-bold">Manager Dashboard - Coop: ${roleData.coopId}</h3><p class="text-sm mt-2">You manage members, collections, and huller.</p><div id="coopInfo"></div></div>`;
-    const coopDoc = await getDoc(doc(db, "coops", roleData.coopId)); if(coopDoc.exists()) document.getElementById('coopInfo').innerHTML = `<pre class="bg-gray-100 p-2 mt-3 text-xs">${JSON.stringify(coopDoc.data(), null, 2)}</pre>`;
-  } else {
-    content.innerHTML = `<div class="bg-white p-4 rounded-2xl"><h3 class="font-bold">${roleData.role} Dashboard</h3><p class="text-sm">Coop: ${roleData.coopId}</p><p class="text-sm mt-2">Role limited access. Main Admin controls everything.</p></div>`;
-  }
+function login(){
+  var email = document.getElementById('email').value.trim();
+  var pass = document.getElementById('password').value;
+  document.getElementById('error').innerText = "Logging in...";
+  firebase.auth().signInWithEmailAndPassword(email, pass)
+    .catch(function(e){
+      document.getElementById('error').innerText = e.message;
+    });
 }
 
-window.createCoop = async () => {
-  const name = document.getElementById('coopName').value.trim();
-  const district = document.getElementById('coopDistrict').value.trim();
-  const mEmail = document.getElementById('managerEmail').value.trim();
-  const mPass = document.getElementById('managerPass').value;
-  const members = parseInt(document.getElementById('coopMembers').value)||0;
-  const status = document.getElementById('createStatus');
-  if(!name || !mEmail || !mPass){ status.textContent="Fill all fields"; return; }
-  status.textContent="Creating...";
-  try{
-    const coopId = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-    await setDoc(doc(db, "coops", coopId), { name, district, members, status: "
+function logout(){
+  firebase.auth().signOut();
+}
+
+firebase.auth().onAuthStateChanged(function(user){
+  if(user && user.email === "tadeoabooki@gmail.com"){
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('devBox').style.display = 'block';
+    document.getElementById('userEmail').innerText = user.email;
+  } else if(user){
+    document.getElementById('error').innerText = "This account is not the dev account.";
+    firebase.auth().signOut();
+  } else {
+    document.getElementById('loginBox').style.display = 'block';
+    document.getElementById('devBox').style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>
