@@ -102,8 +102,8 @@ firebase.auth().onAuthStateChanged(function(u){
 });
 
 function loadAll(){
-  db.collection("cooperatives").onSnapshot(function(s){ allCoops=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allCoops.push(o); }); renderCoops(); updateStats(); });
-  db.collection("members").onSnapshot(function(s){ allMembers=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allMembers.push(o); }); renderMembers(); updateStats(); });
+  db.collection("cooperatives").onSnapshot(function(s){ allCoops=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allCoops.push(o); }); renderCoops(); renderLoans(); updateStats(); });
+  db.collection("members").onSnapshot(function(s){ allMembers=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allMembers.push(o); }); renderMembers(); renderCoops(); renderLoans(); updateStats(); });
   db.collection("loans").onSnapshot(function(s){ allLoans=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allLoans.push(o); }); renderLoans(); updateStats(); });
   db.collection("settings").doc("system").onSnapshot(function(d){ killOn=d.exists && d.data().killed; document.getElementById('killBtn').innerText=killOn?'✅ SYSTEM STOPPED - Tap to Resume':'MASTER KILL SWITCH'; });
 }
