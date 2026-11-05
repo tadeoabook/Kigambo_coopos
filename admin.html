@@ -28,20 +28,19 @@ button.small.green { background: #14532d; color: #fff; border-color: #14532d; }
 @media (max-width: 700px) {
   .cards { grid-template-columns: 1fr 1fr; }
   .row { flex-direction: column; align-items: flex-start; }
-  .row > div:last-child { display: flex; flex-wrap: wrap; }
 }
-#loginBox { max-width: 400px; margin: 40px auto; }
 </style>
 </head>
 <body>
 
-<div id="loginBox" class="box" style="display:none">
+<div id="loginBox" class="box" style="max-width:400px;margin:40px auto">
   <h1>🌿 KIGAMBO THE GREATER</h1>
   <p>Master Dashboard • Admin Login</p>
   <input id="email" type="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
   <p id="error" style="color:red"></p>
+  <p id="loading" style="color:#666;font-size:13px">Checking login...</p>
 </div>
 
 <div id="dash" style="display:none">
@@ -84,5 +83,90 @@ button.small.green { background: #14532d; color: #fff; border-color: #14532d; }
 
   <div class="box">
     <h2>⚠️ Master Kill Switch</h2>
-    <p style="color:#666;font-size:13px">Emergency stop all cooperative operations.</p>
-    <button id="killBtn" onclick="toggleKill()" style="background:#
+    <button id="killBtn" onclick="toggleKill()" style="background:#dc2626">MASTER KILL SWITCH</button>
+  </div>
+</div>
+
+<script>
+var firebaseConfig={apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",authDomain:"kigambo-coopos.firebaseapp.com",projectId:"kigambo-coopos",storageBucket:"kigambo-coopos.firebasestorage.app",messagingSenderId:"711731991766",appId:"1:711731991766:web:2bafe8d4fe922cadc3e577"};
+firebase.initializeApp(firebaseConfig); var db=firebase.firestore();
+var allCoops=[], allMembers=[], allLoans=[], killOn=false;
+
+function login(){ firebase.auth().signInWithEmailAndPassword(document.getElementById('email').value.trim(), document.getElementById('password').value).catch(function(e){document.getElementById('error').innerText=e.message}) }
+function logout(){ firebase.auth().signOut() }
+firebase.auth().onAuthStateChanged(function(u){
+  document.getElementById('loading').innerText = u ? 'Logged in, loading...' : 'Not logged in - please login';
+  document.getElementById('loginBox').style.display = u ? 'none' : 'block';
+  document.getElementById('dash').style.display = u ? 'block' : 'none';
+  if(u) loadAll();
+});
+
+function loadAll(){
+  db.collection("cooperatives").onSnapshot(function(s){ allCoops=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allCoops.push(o); }); renderCoops(); updateStats(); });
+  db.collection("members").onSnapshot(function(s){ allMembers=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allMembers.push(o); }); renderMembers(); updateStats(); });
+  db.collection("loans").onSnapshot(function(s){ allLoans=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allLoans.push(o); }); renderLoans(); updateStats(); });
+  db.collection("settings").doc("system").onSnapshot(function(d){ killOn=d.exists && d.data().killed; document.getElementById('killBtn').innerText=killOn?'✅ SYSTEM STOPPED - Tap to Resume':'MASTER KILL SWITCH'; });
+}
+
+function updateStats(){
+  document.getElementById('tCoops').innerText=allCoops.length;
+  document.getElementById('tMembers').innerText=allMembers.length;
+  var sav=0; for(var i=0;i<allMembers.length;i++){ sav += (allMembers[i].savings||0); }
+  document.getElementById('tSavings').innerText=sav.toLocaleString()+" UGX";
+  document.getElementById('tLoans').innerText=allLoans.length;
+}
+
+function createCoop(){
+  var n=document.getElementById('cName').value.trim(), loc=document.getElementById('cLoc').value.trim(), man=document.getElementById('cManager').value.trim();
+  if(!n){ alert("Enter coop name"); return; }
+  db.collection("cooperatives").add({name:n, location:loc, manager:man, status:'active', createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){ alert("Cooperative added ✅"); document.getElementById('cName').value=''; document.getElementById('cLoc').value=''; document.getElementById('cManager').value=''; });
+}
+
+function renderCoops(){
+  var q=(document.getElementById('coopSearch').value||'').toLowerCase();
+  var html='';
+  for(var i=0;i<allCoops.length;i++){
+    var c=allCoops[i];
+    if(q && (c.name||'').toLowerCase().indexOf(q)===-1) continue;
+    var mCount=0; for(var j=0;j<allMembers.length;j++){ if(allMembers[j].coopId===c.id) mCount++; }
+    html += '<div class="row"><div><b>'+c.name+'</b><br><small>'+(c.location||'')+' • Manager: '+(c.manager||'No manager')+' • '+mCount+' members • <span class="badge">'+(c.status||'active')+'</span></small></div><div><a href="coop.html?coop='+c.id+'"><button class="small green">Open Dashboard</button></a> <button class="small" onclick="toggleCoop(\''+c.id+'\')">Pause</button> <button class="small red" onclick="deleteCoop(\''+c.id+'\')">X</button></div></div>';
+  }
+  document.getElementById('coopsList').innerHTML=html||"No cooperatives yet";
+}
+function toggleCoop(id){
+  for(var i=0;i<allCoops.length;i++){ if(allCoops[i].id===id){ var st=allCoops[i].status||'active'; db.collection("cooperatives").doc(id).update({status: st==='active'?'paused':'active'}); } }
+}
+function deleteCoop(id){ if(confirm("Delete this coop?")) db.collection("cooperatives").doc(id).delete(); }
+
+function renderLoans(){
+  var html='';
+  for(var i=0;i<allLoans.length;i++){
+    var l=allLoans[i]; var coopName=''; for(var j=0;j<allCoops.length;j++){ if(allCoops[j].id===l.coopId) coopName=allCoops[j].name; }
+    var btns='';
+    if(l.status==='pending') btns='<button class="small green" onclick="setLoan(\''+l.id+'\',\'active\')">Approve</button> <button class="small red" onclick="setLoan(\''+l.id+'\',\'rejected\')">Reject</button>';
+    if(l.status==='active') btns='<button class="small green" onclick="setLoan(\''+l.id+'\',\'paid\')">Mark Paid</button>';
+    html += '<div class="row"><div><b>'+l.memberName+' - UGX '+(l.amount||0).toLocaleString()+'</b><br><small>'+coopName+' • '+(l.reason||'')+' • <span class="badge '+(l.status==='pending'?'pending':'')+'">'+l.status+'</span></small></div><div>'+btns+'</div></div>';
+  }
+  document.getElementById('loansList').innerHTML=html||"No loans yet";
+}
+function setLoan(id,st){ db.collection("loans").doc(id).update({status:st}); }
+
+function renderMembers(){
+  var q=(document.getElementById('memberSearch').value||'').toLowerCase().trim();
+  var html='';
+  for(var i=0;i<allMembers.length;i++){
+    var m=allMembers[i];
+    if(q){
+      var name=(m.name||'').toLowerCase(); var phone=(m.phone||'').toLowerCase();
+      if(name.indexOf(q)===-1 && phone.indexOf(q)===-1) continue;
+    }
+    var coopName=''; for(var j=0;j<allCoops.length;j++){ if(allCoops[j].id===m.coopId) coopName=allCoops[j].name; }
+    html += '<div class="row"><div><b>'+m.name+'</b><br><small>'+(m.phone||'')+' • '+coopName+' • Savings: UGX '+(m.savings||0).toLocaleString()+'</small></div><div><button class="small red" onclick="delMember(\''+m.id+'\')">Delete</button></div></div>';
+  }
+  document.getElementById('membersList').innerHTML=html||"No members found. Clear search to see all.";
+}
+function delMember(id){ if(confirm("Delete this member?")) db.collection("members").doc(id).delete(); }
+function toggleKill(){ if(confirm(killOn?"Resume all operations?":"STOP ALL cooperatives?")) db.collection("settings").doc("system").set({killed:!killOn}); }
+</script>
+</body>
+</html>
