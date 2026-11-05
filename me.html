@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Coop</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<style>body{font-family:Arial;padding:12px;background:#f0f2f5} .box{background:#fff;padding:16px;border-radius:12px;margin-bottom:12px;text-align:center} input{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box} button{width:100%;padding:12px;background:#000;color:#fff;border:0;border-radius:8px;font-weight:bold} .big{font-size:28px;font-weight:bold} .small{color:#666;font-size:13px}</style>
+</head><body>
+<div class="box"><h2>👋 Kigambo Coopos</h2><p class="small">Enter your phone to see your balance</p><input id="phone" placeholder="Your Phone - e.g. 0770 123456"><button onclick="findMe()">View My Balance</button></div>
+<div id="result"></div>
+<script>
+const firebaseConfig = { apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain: "kigambo-coopos.firebaseapp.com", projectId: "kigambo-coopos", storageBucket: "kigambo-coopos.firebasestorage.app", messagingSenderId: "711731991766", appId: "1:711731991766:web:2bafe8d4fe922cadc3e577" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+function findMe(){
+  var phone=document.getElementById('phone').value.trim();
+  if(!phone){ alert("Enter phone"); return; }
+  document.getElementById('result').innerHTML="Searching...";
+  db.collection("members").where("phone","==",phone).get().then(snap=>{
+    if(snap.empty){ document.getElementById('result').innerHTML='<div class="box">Not found. Check phone number with your coop manager.</div>'; return; }
+    var html="";
+    snap.forEach(doc=>{
+      var m=doc.data();
+      html+='<div class="box"><h3>Hello, '+m.name+'</h3><p class="small">Your Savings</p><div class="big">UGX '+(m.savings||0).toLocaleString()+'</div><p class="small" style="margin-top:12px">Show this to your manager for receipt</p></div>';
+      db.collection("loans").where("memberName","==",m.name).get().then(ls=>{
+        var lh="<div class='box'><h3>Your Loans</h3>";
+        if(ls.empty) lh+="No loans";
+        ls.forEach(ld=>{ var l=ld.data(); lh+="<p>"+l.status+" - UGX "+(l.amount||0).toLocaleString()+" • "+(l.reason||"")+"</p>"; });
+        lh+="</div>";
+        document.getElementById('result').innerHTML=html+lh;
+      });
+    });
+  });
+}
+</script></body></html>
