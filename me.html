@@ -1,34 +1,59 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My Coop</title>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kigambo - My Balance</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<style>body{font-family:Arial;padding:12px;background:#f0f2f5} .box{background:#fff;padding:16px;border-radius:12px;margin-bottom:12px;text-align:center} input{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box} button{width:100%;padding:12px;background:#000;color:#fff;border:0;border-radius:8px;font-weight:bold} .big{font-size:28px;font-weight:bold} .small{color:#666;font-size:13px}</style>
-</head><body>
-<div class="box"><h2>👋 Kigambo Coopos</h2><p class="small">Enter your phone to see your balance</p><input id="phone" placeholder="Your Phone - e.g. 0770 123456"><button onclick="findMe()">View My Balance</button></div>
-<div id="result"></div>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial; background: #f4f6f2; padding: 12px; max-width: 500px; margin: 0 auto; }
+h1 { color: #14532d; font-size: 22px; margin: 0; }
+.card { background: #fff; padding: 16px; border-radius: 12px; border: 1px solid #e5e7eb; margin: 14px 0; }
+.card b { font-size: 28px; display: block; }
+.card small { color: #666; }
+input { width: 100%; padding: 12px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+button { width: 100%; padding: 13px; background: #14532d; color: #fff; border: 0; border-radius: 10px; font-weight: bold; font-size: 16px; }
+.loan { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+</style>
+</head>
+<body>
+<h1>🌿 KIGAMBO</h1>
+<p style="color:#666">Check My Savings & Loans</p>
+
+<div class="card">
+  <input id="phone" placeholder="Enter Phone - e.g. 075424534">
+  <button onclick="check()">Check My Balance</button>
+  <p id="err" style="color:red"></p>
+</div>
+
+<div id="result" style="display:none">
+  <div class="card"><small>Member</small><b id="rName" style="font-size:22px"></b><small id="rCoop"></small></div>
+  <div class="card" style="background:#14532d;color:#fff"><small style="color:#d1fae5">My Savings</small><b id="rSavings">0 UGX</b></div>
+  <div class="card"><h3 style="margin:0 0 10px">My Loans</h3><div id="rLoans"></div></div>
+</div>
+
 <script>
-const firebaseConfig = { apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain: "kigambo-coopos.firebaseapp.com", projectId: "kigambo-coopos", storageBucket: "kigambo-coopos.firebasestorage.app", messagingSenderId: "711731991766", appId: "1:711731991766:web:2bafe8d4fe922cadc3e577" };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-function findMe(){
-  var phone=document.getElementById('phone').value.trim();
-  if(!phone){ alert("Enter phone"); return; }
-  document.getElementById('result').innerHTML="Searching...";
-  db.collection("members").where("phone","==",phone).get().then(snap=>{
-    if(snap.empty){ document.getElementById('result').innerHTML='<div class="box">Not found. Check phone number with your coop manager.</div>'; return; }
-    var html="";
-    snap.forEach(doc=>{
-      var m=doc.data();
-      html+='<div class="box"><h3>Hello, '+m.name+'</h3><p class="small">Your Savings</p><div class="big">UGX '+(m.savings||0).toLocaleString()+'</div><p class="small" style="margin-top:12px">Show this to your manager for receipt</p></div>';
-      db.collection("loans").where("memberName","==",m.name).get().then(ls=>{
-        var lh="<div class='box'><h3>Your Loans</h3>";
-        if(ls.empty) lh+="No loans";
-        ls.forEach(ld=>{ var l=ld.data(); lh+="<p>"+l.status+" - UGX "+(l.amount||0).toLocaleString()+" • "+(l.reason||"")+"</p>"; });
-        lh+="</div>";
-        document.getElementById('result').innerHTML=html+lh;
-      });
+const firebaseConfig={apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",authDomain:"kigambo-coopos.firebaseapp.com",projectId:"kigambo-coopos",storageBucket:"kigambo-coopos.firebasestorage.app",messagingSenderId:"711731991766",appId:"1:711731991766:web:2bafe8d4fe922cadc3e577"};
+firebase.initializeApp(firebaseConfig); const db=firebase.firestore();
+function check(){
+  let phone=document.getElementById('phone').value.trim();
+  if(!phone){alert("Enter phone");return}
+  db.collection("members").where("phone","==",phone).get().then(s=>{
+    if(s.empty){document.getElementById('err').innerText="No member found with that phone. Try 075424534";return}
+    let m=s.docs[0].data();
+    document.getElementById('result').style.display='block';
+    document.getElementById('err').innerText='';
+    document.getElementById('rName').innerText=m.name;
+    document.getElementById('rSavings').innerText=(m.savings||0).toLocaleString()+" UGX";
+    db.collection("cooperatives").doc(m.coopId).get().then(d=>{document.getElementById('rCoop').innerText=d.exists?d.data().name:""});
+    db.collection("loans").where("memberId","==",s.docs[0].id).get().then(ls=>{
+      let html=""; ls.forEach(d=>{let l=d.data(); html+=`<div class="loan"><div><b>UGX ${(l.amount||0).toLocaleString()}</b><br><small>${l.reason||''}</small></div><b>${l.status}</b></div>`});
+      document.getElementById('rLoans').innerHTML=html||"No loans yet";
     });
   });
 }
-</script></body></html>
+</script>
+</body>
+</html>
