@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kigambo - Main Admin</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<style>
+body{font-family:Arial;padding:12px;background:#f0f2f5;margin:0}
+.top{background:#000;color:#fff;padding:14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.top button{background:#fff;color:#000;border:0;padding:8px 14px;border-radius:20px;font-weight:bold}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.card{background:#fff;padding:14px;border-radius:12px;text-align:center;box-shadow:0 1px 4px #0001}
+.card h3{margin:0;font-size:13px;color:#666}
+.card p{font-size:22px;font-weight:bold;margin:6px 0 0}
+.box{background:#fff;padding:14px;border-radius:12px;margin-bottom:12px}
+input,select{width:100%;padding:11px;margin:6px 0;box-sizing:border-box;border:1px solid #ddd;border-radius:8px}
+button.btn{width:100%;padding:12px;background:#000;color:#fff;border:0;border-radius:8px;font-weight:bold}
+button.smallBtn{width:auto;padding:6px 12px;background:#000;color:#fff;border:0;border-radius:20px;font-size:12px}
+button.green{background:#0a7a2e;color:#fff;border:0;padding:6px 12px;border-radius:20px;font-size:12px}
+button.red{background:#ff3b30;color:#fff;border:0;padding:6px 12px;border-radius:20px;font-size:12px}
+button.grey{background:#eee;color:#000;border:0;padding:6px 12px;border-radius:20px;font-size:12px}
+.item{border-bottom:1px solid #eee;padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item:last-child{border:0}
+.small{color:#666;font-size:12px}
+.badge{background:#e8f5e9;color:#0a7a2e;padding:3px 8px;border-radius:20px;font-size:11px}
+.badge-orange{background:#fff3e0;color:#e65100;padding:3px 8px;border-radius:20px;font-size:11px}
+#loginBox{max-width:400px;margin:40px auto}
+</style>
+</head>
+<body>
+
+<div id="loginBox" class="box" style="display:none">
+  <h2>Kigambo Main Admin</h2>
+  <p class="small">Dev + Main Admins only. Members use me.html</p>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button class="btn" onclick="login()">Login</button>
+  <p id="error" style="color:red"></p>
+  <p class="small">No account? Ask Dev to create one for you in Firebase > Authentication.</p>
+</div>
+
+<div id="dash" style="display:none">
+  <div class="top">
+    <div><b>Kigambo Coopos - Main Admin</b><br><span id="userEmail" style="font-size:12px;opacity:.8"></span><br><span id="roleLabel" style="font-size:11px;background:#fff;color:#000;padding:2px 8px;border-radius:20px"></span></div>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <div class="cards">
+    <div class="card"><h3>Cooperatives</h3><p id="cCoops">0</p></div>
+    <div class="card"><h3>Total Members</h3><p id="cMembers">0</p></div>
+    <div class="card"><h3>Total Savings</h3><p id="cSavings">UGX 0</p></div>
+    <div class="card"><h3>Total Loans</h3><p id="cLoans">0</p></div>
+  </div>
+
+  <!-- CREATE COOPERATIVE - DEV + MAIN ADMIN ONLY -->
+  <div class="box">
+    <h3>➕ Create New Cooperative</h3>
+    <p class="small">When you create a coop, its own dashboard is created automatically. Tap "Open Dashboard" to manage it.</p>
+    <input id="coopName" placeholder="Cooperative Name - e.g. Kigambo Central">
+    <input id="coopLocation" placeholder="Location - e.g. Mbarara, Kyegegwa">
+    <input id="coopManager" type="email" placeholder="Manager Email - e.g. manager@gmail.com">
+    <input id="coopPhone" placeholder="Manager Phone - e.g. 0770 123456">
+    <button class="btn" onclick="createCoop()">+ Create Cooperative</button>
+  </div>
+
+  <div class="box">
+    <h3>🏦 All Cooperatives</h3>
+    <input id="searchCoop" placeholder="Search coop..." onkeyup="filterCoops()">
+    <div id="coopList">Loading...</div>
+  </div>
+
+  <div class="box">
+    <h3>📋 All Loans - Approve / Reject</h3>
+    <div id="loansList">Loading...</div>
+  </div>
+
+  <div class="box">
+    <h3>👥 All Members (All Coops)</h3>
+    <input id="searchMember" placeholder="Search member by name..." onkeyup="filterMembers()">
+    <div id="membersList">Loading...</div>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
+  authDomain: "kigambo-coopos.firebaseapp.com",
+  projectId: "kigambo-coopos",
+  storageBucket: "kigambo-coopos.firebasestorage.app",
+  messagingSenderId: "711731991766",
+  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const DEV_EMAIL = "tadeoabooki@gmail.com";
+
+let allCoops = [];
+let allMembers = [];
+let currentUserEmail = "";
+
+function login(){
+  var email=document.getElementById('email').value.trim();
+  var pass=document.getElementById('password').value;
+  document.getElementById('error').innerText="Logging in...";
+  firebase.auth().signInWithEmailAndPassword(email,pass).catch(e=>{
+    document.getElementById('error').innerText=e.message;
+  });
+}
+function logout(){ firebase.auth().signOut(); }
+
+firebase.auth().onAuthStateChanged(user=>{
+  if(user){
+    // For now: Dev + any logged-in admin can use admin.html
+    // Members should use me.html, but we allow any auth user here
+    // To lock strictly, add your Main Admin emails to this list:
+    // if(user.email !== DEV_EMAIL && !["admin1@gmail.com"].includes(user.email)){ alert("Not admin"); firebase.auth().signOut(); return; }
+    currentUserEmail = user.email;
+    document.getElementById('loginBox').style.display='none';
+    document.getElementById('dash').style.display='block';
+    document.getElementById('userEmail').innerText=user.email;
+    document.getElementById('roleLabel').innerText = (user.email===DEV_EMAIL ? "👑 DEVELOPER" : "🛡️ MAIN ADMIN");
+    loadAll();
+  } else {
+    document.getElementById('loginBox').style.display='block';
+    document.getElementById('dash').style.display='none';
+  }
+});
+
+// --- CREATE COOPERATIVE ---
+function createCoop(){
+  var name=document.getElementById('coopName').value.trim();
+  var loc=document.getElementById('coopLocation').value.trim();
+  var manager=document.getElementById('coopManager').value.trim();
+  var phone=document.getElementById('coopPhone').value.trim();
+  if(!name){ alert("Enter cooperative name"); return; }
+  db.collection("cooperatives").add({
+    name:name,
+    location:loc,
+    managerEmail:manager,
+    managerPhone:phone,
+    status:"active",
+    createdBy: currentUserEmail,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{
+    alert("Cooperative created ✅ - Its dashboard is ready!");
+    document.getElementById('coopName').value='';
+    document.getElementById('coopLocation').value='';
+    document.getElementById('coopManager').value='';
+    document.getElementById('coopPhone').value='';
+  }).catch(e=>alert(e.message));
+}
+
+function deleteCoop(id){
+  if(confirm("Delete this cooperative? This will NOT delete its members, but it will hide the coop. Continue?")){
+    db.collection("cooperatives").doc(id).delete();
+  }
+}
+function toggleCoop(id, currentStatus){
+  var newStatus = currentStatus==="active" ? "paused" : "active";
+  db.collection("cooperatives").doc(id).update({status:newStatus});
+}
+
+// --- LOANS APPROVE ---
+function approveLoan(id){ db.collection("loans").doc(id).update({status:"active"}).then(()=>alert("Loan Approved ✅")); }
+function rejectLoan(id){ db.collection("loans").doc(id).update({status:"rejected"}).then(()=>alert("Loan Rejected")); }
+function markPaid(id){ db.collection("loans").doc(id).update({status:"paid"}).then(()=>alert("Marked as Paid ✅")); }
+
+function filterCoops(){
+  var q=document.getElementById('searchCoop').value.toLowerCase();
+  renderCoops(allCoops.filter(c=> (c.name||'').toLowerCase().includes(q) || (c.location||'').toLowerCase().includes(q)));
+}
+function filterMembers(){
+  var q=document.getElementById('searchMember').value.toLowerCase();
+  renderMembers(allMembers.filter(m=> (m.name||'').toLowerCase().includes(q)));
+}
+
+function renderCoops(list){
+  var html="";
+  list.forEach(doc=>{
+    var d=doc.data();
+    var isPaused = d.status==="paused";
+    html+='<div class="item"><div><b>'+d.name+'</b><br><span class="small">'+(d.location||'')+' • Manager: '+(d.managerEmail||'No manager')+' • <span class="'+(isPaused?'badge-orange':'badge')+'">'+(d.status||'active')+'</span></span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><a href="coop.html?coop='+doc.id+'"><button class="smallBtn">Open Dashboard →</button></a><button class="grey" onclick="toggleCoop(\''+doc.id+'\',\''+(d.status||'active')+'\')">'+(isPaused?'Resume':'Pause')+'</button><button class="red" onclick="deleteCoop(\''+doc.id+'\')">X</button></div></div>';
+  });
+  document.getElementById('coopList').innerHTML = html || "No cooperatives yet. Create one above.";
+  document.getElementById('cCoops').innerText = allCoops.length;
+}
+
+function renderMembers(list){
+  var html="";
+  list.forEach(doc=>{
+    var d=doc.data();
+    var coopName = allCoops.find(c=>c.id===d.coopId)?.data().name || (d.coopId ? "Coop: "+d.coopId.slice(0,6) : "No Coop");
+    html+='<div class="item"><div><b>'+d.name+'</b><br><span class="small">'+(d.phone||'')+' • '+coopName+' • Savings: UGX '+(d.savings||0).toLocaleString()+'</span></div></div>';
+  });
+  document.getElementById('membersList').innerHTML = html || "No members yet";
+  document.getElementById('cMembers').innerText = allMembers.length;
+  var totalSav=0; allMembers.forEach(doc=>{ totalSav += doc.data().savings||0; });
+  document.getElementById('cSavings').innerText = "UGX "+totalSav.toLocaleString();
+}
+
+function loadAll(){
+  db.collection("cooperatives").orderBy("createdAt","desc").onSnapshot(snap=>{
+    allCoops=[]; snap.forEach(doc=> allCoops.push({id:doc.id, data:()=>doc.data()}));
+    // Fix for render: store real doc
+    allCoops = []; snap.forEach(doc=> allCoops.push(doc));
+    renderCoops(allCoops);
+    // Re-render members to update coop names
+    renderMembers(allMembers);
+  });
+
+  db.collection("members").orderBy("createdAt","desc").onSnapshot(snap=>{
+    allMembers=[]; snap.forEach(doc=> allMembers.push(doc));
+    renderMembers(allMembers);
+  });
+
+  db.collection("loans").orderBy("createdAt","desc").onSnapshot(snap=>{
+    var html=""; var total=0;
+    snap.forEach(doc=>{
+      var d=doc.data(); total++;
+      var coopName = allCoops.find(c=>c.id===d.coopId)?.data().name || d.memberName || '';
+      var statusBadge = d.status==="pending" ? '<span class="badge-orange">pending - needs approval</span>' : '<span class="badge">'+(d.status||'active')+'</span>';
+      var actions = "";
+      if(d.status==="pending"){ actions = '<button class="green" onclick="approveLoan(\''+doc.id+'\')">Approve</button> <button class="red" onclick="rejectLoan(\''+doc.id+'\')">Reject</button>'; }
+      else if(d.status==="active"){ actions = '<button class="green" onclick="markPaid(\''+doc.id+'\')">Mark Paid</button>'; }
+      html+='<div class="item"><div><b>'+(d.memberName||'Member')+' - UGX '+(d.amount||0).toLocaleString()+'</b><br><span class="small">'+coopName+' • '+(d.reason||'')+' • '+statusBadge+'</span></div><div style="display:flex;gap:6px">'+actions+'</div></div>';
+    });
+    document.getElementById('loansList').innerHTML = html || "No loans yet";
+    document.getElementById('cLoans').innerText = total;
+  });
+}
+</script>
+</body>
+  </html>
