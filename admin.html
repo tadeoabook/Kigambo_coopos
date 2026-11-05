@@ -145,11 +145,13 @@ function renderLoans(){
     var btns='';
     if(l.status==='pending') btns='<button class="small green" onclick="setLoan(\''+l.id+'\',\'active\')">Approve</button> <button class="small red" onclick="setLoan(\''+l.id+'\',\'rejected\')">Reject</button>';
     if(l.status==='active') btns='<button class="small green" onclick="setLoan(\''+l.id+'\',\'paid\')">Mark Paid</button>';
+    btns += ' <button class="small red" onclick="delLoan(\''+l.id+'\')">Delete</button>';
     html += '<div class="row"><div><b>'+l.memberName+' - UGX '+(l.amount||0).toLocaleString()+'</b><br><small>'+coopName+' • '+(l.reason||'')+' • <span class="badge '+(l.status==='pending'?'pending':'')+'">'+l.status+'</span></small></div><div>'+btns+'</div></div>';
   }
   document.getElementById('loansList').innerHTML=html||"No loans yet";
 }
 function setLoan(id,st){ db.collection("loans").doc(id).update({status:st}); }
+function delLoan(id){ if(confirm("Delete this loan? This cannot be undone.")) db.collection("loans").doc(id).delete(); }
 
 function renderMembers(){
   var q=(document.getElementById('memberSearch').value||'').toLowerCase().trim();
