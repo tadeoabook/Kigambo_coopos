@@ -3,165 +3,126 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coop Dashboard</title>
+<title>Kigambo - Coop Dashboard</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <style>
-body{font-family:Arial;padding:12px;background:#f0f2f5;margin:0}
-.top{background:#000;color:#fff;padding:14px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
-.top button{background:#fff;color:#000;border:0;padding:8px 14px;border-radius:20px;font-weight:bold}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-.card{background:#fff;padding:14px;border-radius:12px;text-align:center}
-.card h3{margin:0;font-size:13px;color:#666}
-.card p{font-size:22px;font-weight:bold;margin:6px 0 0}
-.box{background:#fff;padding:14px;border-radius:12px;margin-bottom:12px}
-input{width:100%;padding:11px;margin:6px 0;box-sizing:border-box;border:1px solid #ddd;border-radius:8px}
-button.btn{width:100%;padding:12px;background:#000;color:#fff;border:0;border-radius:8px;font-weight:bold}
-button.smallBtn{width:auto;padding:6px 12px;background:#000;color:#fff;border:0;border-radius:20px;font-size:12px}
-.item{border-bottom:1px solid #eee;padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.small{color:#666;font-size:12px}
-.badge{background:#e8f5e9;color:#0a7a2e;padding:3px 8px;border-radius:20px;font-size:11px}
-.badge-orange{background:#fff3e0;color:#e65100;padding:3px 8px;border-radius:20px;font-size:11px}
-#loginBox{max-width:400px;margin:40px auto}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial; background: #f4f6f2; padding: 12px; max-width: 1100px; margin: 0 auto; }
+h1 { color: #14532d; margin: 0; font-size: 22px; }
+h2 { font-size: 18px; margin: 18px 0 8px; }
+.cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; }
+.card { background: #fff; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; }
+.card b { font-size: 24px; display: block; }
+.card small { color: #666; }
+.box { background: #fff; padding: 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb; }
+input, select { width: 100%; padding: 11px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+button { width: 100%; padding: 12px; background: #14532d; color: #fff; border: 0; border-radius: 10px; font-weight: bold; cursor: pointer; }
+button.small { width: auto; padding: 7px 10px; font-size: 13px; background: #fff; color: #14532d; border: 1px solid #14532d; margin: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; background: #f8fafc; padding: 10px; } td { padding: 10px; border-top: 1px solid #eee; }
+@media (max-width: 700px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+  table { display: block; overflow-x: auto; }
+}
+#loginBox { max-width: 400px; margin: 40px auto; }
 </style>
 </head>
 <body>
 
 <div id="loginBox" class="box" style="display:none">
-  <h2>Coop Manager Login</h2>
+  <h1>🌿 KIGAMBO</h1>
+  <p>Coop Dashboard - Login</p>
   <input id="email" type="email" placeholder="Email">
   <input id="password" type="password" placeholder="Password">
-  <button class="btn" onclick="login()">Login</button>
+  <button onclick="login()">Login</button>
   <p id="error" style="color:red"></p>
 </div>
 
 <div id="dash" style="display:none">
-  <div class="top"><div><b id="coopTitle">Loading Coop...</b><br><span id="coopInfo" style="font-size:12px;opacity:.8"></span></div><button onclick="logout()">Logout</button></div>
+  <h1 id="coopName">🌿 Coop Dashboard</h1>
+  <p id="coopInfo" style="color:#666;margin:6px 0">Loading...</p>
+  <a href="admin.html"><button class="small">← Back to Admin</button></a>
+  <button class="small" onclick="logout()">Logout</button>
 
   <div class="cards">
-    <div class="card"><h3>Members</h3><p id="cMembers">0</p></div>
-    <div class="card"><h3>Savings</h3><p id="cSavings">UGX 0</p></div>
-    <div class="card"><h3>Loans</h3><p id="cLoans">0</p></div>
-    <div class="card"><h3>Active Loans</h3><p id="cActive">0</p></div>
+    <div class="card"><small>Members</small><b id="tMembers">0</b></div>
+    <div class="card"><small>Total Savings</small><b id="tSavings">0</b></div>
+    <div class="card"><small>Active Loans</small><b id="tLoans">0</b></div>
   </div>
 
   <div class="box">
-    <h3>➕ Add Member to THIS Coop</h3>
-    <input id="mName" placeholder="Full Name">
-    <input id="mPhone" placeholder="Phone - e.g. 0770 123456">
-    <input id="mSavings" type="number" placeholder="Starting Savings - e.g. 50000">
-    <button class="btn" onclick="addMember()">+ Add Member</button>
+    <h2>➕ Add Member</h2>
+    <input id="mName" placeholder="Full Name - e.g. Akorabirungi Michael">
+    <input id="mPhone" placeholder="Phone - e.g. 0771234567">
+    <input id="mSavings" type="number" placeholder="Savings UGX - e.g. 95000">
+    <button onclick="addMember()">Add Member</button>
   </div>
 
   <div class="box">
-    <h3>💰 Add Loan for THIS Coop</h3>
-    <input id="lMember" placeholder="Member Name">
-    <input id="lAmount" type="number" placeholder="Loan Amount - e.g. 200000">
-    <input id="lReason" placeholder="Reason - e.g. School fees">
-    <button class="btn" onclick="addLoan()">+ Request Loan (Goes to Admin for Approval)</button>
-    <p class="small">Loans created here show as "pending" in admin.html until Main Admin approves.</p>
+    <h2>💰 Request Loan</h2>
+    <select id="lMember"></select>
+    <input id="lAmount" type="number" placeholder="Loan Amount UGX">
+    <input id="lReason" placeholder="Reason - e.g. School fees / Business">
+    <button onclick="requestLoan()">Request Loan</button>
   </div>
 
-  <div class="box"><h3>👥 Members in this Coop</h3><input id="searchMember" placeholder="Search member..." onkeyup="renderMembers()"><div id="membersList">Loading...</div></div>
-  <div class="box"><h3>📋 Loans in this Coop</h3><div id="loansList">Loading...</div></div>
-  <div class="box"><a href="admin.html"><button class="btn">← Back to Admin</button></a></div>
+  <div class="box">
+    <h2>👥 Members</h2>
+    <div id="membersList">Loading...</div>
+  </div>
+
+  <div class="box">
+    <h2>📋 Loans</h2>
+    <div id="loansList">Loading...</div>
+  </div>
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
-  authDomain: "kigambo-coopos.firebaseapp.com",
-  projectId: "kigambo-coopos",
-  storageBucket: "kigambo-coopos.firebasestorage.app",
-  messagingSenderId: "711731991766",
-  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const params = new URLSearchParams(window.location.search);
-const coopId = params.get('coop');
-let allMembers = [];
+const firebaseConfig={apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",authDomain:"kigambo-coopos.firebaseapp.com",projectId:"kigambo-coopos",storageBucket:"kigambo-coopos.firebasestorage.app",messagingSenderId:"711731991766",appId:"1:711731991766:web:2bafe8d4fe922cadc3e577"};
+firebase.initializeApp(firebaseConfig); const db=firebase.firestore();
+const params=new URLSearchParams(location.search);
+let coopId=params.get('coop')||localStorage.getItem('coopId')||'';
+if(params.get('coop')) localStorage.setItem('coopId',coopId);
 
-function login(){
-  var email=document.getElementById('email').value.trim();
-  var pass=document.getElementById('password').value;
-  firebase.auth().signInWithEmailAndPassword(email,pass).catch(e=>{ document.getElementById('error').innerText=e.message; });
-}
-function logout(){ firebase.auth().signOut(); }
+function login(){firebase.auth().signInWithEmailAndPassword(document.getElementById('email').value.trim(),document.getElementById('password').value).catch(e=>document.getElementById('error').innerText=e.message)}
+function logout(){firebase.auth().signOut()}
+firebase.auth().onAuthStateChanged(u=>{document.getElementById('loginBox').style.display=u?'none':'block';document.getElementById('dash').style.display=u?'block':'none';if(u)loadAll()});
 
-firebase.auth().onAuthStateChanged(user=>{
-  if(!user){ document.getElementById('loginBox').style.display='block'; document.getElementById('dash').style.display='none'; return; }
-  if(!coopId){ document.getElementById('dash').style.display='block'; document.getElementById('coopTitle').innerText="No coop selected. Go back to Admin and tap Open Dashboard."; return; }
-  document.getElementById('loginBox').style.display='none';
-  document.getElementById('dash').style.display='block';
-  loadCoop();
-});
+function loadAll(){
+  if(!coopId){document.getElementById('coopInfo').innerText="No coop selected. Go back to Admin and click View Dashboard.";return}
+  db.collection("cooperatives").doc(coopId).get().then(d=>{if(d.exists){document.getElementById('coopName').innerText="🌿 "+d.data().name;document.getElementById('coopInfo').innerText=(d.data().location||'')+" • Coop ID: "+coopId}});
 
-function loadCoop(){
-  db.collection("cooperatives").doc(coopId).get().then(doc=>{
-    if(doc.exists){
-      var d=doc.data();
-      document.getElementById('coopTitle').innerText=d.name;
-      document.getElementById('coopInfo').innerText=(d.location||'')+" • Manager: "+(d.managerEmail||'');
-    } else { document.getElementById('coopTitle').innerText="Coop not found"; }
+  db.collection("members").where("coopId","==",coopId).onSnapshot(s=>{
+    let list=[]; s.forEach(d=>list.push({id:d.id,...d.data()}));
+    let total=list.reduce((a,m)=>a+(m.savings||0),0);
+    document.getElementById('tMembers').innerText=list.length;
+    document.getElementById('tSavings').innerText=total.toLocaleString()+" UGX";
+    document.getElementById('membersList').innerHTML=list.map(m=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee"><div><b>${m.name}</b><br><small>${m.phone||''} • Savings: UGX ${(m.savings||0).toLocaleString()}</small></div><button class="small" onclick="delMember('${m.id}')">🗑</button></div>`).join('')||"No members yet";
+    document.getElementById('lMember').innerHTML=list.map(m=>`<option value="${m.id}|${m.name}">${m.name} - ${m.phone||''}</option>`).join('');
   });
-  db.collection("members").where("coopId","==",coopId).onSnapshot(snap=>{
-    allMembers=[]; snap.forEach(doc=> allMembers.push(doc));
-    renderMembers();
-  });
-  db.collection("loans").where("coopId","==",coopId).onSnapshot(snap=>{
-    var html=""; var total=0; var active=0;
-    snap.forEach(doc=>{
-      var d=doc.data(); total++;
-      if(d.status==="active") active++;
-      var badge = d.status==="pending" ? '<span class="badge-orange">pending</span>' : '<span class="badge">'+(d.status||'')+'</span>';
-      html+='<div class="item"><div><b>'+(d.memberName||'')+' - UGX '+(d.amount||0).toLocaleString()+'</b><br><span class="small">'+(d.reason||'')+' • '+badge+'</span></div></div>';
-    });
-    document.getElementById('loansList').innerHTML = html || "No loans in this coop yet";
-    document.getElementById('cLoans').innerText=total;
-    document.getElementById('cActive').innerText=active;
-  });
-}
 
-function renderMembers(){
-  var q=(document.getElementById('searchMember')?.value||'').toLowerCase();
-  var html=""; var totalSav=0;
-  allMembers.forEach(doc=>{
-    var m=doc.data(); totalSav+=m.savings||0;
-    if(q && !(m.name||'').toLowerCase().includes(q)) return;
-    html+='<div class="item"><div><b>'+m.name+'</b><br><span class="small">'+(m.phone||'')+' • Savings: UGX '+(m.savings||0).toLocaleString()+'</span></div><button class="smallBtn" onclick="addSavings(\''+doc.id+'\','+(m.savings||0)+')">+ Savings</button></div>';
+  db.collection("loans").where("coopId","==",coopId).onSnapshot(s=>{
+    let list=[]; s.forEach(d=>list.push({id:d.id,...d.data()}));
+    document.getElementById('tLoans').innerText=list.filter(l=>l.status==='active').length;
+    document.getElementById('loansList').innerHTML=list.map(l=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee"><div><b>${l.memberName} - UGX ${(l.amount||0).toLocaleString()}</b><br><small>${l.reason||''} • ${l.status}</small></div></div>`).join('')||"No loans yet";
   });
-  document.getElementById('membersList').innerHTML = html || "No members in this coop yet";
-  document.getElementById('cMembers').innerText=allMembers.length;
-  document.getElementById('cSavings').innerText="UGX "+totalSav.toLocaleString();
 }
 
 function addMember(){
-  var name=document.getElementById('mName').value.trim();
-  var phone=document.getElementById('mPhone').value.trim();
-  var savings=parseInt(document.getElementById('mSavings').value)||0;
-  if(!name||!coopId){ alert("Enter name"); return; }
-  db.collection("members").add({name:name,phone:phone,savings:savings,coopId:coopId,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{
-    alert("Member added ✅");
-    document.getElementById('mName').value=''; document.getElementById('mPhone').value=''; document.getElementById('mSavings').value='';
-  });
+  let name=document.getElementById('mName').value.trim(), phone=document.getElementById('mPhone').value.trim(), sav=parseInt(document.getElementById('mSavings').value)||0;
+  if(!coopId){alert("No coop selected");return}
+  if(!name||!phone){alert("Enter name and phone");return}
+  db.collection("members").add({coopId,name,phone,savings:sav,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{alert("Member added ✅");document.getElementById('mName').value='';document.getElementById('mPhone').value='';document.getElementById('mSavings').value=''});
 }
-function addSavings(id, current){
-  var amt=parseInt(prompt("How much to add to savings?"))||0;
-  if(!amt) return;
-  db.collection("members").doc(id).update({savings: current+amt});
+function requestLoan(){
+  let sel=document.getElementById('lMember').value; if(!sel){alert("Add a member first");return}
+  let [mid,mname]=sel.split('|'); let amt=parseInt(document.getElementById('lAmount').value)||0; let reason=document.getElementById('lReason').value.trim();
+  if(!amt){alert("Enter amount");return}
+  db.collection("loans").add({coopId,memberId:mid,memberName:mname,amount:amt,reason,status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{alert("Loan requested - waiting for Admin ✅");document.getElementById('lAmount').value='';document.getElementById('lReason').value=''});
 }
-function addLoan(){
-  var member=document.getElementById('lMember').value.trim();
-  var amount=parseInt(document.getElementById('lAmount').value)||0;
-  var reason=document.getElementById('lReason').value.trim();
-  if(!member||!amount){ alert("Enter member and amount"); return; }
-  db.collection("loans").add({memberName:member,amount:amount,reason:reason,coopId:coopId,status:"pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{
-    alert("Loan sent to Admin for approval ✅");
-    document.getElementById('lMember').value=''; document.getElementById('lAmount').value=''; document.getElementById('lReason').value='';
-  });
-}
+function delMember(id){if(confirm("Delete this member?"))db.collection("members").doc(id).delete()}
 </script>
 </body>
-  </html>
+      </html>
