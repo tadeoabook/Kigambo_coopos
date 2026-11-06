@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developer Dashboard - KIGAMBO</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial; background: #0f172a; padding: 16px; color: #fff; }
+.top { background: #fff; color: #111; padding: 16px; border-radius: 12px; }
+.logo { font-size: 28px; font-weight: 900; }
+.logo span { color: #16a34a; }
+.sub { color: #666; font-size: 13px; }
+.card { background: #fff; color: #111; padding: 16px; border-radius: 12px; margin-top: 12px; }
+input { width: 100%; padding: 13px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+.btn { display: block; text-align: center; padding: 13px; border-radius: 10px; background: #111; color: #fff; text-decoration: none; font-weight: 700; border: none; width: 100%; font-size: 15px; margin-top: 8px; }
+.green { background: #16a34a; }
+.blue { background: #2563eb; }
+.orange { background: #ea580c; }
+.row { display: flex; gap: 10px; }
+.box { flex: 1; background: #f8fafc; padding: 12px; border-radius: 10px; text-align: center; }
+.box b { font-size: 20px; display: block; }
+.box small { color: #666; }
+.hidden { display: none; }
+small { color: #888; }
+.back { display: block; text-align: center; margin-top: 12px; color: #fff; text-decoration: none; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="top">
+<div class="logo">KIGAMBO<br><span>DEVELOPER</span></div>
+<p class="sub">Developer Control • Tadeo Only • v1.1</p>
+</div>
+
+<!-- PIN LOCK -->
+<div class="card" id="lockBox">
+<b>🔐 Developer PIN</b>
+<p style="color:#666;font-size:13px;">Enter PIN to open Developer Dashboard.<br>Default PIN is <b>2026</b> — you can change it later.</p>
+<input id="pin" type="password" placeholder="Enter PIN: 2026">
+<button class="btn" onclick="unlock()">Unlock Dashboard →</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashBox" class="hidden">
+
+<div class="row">
+<div class="card box"><small>Cooperatives</small><b>1</b></div>
+<div class="card box"><small>Members</small><b>0</b></div>
+</div>
+
+<div class="row">
+<div class="card box"><small>App Version</small><b>v1.1</b></div>
+<div class="card box"><small>Status</small><b style="color:#16a34a;">● LIVE</b></div>
+</div>
+
+<div class="card">
+<b>🏦 KIGAMBO 1 - Kyegegwa</b>
+<p style="color:#666;font-size:13px;">Status: Active • District: Kyegegwa<br>Admin: Set • Coop Dashboard: Working<br>Member Login: To be created next</p>
+<a class="btn green" href="coop.html">Open Coop Dashboard</a>
+<a class="btn" href="admin.html">Open Admin Dashboard</a>
+<a class="btn blue" href="member.html">Open Member Dashboard (Test)</a>
+</div>
+
+<div class="card">
+<b>🛠️ Developer Tools</b>
+<a class="btn orange" href="index.html">🏠 Test Home Page</a>
+<a class="btn" style="background:#2563eb;" href="https://github.com/tadeoabook/Kigambo_coopos" target="_blank">📂 Open GitHub Repo</a>
+<button class="btn" style="background:#dc2626;" onclick="clearAll()">🧹 Clear App Cache / Logout Test</button>
+<button class="btn" style="background:#eee;color:#111;" onclick="lock()">🔒 Lock Dashboard</button>
+</div>
+
+<div class="card">
+<b>📝 Developer Notes</b>
+<p style="color:#666;font-size:13px;">• Next: Create member.html<br>• Next: Connect real Firebase login<br>• Next: Add real savings / loans data<br>• App loads from: tadeoabook.github.io/Kigambo_coopos/</p>
+</div>
+
+</div>
+
+<a class="back" href="index.html">← Back to Home</a>
+
+<script>
+function unlock(){
+  var p = document.getElementById('pin').value.trim();
+  if(p === '2026'){
+    document.getElementById('lockBox').classList.add('hidden');
+    document.getElementById('dashBox').classList.remove('hidden');
+    localStorage.setItem('kigambo_dev','yes');
+  } else { alert('Wrong PIN. Try 2026'); }
+}
+function lock(){
+  localStorage.removeItem('kigambo_dev');
+  document.getElementById('dashBox').classList.add('hidden');
+  document.getElementById('lockBox').classList.remove('hidden');
+}
+function clearAll(){
+  localStorage.clear();
+  alert('Cache cleared! Reload the app to test fresh.');
+  location.reload();
+}
+if(localStorage.getItem('kigambo_dev')==='yes'){
+  document.getElementById('lockBox').classList.add('hidden');
+  document.getElementById('dashBox').classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
