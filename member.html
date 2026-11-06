@@ -2,94 +2,202 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Member Login - KIGAMBO</title>
+<title>Member - KIGAMBO CoopOS</title>
+<link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14532d">
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Arial; background: #f1f5f9; padding: 16px; }
-.top { background: #fff; padding: 16px; border-radius: 12px; }
-.logo { font-size: 28px; font-weight: 900; }
+body { margin: 0; font-family: Arial; background: #f8fafc; padding: 16px; }
+.top { background: #fff; padding: 18px 16px; border-radius: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.logo-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px auto; border: 3px solid #14532d; }
+.logo { font-size: 22px; font-weight: 900; color: #14532d; }
 .logo span { color: #16a34a; }
-.sub { color: #666; font-size: 13px; }
-.card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; }
-input { width: 100%; padding: 13px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
-.btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #111; color: #fff; text-decoration: none; font-weight: 700; border: none; width: 100%; font-size: 16px; }
-.back { display: block; text-align: center; margin-top: 12px; color: #14532d; text-decoration: none; font-weight: 700; }
-.row { display: flex; gap: 10px; }
-.box { flex: 1; background: #f8fafc; padding: 12px; border-radius: 10px; text-align: center; }
-.box b { font-size: 18px; display: block; }
-.box small { color: #666; }
+.sub { color: #666; font-size: 12px; }
+.card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.card b { font-size: 16px; }
+input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
+.btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #16a34a; color: #fff; text-decoration: none; font-weight: 700; margin-top: 12px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
+.btn2 { background: #2563eb; }
+.btn3 { background: #0f172a; }
+.btn-red { background: #dc2626; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; text-align: center; }
+.box small { color: #666; font-size: 11px; }
+.box div { font-size: 18px; font-weight: 900; color: #14532d; margin-top: 4px; }
+.row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+.row span:last-child { font-weight: 700; }
+.back { display: inline-block; margin-top: 12px; color: #2563eb; text-decoration: none; font-weight: 700; font-size: 14px; }
 .hidden { display: none; }
+.footer { text-align: center; color: #888; font-size: 12px; margin-top: 16px; }
 </style>
 </head>
 <body>
 
 <div class="top">
-<div class="logo">KIGAMBO<br><span>MEMBER</span></div>
-<p class="sub">Member Login • KIGAMBO 1 - Kyegegwa</p>
+<img src="logo.png" class="logo-img">
+<div class="logo">KIGAMBO <span>THE GREATER</span></div>
+<p class="sub">Member Dashboard • KIGAMBO 1 - Kyegegwa</p>
 </div>
 
-<!-- LOGIN -->
-<div class="card" id="loginBox">
+<!-- LOGIN / REGISTER -->
+<div id="loginBox" class="card">
 <b>👤 Member Login</b>
-<p style="color:#666;font-size:13px;">Enter your Member ID / Phone to view your dashboard.</p>
-<input id="memberId" placeholder="Member ID e.g. KIG-001">
-<input id="phone" placeholder="Phone e.g. 0770 000 000">
-<button class="btn" onclick="login()">Login to Dashboard →</button>
-<p style="color:#888;font-size:12px;text-align:center;">Demo: Use any ID to test. Real Firebase login will be connected next.</p>
+<p style="color:#666;font-size:13px;">Enter your Phone Number to login. If you are new, register below.</p>
+<input id="loginPhone" placeholder="Phone Number e.g. 0771234567">
+<button class="btn" onclick="login()">Login →</button>
+<p style="text-align:center;color:#888;font-size:13px;margin:14px 0 4px;">New member?</p>
+<button class="btn btn2" onclick="showRegister()">Register New Member</button>
+</div>
+
+<div id="registerBox" class="card hidden">
+<b>📝 Register New Member</b>
+<input id="regName" placeholder="Full Name e.g. Tadeo Mwesigye">
+<input id="regPhone" placeholder="Phone Number e.g. 0771234567">
+<input id="regVillage" placeholder="Village e.g. Kigambo">
+<select id="regParish">
+<option>Parish: Kigambo</option>
+<option>Parish: Kyegegwa Town</option>
+<option>Parish: Ruyonza</option>
+<option>Parish: Other</option>
+</select>
+<button class="btn" onclick="register()">Create My Account ✅</button>
+<button class="btn btn3" onclick="showLogin()">Back to Login</button>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashBox" class="hidden">
 <div class="card">
-<b>Welcome, <span id="showId">Member</span> 👋</b>
-<p style="color:#666;font-size:13px;">KIGAMBO 1 - Kyegegwa • Active Member</p>
+<b>👋 Hello, <span id="mName"></span></b>
+<p style="color:#666;font-size:13px;margin:4px 0 0;">Member ID: <b id="mId"></b> • Phone: <span id="mPhone"></span><br>Village: <span id="mVillage"></span> • KIGAMBO 1</p>
 </div>
 
-<div class="row">
-<div class="card box"><small>Savings</small><b>UGX 0</b></div>
-<div class="card box"><small>Shares</small><b>0</b></div>
-</div>
-
-<div class="row">
-<div class="card box"><small>Loan Balance</small><b>UGX 0</b></div>
-<div class="card box"><small>Status</small><b style="color:#16a34a;">Active</b></div>
+<div class="grid">
+<div class="box"><small>💰 SAVINGS</small><div id="mSavings">0</div><small>UGX</small></div>
+<div class="box"><small>📈 SHARES</small><div id="mShares">0</div><small>Shares</small></div>
+<div class="box"><small>💳 LOAN BALANCE</small><div id="mLoan">0</div><small>UGX</small></div>
+<div class="box"><small>☕ COFFEE THIS SEASON</small><div id="mCoffee">0</div><small>Kg</small></div>
 </div>
 
 <div class="card">
-<b>📋 Recent Activity</b>
-<p style="color:#666;font-size:13px;">• No transactions yet<br>• Your savings & loans will appear here<br>• Contact your Cooperative for help</p>
+<b>📋 My Records</b>
+<div class="row"><span>Join Date</span><span id="mDate"></span></div>
+<div class="row"><span>Status</span><span style="color:#16a34a;">● Active</span></div>
+<div class="row"><span>Total Savings</span><span id="mSavings2">0 UGX</span></div>
+<div class="row"><span>Total Shares Value</span><span id="mSharesVal">0 UGX</span></div>
+<div class="row"><span>Coffee Delivered</span><span id="mCoffee2">0 Kg</span></div>
 </div>
 
 <div class="card">
-<b>Quick Actions</b><br><br>
-<a class="btn" style="background:#16a34a;" href="coop.html">Go to Cooperative Dashboard</a>
-<br>
-<button class="btn" style="background:#eee;color:#111;" onclick="logout()">Logout</button>
+<b>➕ Add My Savings / Coffee</b>
+<p style="color:#666;font-size:13px;">This is for testing. Admin will confirm later.</p>
+<input id="addSavings" type="number" placeholder="Add Savings UGX e.g. 50000">
+<button class="btn" onclick="addSaving()">Add Savings 💰</button>
+<input id="addCoffee" type="number" placeholder="Add Coffee Kg e.g. 20">
+<button class="btn btn2" onclick="addCoffee()">Add Coffee ☕</button>
 </div>
+
+<button class="btn btn-red" onclick="logout()">Logout</button>
 </div>
 
 <a class="back" href="index.html">← Back to Home</a>
+<p class="footer">KIGAMBO THE GREATER • Member data is saved on this phone<br>Kyegegwa, Uganda 🇺🇬</p>
 
 <script>
+function getMembers(){ return JSON.parse(localStorage.getItem('kigambo_members') || '[]'); }
+function saveMembers(m){ localStorage.setItem('kigambo_members', JSON.stringify(m)); }
+function showRegister(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden'); }
+function showLogin(){ document.getElementById('registerBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+
+function register(){
+  let name = document.getElementById('regName').value.trim();
+  let phone = document.getElementById('regPhone').value.trim();
+  let village = document.getElementById('regVillage').value.trim();
+  let parish = document.getElementById('regParish').value;
+  if(!name || !phone){ alert('Please enter Name and Phone'); return; }
+  let members = getMembers();
+  if(members.find(x=>x.phone===phone)){ alert('This phone already registered. Please Login.'); showLogin(); return; }
+  let id = 'KIG-' + (1001 + members.length);
+  let newM = { id:id, name:name, phone:phone, village:village, parish:parish, savings:0, shares:0, loan:0, coffee:0, date: new Date().toLocaleDateString() };
+  members.push(newM);
+  saveMembers(members);
+  localStorage.setItem('kigambo_current', phone);
+  alert('Welcome '+name+'! Your Member ID is '+id);
+  showDashboard(newM);
+}
+
 function login(){
-  var id = document.getElementById('memberId').value.trim();
-  if(!id){ alert('Please enter your Member ID'); return; }
-  document.getElementById('showId').innerText = id;
+  let phone = document.getElementById('loginPhone').value.trim();
+  if(!phone){ alert('Enter phone number'); return; }
+  let members = getMembers();
+  let m = members.find(x=>x.phone===phone);
+  if(!m){ alert('Not found. Please Register first.'); showRegister(); return; }
+  localStorage.setItem('kigambo_current', phone);
+  showDashboard(m);
+}
+
+function showDashboard(m){
   document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('registerBox').classList.add('hidden');
   document.getElementById('dashBox').classList.remove('hidden');
-  localStorage.setItem('kigambo_member', id);
+  document.getElementById('mName').innerText = m.name;
+  document.getElementById('mId').innerText = m.id;
+  document.getElementById('mPhone').innerText = m.phone;
+  document.getElementById('mVillage').innerText = m.village;
+  document.getElementById('mDate').innerText = m.date;
+  document.getElementById('mSavings').innerText = m.savings.toLocaleString();
+  document.getElementById('mSavings2').innerText = m.savings.toLocaleString() + ' UGX';
+  document.getElementById('mShares').innerText = m.shares;
+  document.getElementById('mSharesVal').innerText = (m.shares * 20000).toLocaleString() + ' UGX';
+  document.getElementById('mLoan').innerText = m.loan.toLocaleString();
+  document.getElementById('mCoffee').innerText = m.coffee;
+  document.getElementById('mCoffee2').innerText = m.coffee + ' Kg';
+}
+
+function getCurrent(){
+  let phone = localStorage.getItem('kigambo_current');
+  if(!phone) return null;
+  let members = getMembers();
+  return members.find(x=>x.phone===phone);
+}
+function updateCurrent(updated){
+  let members = getMembers();
+  let idx = members.findIndex(x=>x.phone===updated.phone);
+  members[idx] = updated;
+  saveMembers(members);
+  showDashboard(updated);
+}
+function addSaving(){
+  let amt = parseInt(document.getElementById('addSavings').value);
+  if(!amt || amt<=0){ alert('Enter amount'); return; }
+  let m = getCurrent();
+  m.savings += amt;
+  // 1 share = 20000 UGX
+  m.shares = Math.floor(m.savings / 20000);
+  document.getElementById('addSavings').value='';
+  updateCurrent(m);
+  alert('Savings added: '+amt.toLocaleString()+' UGX');
+}
+function addCoffee(){
+  let kg = parseInt(document.getElementById('addCoffee').value);
+  if(!kg || kg<=0){ alert('Enter Kg'); return; }
+  let m = getCurrent();
+  m.coffee += kg;
+  document.getElementById('addCoffee').value='';
+  updateCurrent(m);
+  alert('Coffee added: '+kg+' Kg');
 }
 function logout(){
-  localStorage.removeItem('kigambo_member');
-  document.getElementById('loginBox').classList.remove('hidden');
+  localStorage.removeItem('kigambo_current');
   document.getElementById('dashBox').classList.add('hidden');
+  document.getElementById('loginBox').classList.remove('hidden');
 }
-var saved = localStorage.getItem('kigambo_member');
-if(saved){
-  document.getElementById('memberId').value = saved;
-  login();
+// Auto-login if already logged in
+window.onload = function(){
+  let m = getCurrent();
+  if(m) showDashboard(m);
 }
 </script>
 
 </body>
-  </html>
+                                        </html>
