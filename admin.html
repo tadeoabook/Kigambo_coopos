@@ -1,174 +1,127 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kigambo - Admin</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<title>Admin - KIGAMBO CoopOS</title>
+<link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14532d">
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Arial; background: #f4f6f2; padding: 12px; max-width: 1100px; margin: 0 auto; }
-h1 { color: #14532d; font-size: 22px; margin: 0; }
-h2 { font-size: 18px; margin: 0 0 10px; }
-.cards { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin: 14px 0; }
-.card { background: #fff; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; }
-.card b { font-size: 22px; display: block; }
-.card small { color: #666; }
-.box { background: #fff; padding: 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb; }
-input, select { width: 100%; padding: 11px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
-button { width: 100%; padding: 12px; background: #14532d; color: #fff; border: 0; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 15px; }
-button.small { width: auto; padding: 7px 12px; font-size: 13px; background: #fff; color: #14532d; border: 1px solid #14532d; margin: 2px; }
-button.small.red { color: #dc2626; border-color: #dc2626; }
-button.small.green { background: #14532d; color: #fff; border-color: #14532d; }
-.row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid #eee; }
-.badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #dcfce7; color: #166534; display: inline-block; }
-.badge.pending { background: #fef9c3; color: #854d0e; }
-@media (max-width: 700px) {
-  .cards { grid-template-columns: 1fr 1fr; }
-  .row { flex-direction: column; align-items: flex-start; }
-}
+body { margin: 0; font-family: Arial; background: #f8fafc; padding: 16px; }
+.top { background: #fff; padding: 18px 16px; border-radius: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.logo-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px auto; border: 3px solid #14532d; }
+.logo { font-size: 22px; font-weight: 900; color: #14532d; }
+.logo span { color: #16a34a; }
+.sub { color: #666; font-size: 12px; }
+.card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.card b { font-size: 16px; }
+input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
+.btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #16a34a; color: #fff; text-decoration: none; font-weight: 700; margin-top: 12px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
+.btn2 { background: #2563eb; }
+.btn-red { background: #dc2626; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; text-align: center; }
+.box small { color: #666; font-size: 11px; }
+.box div { font-size: 18px; font-weight: 900; color: #14532d; margin-top: 4px; }
+.member { background: #fff; padding: 12px; border-radius: 10px; margin-top: 10px; border-left: 4px solid #16a34a; }
+.member b { font-size: 15px; }
+.member p { color: #666; font-size: 12px; margin: 4px 0; }
+.back { display: inline-block; margin-top: 12px; color: #2563eb; text-decoration: none; font-weight: 700; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<div id="loginBox" class="box" style="max-width:400px;margin:40px auto">
-  <h1>🌿 KIGAMBO THE GREATER</h1>
-  <p>Master Dashboard • Admin Login</p>
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <p id="error" style="color:red"></p>
-  <p id="loading" style="color:#666;font-size:13px">Checking login...</p>
+<div class="top">
+<img src="logo.png" class="logo-img">
+<div class="logo">KIGAMBO <span>THE GREATER</span></div>
+<p class="sub">Admin Dashboard • KIGAMBO 1 - Kyegegwa</p>
 </div>
 
-<div id="dash" style="display:none">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div><h1>🌿 KIGAMBO THE GREATER</h1><p style="color:#666;margin:4px 0">Main Admin Master Dashboard</p></div>
-    <button class="small" onclick="logout()">Logout</button>
-  </div>
-
-  <div class="cards">
-    <div class="card"><small>Cooperatives</small><b id="tCoops">0</b></div>
-    <div class="card"><small>Total Members</small><b id="tMembers">0</b></div>
-    <div class="card"><small>Total Savings</small><b id="tSavings">0 UGX</b></div>
-    <div class="card"><small>Total Loans</small><b id="tLoans">0</b></div>
-  </div>
-
-  <div class="box">
-    <h2>➕ Create Cooperative</h2>
-    <input id="cName" placeholder="Cooperative Name - e.g. KIGAMBO 1">
-    <input id="cLoc" placeholder="District / Location - e.g. Kyegegwa">
-    <input id="cManager" placeholder="Manager Name - e.g. Tadeo Abooki">
-    <button onclick="createCoop()">+ Create Cooperative</button>
-  </div>
-
-  <div class="box">
-    <h2>🏢 All Cooperatives</h2>
-    <input id="coopSearch" placeholder="Search coop..." onkeyup="renderCoops()">
-    <div id="coopsList">Loading...</div>
-  </div>
-
-  <div class="box">
-    <h2>📋 All Loans - Approve / Reject</h2>
-    <div id="loansList">Loading...</div>
-  </div>
-
-  <div class="box">
-    <h2>👥 All Members (All Coops)</h2>
-    <input id="memberSearch" placeholder="Search by name OR phone - e.g. Akorabirungi or 075424534" onkeyup="renderMembers()">
-    <div id="membersList">Loading...</div>
-  </div>
-
-  <div class="box">
-    <h2>⚠️ Master Kill Switch</h2>
-    <button id="killBtn" onclick="toggleKill()" style="background:#dc2626">MASTER KILL SWITCH</button>
-  </div>
+<div class="grid">
+<div class="box"><small>👥 MEMBERS</small><div id="totalMembers">0</div></div>
+<div class="box"><small>💰 TOTAL SAVINGS</small><div id="totalSavings">0</div></div>
+<div class="box"><small>📈 SHARES</small><div id="totalShares">0</div></div>
+<div class="box"><small>☕ COFFEE</small><div id="totalCoffee">0</div></div>
 </div>
+
+<div class="card">
+<b>➕ Add Member</b>
+<input id="aName" placeholder="Full Name e.g. Kweyamba Patrick">
+<input id="aPhone" placeholder="Phone e.g. 0745245711">
+<input id="aVillage" placeholder="Village e.g. Nyabuliko">
+<input id="aSavings" type="number" placeholder="Savings UGX e.g. 45000">
+<button class="btn" onclick="addMember()">Add Member ✅</button>
+</div>
+
+<div class="card">
+<b>💳 Give Loan</b>
+<select id="loanMember"></select>
+<input id="loanAmount" type="number" placeholder="Loan Amount UGX">
+<button class="btn btn2" onclick="giveLoan()">Give Loan 💳</button>
+</div>
+
+<div class="card">
+<b>👥 All Members</b>
+<div id="memberList"></div>
+</div>
+
+<a class="back" href="index.html">← Back to Home</a>
+<a class="back" href="coop.html" style="margin-left:12px;">→ Go to Coop</a>
 
 <script>
-var firebaseConfig={apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",authDomain:"kigambo-coopos.firebaseapp.com",projectId:"kigambo-coopos",storageBucket:"kigambo-coopos.firebasestorage.app",messagingSenderId:"711731991766",appId:"1:711731991766:web:2bafe8d4fe922cadc3e577"};
-firebase.initializeApp(firebaseConfig); var db=firebase.firestore();
-var allCoops=[], allMembers=[], allLoans=[], killOn=false;
-
-function login(){ firebase.auth().signInWithEmailAndPassword(document.getElementById('email').value.trim(), document.getElementById('password').value).catch(function(e){document.getElementById('error').innerText=e.message}) }
-function logout(){ firebase.auth().signOut() }
-firebase.auth().onAuthStateChanged(function(u){
-  document.getElementById('loading').innerText = u ? 'Logged in, loading...' : 'Not logged in - please login';
-  document.getElementById('loginBox').style.display = u ? 'none' : 'block';
-  document.getElementById('dash').style.display = u ? 'block' : 'none';
-  if(u) loadAll();
-});
-
-function loadAll(){
-  db.collection("cooperatives").onSnapshot(function(s){ allCoops=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allCoops.push(o); }); renderCoops(); renderLoans(); updateStats(); });
-  db.collection("members").onSnapshot(function(s){ allMembers=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allMembers.push(o); }); renderMembers(); renderCoops(); renderLoans(); updateStats(); });
-  db.collection("loans").onSnapshot(function(s){ allLoans=[]; s.forEach(function(d){ var o=d.data(); o.id=d.id; allLoans.push(o); }); renderLoans(); updateStats(); });
-  db.collection("settings").doc("system").onSnapshot(function(d){ killOn=d.exists && d.data().killed; document.getElementById('killBtn').innerText=killOn?'✅ SYSTEM STOPPED - Tap to Resume':'MASTER KILL SWITCH'; });
+function getMembers(){ return JSON.parse(localStorage.getItem('kigambo_members') || '[]'); }
+function saveMembers(m){ localStorage.setItem('kigambo_members', JSON.stringify(m)); }
+function load(){
+  let members = getMembers();
+  let ts=0, tsh=0, tc=0;
+  members.forEach(m=>{ ts+=m.savings||0; tsh+=m.shares||0; tc+=m.coffee||0; });
+  document.getElementById('totalMembers').innerText = members.length;
+  document.getElementById('totalSavings').innerText = ts.toLocaleString() + ' UGX';
+  document.getElementById('totalShares').innerText = tsh;
+  document.getElementById('totalCoffee').innerText = tc.toLocaleString() + ' Kg';
+  let list = document.getElementById('memberList');
+  let sel = document.getElementById('loanMember');
+  list.innerHTML=''; sel.innerHTML='';
+  members.forEach((m,i)=>{
+    list.innerHTML += `<div class="member"><b>${m.name}</b> • ${m.id}<br><p>📞 ${m.phone} • 🏡 ${m.village}</p><p>💰 ${m.savings.toLocaleString()} UGX • 📈 ${m.shares} Shares • ☕ ${m.coffee} Kg • 💳 Loan ${m.loan.toLocaleString()} UGX</p><button class="btn btn-red" style="padding:8px;font-size:13px;" onclick="deleteMember(${i})">Delete</button></div>`;
+    sel.innerHTML += `<option value="${i}">${m.name} - ${m.phone}</option>`;
+  });
 }
-
-function updateStats(){
-  document.getElementById('tCoops').innerText=allCoops.length;
-  document.getElementById('tMembers').innerText=allMembers.length;
-  var sav=0; for(var i=0;i<allMembers.length;i++){ sav += (allMembers[i].savings||0); }
-  document.getElementById('tSavings').innerText=sav.toLocaleString()+" UGX";
-  document.getElementById('tLoans').innerText=allLoans.length;
+function addMember(){
+  let name=document.getElementById('aName').value.trim();
+  let phone=document.getElementById('aPhone').value.trim();
+  let village=document.getElementById('aVillage').value.trim();
+  let savings=parseInt(document.getElementById('aSavings').value)||0;
+  if(!name||!phone){ alert('Enter Name and Phone'); return; }
+  let members=getMembers();
+  if(members.find(x=>x.phone===phone)){ alert('Already exists'); return; }
+  let id='KIG-'+(1001+members.length);
+  members.push({id:id, name:name, phone:phone, village:village, savings:savings, shares: Math.floor(savings/20000), loan:0, coffee:0, date: new Date().toLocaleDateString()});
+  saveMembers(members);
+  alert('Added '+name+' - '+id);
+  document.getElementById('aName').value=''; document.getElementById('aPhone').value=''; document.getElementById('aVillage').value=''; document.getElementById('aSavings').value='';
+  load();
 }
-
-function createCoop(){
-  var n=document.getElementById('cName').value.trim(), loc=document.getElementById('cLoc').value.trim(), man=document.getElementById('cManager').value.trim();
-  if(!n){ alert("Enter coop name"); return; }
-  db.collection("cooperatives").add({name:n, location:loc, manager:man, status:'active', createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){ alert("Cooperative added ✅"); document.getElementById('cName').value=''; document.getElementById('cLoc').value=''; document.getElementById('cManager').value=''; });
+function giveLoan(){
+  let idx=document.getElementById('loanMember').value;
+  let amt=parseInt(document.getElementById('loanAmount').value);
+  if(!amt){ alert('Enter loan amount'); return; }
+  let members=getMembers();
+  members[idx].loan += amt;
+  saveMembers(members);
+  alert('Loan given: '+amt.toLocaleString()+' UGX to '+members[idx].name);
+  document.getElementById('loanAmount').value='';
+  load();
 }
-
-function renderCoops(){
-  var q=(document.getElementById('coopSearch').value||'').toLowerCase();
-  var html='';
-  for(var i=0;i<allCoops.length;i++){
-    var c=allCoops[i];
-    if(q && (c.name||'').toLowerCase().indexOf(q)===-1) continue;
-    var mCount=0; for(var j=0;j<allMembers.length;j++){ if(allMembers[j].coopId===c.id) mCount++; }
-    html += '<div class="row"><div><b>'+c.name+'</b><br><small>'+(c.location||'')+' • Manager: '+(c.manager||'No manager')+' • '+mCount+' members • <span class="badge">'+(c.status||'active')+'</span></small></div><div><a href="coop.html?coop='+c.id+'"><button class="small green">Open Dashboard</button></a> <button class="small" onclick="toggleCoop(\''+c.id+'\')">Pause</button> <button class="small red" onclick="deleteCoop(\''+c.id+'\')">X</button></div></div>';
-  }
-  document.getElementById('coopsList').innerHTML=html||"No cooperatives yet";
+function deleteMember(i){
+  if(!confirm('Delete this member?')) return;
+  let members=getMembers();
+  members.splice(i,1);
+  saveMembers(members);
+  load();
 }
-function toggleCoop(id){
-  for(var i=0;i<allCoops.length;i++){ if(allCoops[i].id===id){ var st=allCoops[i].status||'active'; db.collection("cooperatives").doc(id).update({status: st==='active'?'paused':'active'}); } }
-}
-function deleteCoop(id){ if(confirm("Delete this coop?")) db.collection("cooperatives").doc(id).delete(); }
-
-function renderLoans(){
-  var html='';
-  for(var i=0;i<allLoans.length;i++){
-    var l=allLoans[i]; var coopName=''; for(var j=0;j<allCoops.length;j++){ if(allCoops[j].id===l.coopId) coopName=allCoops[j].name; }
-    var btns='';
-    if(l.status==='pending') btns='<button class="small green" onclick="setLoan(\''+l.id+'\',\'active\')">Approve</button> <button class="small red" onclick="setLoan(\''+l.id+'\',\'rejected\')">Reject</button>';
-    if(l.status==='active') btns='<button class="small green" onclick="setLoan(\''+l.id+'\',\'paid\')">Mark Paid</button>';
-    btns += ' <button class="small red" onclick="delLoan(\''+l.id+'\')">Delete</button>';
-    html += '<div class="row"><div><b>'+l.memberName+' - UGX '+(l.amount||0).toLocaleString()+'</b><br><small>'+coopName+' • '+(l.reason||'')+' • <span class="badge '+(l.status==='pending'?'pending':'')+'">'+l.status+'</span></small></div><div>'+btns+'</div></div>';
-  }
-  document.getElementById('loansList').innerHTML=html||"No loans yet";
-}
-function setLoan(id,st){ db.collection("loans").doc(id).update({status:st}); }
-function delLoan(id){ if(confirm("Delete this loan? This cannot be undone.")) db.collection("loans").doc(id).delete(); }
-
-function renderMembers(){
-  var q=(document.getElementById('memberSearch').value||'').toLowerCase().trim();
-  var html='';
-  for(var i=0;i<allMembers.length;i++){
-    var m=allMembers[i];
-    if(q){
-      var name=(m.name||'').toLowerCase(); var phone=(m.phone||'').toLowerCase();
-      if(name.indexOf(q)===-1 && phone.indexOf(q)===-1) continue;
-    }
-    var coopName=''; for(var j=0;j<allCoops.length;j++){ if(allCoops[j].id===m.coopId) coopName=allCoops[j].name; }
-    html += '<div class="row"><div><b>'+m.name+'</b><br><small>'+(m.phone||'')+' • '+coopName+' • Savings: UGX '+(m.savings||0).toLocaleString()+'</small></div><div><button class="small red" onclick="delMember(\''+m.id+'\')">Delete</button></div></div>';
-  }
-  document.getElementById('membersList').innerHTML=html||"No members found. Clear search to see all.";
-}
-function delMember(id){ if(confirm("Delete this member?")) db.collection("members").doc(id).delete(); }
-function toggleKill(){ if(confirm(killOn?"Resume all operations?":"STOP ALL cooperatives?")) db.collection("settings").doc("system").set({killed:!killOn}); }
+load();
 </script>
 </body>
 </html>
