@@ -1,128 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kigambo - Coop Dashboard</title>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<title>Cooperative - KIGAMBO CoopOS</title>
+<link rel="icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14532d">
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Arial; background: #f4f6f2; padding: 12px; max-width: 1100px; margin: 0 auto; }
-h1 { color: #14532d; margin: 0; font-size: 22px; }
-h2 { font-size: 18px; margin: 18px 0 8px; }
-.cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; }
-.card { background: #fff; padding: 14px; border-radius: 12px; border: 1px solid #e5e7eb; }
-.card b { font-size: 24px; display: block; }
-.card small { color: #666; }
-.box { background: #fff; padding: 14px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb; }
-input, select { width: 100%; padding: 11px; margin: 6px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
-button { width: 100%; padding: 12px; background: #14532d; color: #fff; border: 0; border-radius: 10px; font-weight: bold; cursor: pointer; }
-button.small { width: auto; padding: 7px 10px; font-size: 13px; background: #fff; color: #14532d; border: 1px solid #14532d; margin: 2px; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th { text-align: left; background: #f8fafc; padding: 10px; } td { padding: 10px; border-top: 1px solid #eee; }
-@media (max-width: 700px) {
-  .cards { grid-template-columns: 1fr 1fr; }
-  table { display: block; overflow-x: auto; }
-}
-#loginBox { max-width: 400px; margin: 40px auto; }
+body { margin: 0; font-family: Arial; background: #f8fafc; padding: 16px; }
+.top { background: #fff; padding: 18px 16px; border-radius: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.logo-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px auto; border: 3px solid #14532d; }
+.logo { font-size: 22px; font-weight: 900; color: #14532d; }
+.logo span { color: #16a34a; }
+.sub { color: #666; font-size: 12px; }
+.card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.card b { font-size: 16px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; text-align: center; }
+.box small { color: #666; font-size: 11px; }
+.box div { font-size: 18px; font-weight: 900; color: #14532d; margin-top: 4px; }
+.member { background: #fff; padding: 12px; border-radius: 10px; margin-top: 10px; border-left: 4px solid #16a34a; box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+.member b { font-size: 15px; }
+.member p { color: #666; font-size: 12px; margin: 4px 0; }
+.member span { font-size: 12px; background: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; margin-right: 4px; display: inline-block; margin-top: 4px; }
+.btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #16a34a; color: #fff; text-decoration: none; font-weight: 700; margin-top: 12px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
+.btn2 { background: #2563eb; }
+.back { display: inline-block; margin-top: 12px; color: #2563eb; text-decoration: none; font-weight: 700; font-size: 14px; }
+.footer { text-align: center; color: #888; font-size: 12px; margin-top: 16px; }
 </style>
 </head>
 <body>
 
-<div id="loginBox" class="box" style="display:none">
-  <h1>🌿 KIGAMBO</h1>
-  <p>Coop Dashboard - Login</p>
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <p id="error" style="color:red"></p>
+<div class="top">
+<img src="logo.png" class="logo-img">
+<div class="logo">KIGAMBO <span>THE GREATER</span></div>
+<p class="sub">KIGAMBO 1 - Kyegegwa • Cooperative Dashboard</p>
 </div>
 
-<div id="dash" style="display:none">
-  <h1 id="coopName">🌿 Coop Dashboard</h1>
-  <p id="coopInfo" style="color:#666;margin:6px 0">Loading...</p>
-  <a href="admin.html"><button class="small">← Back to Admin</button></a>
-  <button class="small" onclick="logout()">Logout</button>
-
-  <div class="cards">
-    <div class="card"><small>Members</small><b id="tMembers">0</b></div>
-    <div class="card"><small>Total Savings</small><b id="tSavings">0</b></div>
-    <div class="card"><small>Active Loans</small><b id="tLoans">0</b></div>
-  </div>
-
-  <div class="box">
-    <h2>➕ Add Member</h2>
-    <input id="mName" placeholder="Full Name - e.g. Akorabirungi Michael">
-    <input id="mPhone" placeholder="Phone - e.g. 0771234567">
-    <input id="mSavings" type="number" placeholder="Savings UGX - e.g. 95000">
-    <button onclick="addMember()">Add Member</button>
-  </div>
-
-  <div class="box">
-    <h2>💰 Request Loan</h2>
-    <select id="lMember"></select>
-    <input id="lAmount" type="number" placeholder="Loan Amount UGX">
-    <input id="lReason" placeholder="Reason - e.g. School fees / Business">
-    <button onclick="requestLoan()">Request Loan</button>
-  </div>
-
-  <div class="box">
-    <h2>👥 Members</h2>
-    <div id="membersList">Loading...</div>
-  </div>
-
-  <div class="box">
-    <h2>📋 Loans</h2>
-    <div id="loansList">Loading...</div>
-  </div>
+<div class="grid">
+<div class="box"><small>👥 TOTAL MEMBERS</small><div id="totalMembers">0</div></div>
+<div class="box"><small>💰 TOTAL SAVINGS</small><div id="totalSavings">0</div><small>UGX</small></div>
+<div class="box"><small>📈 TOTAL SHARES</small><div id="totalShares">0</div></div>
+<div class="box"><small>☕ TOTAL COFFEE</small><div id="totalCoffee">0</div><small>Kg</small></div>
 </div>
+
+<div class="card">
+<b>👥 All Members - KIGAMBO 1</b>
+<p style="color:#666;font-size:13px;" id="emptyMsg">No members yet. Register in Member Dashboard.</p>
+<div id="memberList"></div>
+</div>
+
+<div class="card">
+<b>📤 Share KIGAMBO</b>
+<p style="color:#666;font-size:13px;">Invite new farmers to join KIGAMBO 1.</p>
+<button class="btn btn2" onclick="shareApp()">Share App Link 📲</button>
+</div>
+
+<a class="back" href="index.html">← Back to Home</a>
+<a class="back" href="admin.html" style="margin-left:12px;">← Back to Admin</a>
+<p class="footer">KIGAMBO THE GREATER • KIGAMBO 1 - Kyegegwa<br>Kyegegwa, Uganda 🇺🇬</p>
 
 <script>
-const firebaseConfig={apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",authDomain:"kigambo-coopos.firebaseapp.com",projectId:"kigambo-coopos",storageBucket:"kigambo-coopos.firebasestorage.app",messagingSenderId:"711731991766",appId:"1:711731991766:web:2bafe8d4fe922cadc3e577"};
-firebase.initializeApp(firebaseConfig); const db=firebase.firestore();
-const params=new URLSearchParams(location.search);
-let coopId=params.get('coop')||localStorage.getItem('coopId')||'';
-if(params.get('coop')) localStorage.setItem('coopId',coopId);
-
-function login(){firebase.auth().signInWithEmailAndPassword(document.getElementById('email').value.trim(),document.getElementById('password').value).catch(e=>document.getElementById('error').innerText=e.message)}
-function logout(){firebase.auth().signOut()}
-firebase.auth().onAuthStateChanged(u=>{document.getElementById('loginBox').style.display=u?'none':'block';document.getElementById('dash').style.display=u?'block':'none';if(u)loadAll()});
-
-function loadAll(){
-  if(!coopId){document.getElementById('coopInfo').innerText="No coop selected. Go back to Admin and click View Dashboard.";return}
-  db.collection("cooperatives").doc(coopId).get().then(d=>{if(d.exists){document.getElementById('coopName').innerText="🌿 "+d.data().name;document.getElementById('coopInfo').innerText=(d.data().location||'')+" • Coop ID: "+coopId}});
-
-  db.collection("members").where("coopId","==",coopId).onSnapshot(s=>{
-    let list=[]; s.forEach(d=>list.push({id:d.id,...d.data()}));
-    let total=list.reduce((a,m)=>a+(m.savings||0),0);
-    document.getElementById('tMembers').innerText=list.length;
-    document.getElementById('tSavings').innerText=total.toLocaleString()+" UGX";
-    document.getElementById('membersList').innerHTML=list.map(m=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee"><div><b>${m.name}</b><br><small>${m.phone||''} • Savings: UGX ${(m.savings||0).toLocaleString()}</small></div><button class="small" onclick="delMember('${m.id}')">🗑</button></div>`).join('')||"No members yet";
-    document.getElementById('lMember').innerHTML=list.map(m=>`<option value="${m.id}|${m.name}">${m.name} - ${m.phone||''}</option>`).join('');
+function getAllMembers(){
+  // Merge NEW member database + OLD admin database so you see everyone
+  let a = JSON.parse(localStorage.getItem('kigambo_members') || '[]');
+  let b = JSON.parse(localStorage.getItem('kigambo_coop_members') || '[]');
+  let c = JSON.parse(localStorage.getItem('members') || '[]');
+  let d = JSON.parse(localStorage.getItem('coop_members') || '[]');
+  let all = [...a, ...b, ...c, ...d];
+  // Remove duplicates by phone
+  let seen = {};
+  let clean = [];
+  all.forEach(m=>{
+    let key = m.phone || m.name;
+    if(!seen[key]){ seen[key]=true; clean.push({name:m.name||'Unknown', phone:m.phone||'', village:m.village||'', id:m.id||'KIG-?', savings: Number(m.savings||0), shares: Number(m.shares||0), coffee: Number(m.coffee||0), date: m.date||'' }); }
   });
-
-  db.collection("loans").where("coopId","==",coopId).onSnapshot(s=>{
-    let list=[]; s.forEach(d=>list.push({id:d.id,...d.data()}));
-    document.getElementById('tLoans').innerText=list.filter(l=>l.status==='active').length;
-    document.getElementById('loansList').innerHTML=list.map(l=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee"><div><b>${l.memberName} - UGX ${(l.amount||0).toLocaleString()}</b><br><small>${l.reason||''} • ${l.status}</small></div></div>`).join('')||"No loans yet";
+  return clean;
+}
+function load(){
+  let members = getAllMembers();
+  let totalSav=0, totalShares=0, totalCoffee=0;
+  members.forEach(m=>{ totalSav+=m.savings; totalShares+=m.shares; totalCoffee+=m.coffee; });
+  document.getElementById('totalMembers').innerText = members.length;
+  document.getElementById('totalSavings').innerText = totalSav.toLocaleString();
+  document.getElementById('totalShares').innerText = totalShares;
+  document.getElementById('totalCoffee').innerText = totalCoffee.toLocaleString();
+  let list = document.getElementById('memberList');
+  if(members.length>0) document.getElementById('emptyMsg').style.display='none';
+  list.innerHTML='';
+  members.forEach(m=>{
+    list.innerHTML += `<div class="member"><b>${m.name}</b> • ${m.id}<br><p>📞 ${m.phone} • 🏡 ${m.village} • Joined ${m.date}</p><span>💰 ${m.savings.toLocaleString()} UGX</span><span>📈 ${m.shares} Shares</span><span>☕ ${m.coffee} Kg</span></div>`;
   });
 }
-
-function addMember(){
-  let name=document.getElementById('mName').value.trim(), phone=document.getElementById('mPhone').value.trim(), sav=parseInt(document.getElementById('mSavings').value)||0;
-  if(!coopId){alert("No coop selected");return}
-  if(!name||!phone){alert("Enter name and phone");return}
-  db.collection("members").add({coopId,name,phone,savings:sav,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{alert("Member added ✅");document.getElementById('mName').value='';document.getElementById('mPhone').value='';document.getElementById('mSavings').value=''});
+function shareApp(){
+  let text = 'Join KIGAMBO THE GREATER - Coffee Farmers Co-operative! ' + window.location.origin;
+  if(navigator.share){ navigator.share({title:'KIGAMBO', text:text, url: window.location.origin}); }
+  else { prompt('Copy and share this link:', window.location.origin); }
 }
-function requestLoan(){
-  let sel=document.getElementById('lMember').value; if(!sel){alert("Add a member first");return}
-  let [mid,mname]=sel.split('|'); let amt=parseInt(document.getElementById('lAmount').value)||0; let reason=document.getElementById('lReason').value.trim();
-  if(!amt){alert("Enter amount");return}
-  db.collection("loans").add({coopId,memberId:mid,memberName:mname,amount:amt,reason,status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp()}).then(()=>{alert("Loan requested - waiting for Admin ✅");document.getElementById('lAmount').value='';document.getElementById('lReason').value=''});
-}
-function delMember(id){if(confirm("Delete this member?"))db.collection("members").doc(id).delete()}
+load();
 </script>
+
 </body>
-      </html>
+</html>
