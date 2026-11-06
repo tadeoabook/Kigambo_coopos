@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Member Login - KIGAMBO</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial; background: #f1f5f9; padding: 16px; }
+.top { background: #fff; padding: 16px; border-radius: 12px; }
+.logo { font-size: 28px; font-weight: 900; }
+.logo span { color: #16a34a; }
+.sub { color: #666; font-size: 13px; }
+.card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; }
+input { width: 100%; padding: 13px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+.btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #111; color: #fff; text-decoration: none; font-weight: 700; border: none; width: 100%; font-size: 16px; }
+.back { display: block; text-align: center; margin-top: 12px; color: #14532d; text-decoration: none; font-weight: 700; }
+.row { display: flex; gap: 10px; }
+.box { flex: 1; background: #f8fafc; padding: 12px; border-radius: 10px; text-align: center; }
+.box b { font-size: 18px; display: block; }
+.box small { color: #666; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="top">
+<div class="logo">KIGAMBO<br><span>MEMBER</span></div>
+<p class="sub">Member Login • KIGAMBO 1 - Kyegegwa</p>
+</div>
+
+<!-- LOGIN -->
+<div class="card" id="loginBox">
+<b>👤 Member Login</b>
+<p style="color:#666;font-size:13px;">Enter your Member ID / Phone to view your dashboard.</p>
+<input id="memberId" placeholder="Member ID e.g. KIG-001">
+<input id="phone" placeholder="Phone e.g. 0770 000 000">
+<button class="btn" onclick="login()">Login to Dashboard →</button>
+<p style="color:#888;font-size:12px;text-align:center;">Demo: Use any ID to test. Real Firebase login will be connected next.</p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashBox" class="hidden">
+<div class="card">
+<b>Welcome, <span id="showId">Member</span> 👋</b>
+<p style="color:#666;font-size:13px;">KIGAMBO 1 - Kyegegwa • Active Member</p>
+</div>
+
+<div class="row">
+<div class="card box"><small>Savings</small><b>UGX 0</b></div>
+<div class="card box"><small>Shares</small><b>0</b></div>
+</div>
+
+<div class="row">
+<div class="card box"><small>Loan Balance</small><b>UGX 0</b></div>
+<div class="card box"><small>Status</small><b style="color:#16a34a;">Active</b></div>
+</div>
+
+<div class="card">
+<b>📋 Recent Activity</b>
+<p style="color:#666;font-size:13px;">• No transactions yet<br>• Your savings & loans will appear here<br>• Contact your Cooperative for help</p>
+</div>
+
+<div class="card">
+<b>Quick Actions</b><br><br>
+<a class="btn" style="background:#16a34a;" href="coop.html">Go to Cooperative Dashboard</a>
+<br>
+<button class="btn" style="background:#eee;color:#111;" onclick="logout()">Logout</button>
+</div>
+</div>
+
+<a class="back" href="index.html">← Back to Home</a>
+
+<script>
+function login(){
+  var id = document.getElementById('memberId').value.trim();
+  if(!id){ alert('Please enter your Member ID'); return; }
+  document.getElementById('showId').innerText = id;
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('dashBox').classList.remove('hidden');
+  localStorage.setItem('kigambo_member', id);
+}
+function logout(){
+  localStorage.removeItem('kigambo_member');
+  document.getElementById('loginBox').classList.remove('hidden');
+  document.getElementById('dashBox').classList.add('hidden');
+}
+var saved = localStorage.getItem('kigambo_member');
+if(saved){
+  document.getElementById('memberId').value = saved;
+  login();
+}
+</script>
+
+</body>
+  </html>
