@@ -30,6 +30,7 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 .back { display: inline-block; margin-top: 12px; color: #2563eb; text-decoration: none; font-weight: 700; font-size: 14px; }
 .hidden { display: none; }
 .footer { text-align: center; color: #888; font-size: 12px; margin-top: 16px; }
+.cloud { background:#e0f2fe; color:#0369a1; font-size:12px; padding:6px 10px; border-radius:20px; display:inline-block; margin-top:6px; }
 </style>
 </head>
 <body>
@@ -38,9 +39,9 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <img src="logo.png" class="logo-img">
 <div class="logo">KIGAMBO <span>THE GREATER</span></div>
 <p class="sub">Member Dashboard • KIGAMBO 1 - Kyegegwa</p>
+<div class="cloud">☁️ Connected to Firebase Cloud</div>
 </div>
 
-<!-- LOGIN / REGISTER -->
 <div id="loginBox" class="card">
 <b>👤 Member Login</b>
 <p style="color:#666;font-size:13px;">Enter your Phone Number to login. If you are new, register below.</p>
@@ -65,7 +66,6 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <button class="btn btn3" onclick="showLogin()">Back to Login</button>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashBox" class="hidden">
 <div class="card">
 <b>👋 Hello, <span id="mName"></span></b>
@@ -90,7 +90,7 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 
 <div class="card">
 <b>➕ Add My Savings / Coffee</b>
-<p style="color:#666;font-size:13px;">This is for testing. Admin will confirm later.</p>
+<p style="color:#666;font-size:13px;">Saved to Cloud - Admin will see it instantly.</p>
 <input id="addSavings" type="number" placeholder="Add Savings UGX e.g. 50000">
 <button class="btn" onclick="addSaving()">Add Savings 💰</button>
 <input id="addCoffee" type="number" placeholder="Add Coffee Kg e.g. 20">
@@ -101,39 +101,59 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 </div>
 
 <a class="back" href="index.html">← Back to Home</a>
-<p class="footer">KIGAMBO THE GREATER • Member data is saved on this phone<br>Kyegegwa, Uganda 🇺🇬</p>
+<p class="footer">KIGAMBO THE GREATER • Data saved in Firebase Cloud<br>Kyegegwa, Uganda 🇺🇬</p>
 
-<script>
-function getMembers(){ return JSON.parse(localStorage.getItem('kigambo_members') || '[]'); }
-function saveMembers(m){ localStorage.setItem('kigambo_members', JSON.stringify(m)); }
-function showRegister(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden'); }
-function showLogin(){ document.getElementById('registerBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+<script type="importmap">
+{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
+</script>
 
-function register(){
+<script type="module">
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
+  authDomain: "kigambo-coopos.firebaseapp.com",
+  projectId: "kigambo-coopos",
+  storageBucket: "kigambo-coopos.firebasestorage.app",
+  messagingSenderId: "711731991766",
+  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let currentPhone = localStorage.getItem('kigambo_current') || '';
+let currentData = null;
+
+window.showRegister = () => { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden'); }
+window.showLogin = () => { document.getElementById('registerBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+
+window.register = async () => {
   let name = document.getElementById('regName').value.trim();
   let phone = document.getElementById('regPhone').value.trim();
   let village = document.getElementById('regVillage').value.trim();
   let parish = document.getElementById('regParish').value;
   if(!name || !phone){ alert('Please enter Name and Phone'); return; }
-  let members = getMembers();
-  if(members.find(x=>x.phone===phone)){ alert('This phone already registered. Please Login.'); showLogin(); return; }
-  let id = 'KIG-' + (1001 + members.length);
-  let newM = { id:id, name:name, phone:phone, village:village, parish:parish, savings:0, shares:0, loan:0, coffee:0, date: new Date().toLocaleDateString() };
-  members.push(newM);
-  saveMembers(members);
+  let ref = doc(db, "members", phone);
+  let snap = await getDoc(ref);
+  if(snap.exists()){ alert('This phone already registered. Please Login.'); showLogin(); return; }
+  // Get count for ID - use timestamp based ID for cloud
+  let id = 'KIG-' + String(Date.now()).slice(-4);
+  let data = { id:id, name:name, phone:phone, village:village, parish:parish, savings:0, shares:0, loan:0, coffee:0, date: new Date().toLocaleDateString() };
+  await setDoc(ref, data);
   localStorage.setItem('kigambo_current', phone);
-  alert('Welcome '+name+'! Your Member ID is '+id);
-  showDashboard(newM);
+  currentPhone = phone;
+  alert('Welcome '+name+'! Your Member ID is '+id+' - Saved to Cloud ☁️');
+  listenMember(phone);
 }
 
-function login(){
+window.login = async () => {
   let phone = document.getElementById('loginPhone').value.trim();
   if(!phone){ alert('Enter phone number'); return; }
-  let members = getMembers();
-  let m = members.find(x=>x.phone===phone);
-  if(!m){ alert('Not found. Please Register first.'); showRegister(); return; }
+  let snap = await getDoc(doc(db, "members", phone));
+  if(!snap.exists()){ alert('Not found in Cloud. Please Register first.'); showRegister(); return; }
   localStorage.setItem('kigambo_current', phone);
-  showDashboard(m);
+  currentPhone = phone;
+  listenMember(phone);
 }
 
 function showDashboard(m){
@@ -145,59 +165,46 @@ function showDashboard(m){
   document.getElementById('mPhone').innerText = m.phone;
   document.getElementById('mVillage').innerText = m.village;
   document.getElementById('mDate').innerText = m.date;
-  document.getElementById('mSavings').innerText = m.savings.toLocaleString();
-  document.getElementById('mSavings2').innerText = m.savings.toLocaleString() + ' UGX';
-  document.getElementById('mShares').innerText = m.shares;
-  document.getElementById('mSharesVal').innerText = (m.shares * 20000).toLocaleString() + ' UGX';
-  document.getElementById('mLoan').innerText = m.loan.toLocaleString();
-  document.getElementById('mCoffee').innerText = m.coffee;
-  document.getElementById('mCoffee2').innerText = m.coffee + ' Kg';
+  document.getElementById('mSavings').innerText = (m.savings||0).toLocaleString();
+  document.getElementById('mSavings2').innerText = (m.savings||0).toLocaleString() + ' UGX';
+  document.getElementById('mShares').innerText = m.shares||0;
+  document.getElementById('mSharesVal').innerText = ((m.shares||0) * 20000).toLocaleString() + ' UGX';
+  document.getElementById('mLoan').innerText = (m.loan||0).toLocaleString();
+  document.getElementById('mCoffee').innerText = m.coffee||0;
+  document.getElementById('mCoffee2').innerText = (m.coffee||0) + ' Kg';
 }
 
-function getCurrent(){
-  let phone = localStorage.getItem('kigambo_current');
-  if(!phone) return null;
-  let members = getMembers();
-  return members.find(x=>x.phone===phone);
+function listenMember(phone){
+  onSnapshot(doc(db, "members", phone), (snap)=>{
+    if(snap.exists()){
+      currentData = snap.data();
+      showDashboard(currentData);
+    }
+  });
 }
-function updateCurrent(updated){
-  let members = getMembers();
-  let idx = members.findIndex(x=>x.phone===updated.phone);
-  members[idx] = updated;
-  saveMembers(members);
-  showDashboard(updated);
-}
-function addSaving(){
+
+window.addSaving = async () => {
   let amt = parseInt(document.getElementById('addSavings').value);
   if(!amt || amt<=0){ alert('Enter amount'); return; }
-  let m = getCurrent();
-  m.savings += amt;
-  // 1 share = 20000 UGX
-  m.shares = Math.floor(m.savings / 20000);
+  let newSav = (currentData.savings||0) + amt;
+  let newShares = Math.floor(newSav / 20000);
+  await updateDoc(doc(db, "members", currentPhone), { savings: newSav, shares: newShares });
   document.getElementById('addSavings').value='';
-  updateCurrent(m);
-  alert('Savings added: '+amt.toLocaleString()+' UGX');
+  alert('Savings added to Cloud: '+amt.toLocaleString()+' UGX ☁️');
 }
-function addCoffee(){
+window.addCoffee = async () => {
   let kg = parseInt(document.getElementById('addCoffee').value);
   if(!kg || kg<=0){ alert('Enter Kg'); return; }
-  let m = getCurrent();
-  m.coffee += kg;
+  await updateDoc(doc(db, "members", currentPhone), { coffee: (currentData.coffee||0) + kg });
   document.getElementById('addCoffee').value='';
-  updateCurrent(m);
-  alert('Coffee added: '+kg+' Kg');
+  alert('Coffee added to Cloud: '+kg+' Kg ☁️');
 }
-function logout(){
+window.logout = () => {
   localStorage.removeItem('kigambo_current');
-  document.getElementById('dashBox').classList.add('hidden');
-  document.getElementById('loginBox').classList.remove('hidden');
+  location.reload();
 }
-// Auto-login if already logged in
-window.onload = function(){
-  let m = getCurrent();
-  if(m) showDashboard(m);
-}
+if(currentPhone) listenMember(currentPhone);
 </script>
 
 </body>
-                                        </html>
+</html>
