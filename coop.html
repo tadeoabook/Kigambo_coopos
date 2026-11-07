@@ -12,7 +12,8 @@ body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
 .card { background:#fff; padding:16px; border-radius:12px; margin-top:12px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
 input, select { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
 label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-top:12px; }
-.btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; }
+.btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; font-size:16px; }
+.btn:active { background:#15803d; transform:scale(0.98); }
 .btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; } .btn-gold { background:#d97706; } .btn-purple { background:#7c3aed; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
 .box { background:#fff; border:1px solid #e2e8f0; padding:12px; border-radius:10px; text-align:center; }
@@ -40,9 +41,10 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <div id="loginBox" class="card">
 <b>🔐 Coop Login — Your Own Account</b>
 <p style="font-size:13px;color:#666;">Each admin has his own Phone + Password.<br>Your name will appear on everything you do.</p>
-<input id="loginPhone" placeholder="Your Phone e.g. 0771234567">
-<input id="adminPass" type="password" placeholder="Your Password">
-<button class="btn" onclick="adminLogin()">Login →</button>
+<input id="loginPhone" placeholder="Your Phone e.g. developer" autocomplete="off">
+<input id="adminPass" type="password" placeholder="Your Password" autocomplete="off">
+<button class="btn" id="loginBtn" type="button">Login →</button>
+<p id="loginMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p>
 <div style="background:#fef3c7;padding:10px;border-radius:10px;font-size:12px;margin-top:12px;color:#92400e;">
 <b>First Time? Developer Login:</b><br>Phone: <b>developer</b><br>Password: <b>dev123</b><br>Use this to create first Admins.
 </div>
@@ -50,17 +52,15 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 
 <div id="dashBox" class="hidden">
 <div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small style="color:#666;">Phone: <span id="myPhoneShow"></span> • Coop: <b>KIGAMBO 1</b> • All your actions will show your name</small></div>
-
 <div class="grid">
 <div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div>
 <div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div>
 <div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div>
 <div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div>
 </div>
-
 <div id="devBox" class="card hidden" style="border:2px solid #7c3aed;">
 <b>👑 Developer — Create New Admins</b>
-<p style="font-size:13px;color:#666;">Only Developer can create admins. Create as many Main Admins & Coop Admins as you want.</p>
+<p style="font-size:13px;color:#666;">Only Developer can create admins.</p>
 <input id="aName" placeholder="Admin Full Name e.g. Tadeo Mwesigye">
 <input id="aPhone" placeholder="Admin Phone e.g. 0771234567">
 <input id="aPass" placeholder="Admin Password e.g. tadeo123">
@@ -69,7 +69,6 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <button class="btn btn-purple" onclick="createAdmin()">Create Admin Account ✅</button>
 <div id="adminList"><p style="color:#888;font-size:13px;">Loading admins...</p></div>
 </div>
-
 <div class="card" style="border:2px solid #16a34a;">
 <b>📝 Register New Member</b>
 <input id="rName" placeholder="Full Name">
@@ -82,13 +81,11 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <label>🪪 ID Back</label><input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')"><img id="pBack" class="preview">
 <button class="btn" onclick="registerMember()">Register Member ✅</button>
 </div>
-
 <div class="card">
 <b>🔍 Search Members</b>
 <input id="search" placeholder="Name or Phone or NIN..." oninput="render()">
 <div id="list">Loading...</div>
 </div>
-
 <div class="card">
 <b>➕ Quick Actions</b>
 <input id="qPhone" placeholder="Member Phone">
@@ -98,13 +95,11 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee ☕</button>
 <button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button>
 </div>
-
 <div class="card" style="border:2px solid #f59e0b;">
 <b>📜 Activity Log — Who Did What?</b>
 <p style="font-size:12px;color:#666;">Every action shows who did it. Latest first.</p>
 <div id="activityLog"><p style="color:#888;">Loading activity...</p></div>
 </div>
-
 <button class="btn btn-red" onclick="logout()">Logout 🔒</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
@@ -129,4 +124,115 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <button class="btn" onclick="editAction('savings')">Add Savings 💰</button>
 <button class="btn btn-gold" onclick="editAction('shares')">Add Shares 📈</button>
 <button class="btn btn2" onclick="editAction('coffee')">Add Coffee ☕</button>
-<button class="btn
+<button class="btn btn3" onclick="forceClose()">Close</button>
+</div>
+</div>
+
+<script>
+function forceClose(){ var p=document.getElementById('popup'); if(p){ p.classList.add('hidden'); p.style.display='none'; } }
+function forceOpen(){ var p=document.getElementById('popup'); if(p){ p.classList.remove('hidden'); p.style.display='flex'; } }
+var myAdminGlobal = null;
+function showDashPlain(){
+  document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('loginBox').style.display='none';
+  var d=document.getElementById('dashBox');
+  d.classList.remove('hidden'); d.style.display='block';
+  var label = myAdminGlobal.role==='dev' ? '👑 Developer — Overall System' : myAdminGlobal.role==='main' ? '👨‍💼 Main Admin — All Coops' : '🏡 Coop Admin — '+myAdminGlobal.coop;
+  document.getElementById('roleName').innerText = myAdminGlobal.name;
+  var badge=document.getElementById('roleBadge'); badge.innerText=label;
+  badge.style.background = myAdminGlobal.role==='dev' ? '#7c3aed' : myAdminGlobal.role==='main' ? '#dc2626' : '#16a34a';
+  badge.style.color='#fff';
+  document.getElementById('myPhoneShow').innerText = myAdminGlobal.phone;
+  if(myAdminGlobal.role==='dev'){ var db=document.getElementById('devBox'); db.classList.remove('hidden'); db.style.display='block'; }
+  if(window.startFirebase) window.startFirebase();
+}
+async function doLogin(){
+  var phone=document.getElementById('loginPhone').value.trim();
+  var pass=document.getElementById('adminPass').value.trim();
+  var msg=document.getElementById('loginMsg');
+  if(!phone||!pass){ msg.innerText='Enter Phone and Password'; return; }
+  msg.innerText='Logging in...';
+  // Developer works instantly, no Firebase needed
+  if(phone==='developer' && pass==='dev123'){
+    myAdminGlobal={ name:'Developer (Overall)', phone:'developer', role:'dev', coop:'ALL' };
+    msg.innerText='';
+    showDashPlain(); return;
+  }
+  // Other admins need Firebase - try to load it
+  try{
+    var mod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    var appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    var app = appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" });
+    var db = mod.getFirestore(app);
+    var snap = await mod.getDoc(mod.doc(db,"admins",phone));
+    if(!snap.exists()){ msg.innerText='Admin not found. Ask Developer to create your account.'; return; }
+    var d=snap.data();
+    if(d.password!==pass){ msg.innerText='Wrong password 🔒'; return; }
+    myAdminGlobal={ name:d.name, phone:d.phone, role:d.role, coop:d.coop };
+    window._db=db; window._firestore=mod;
+    msg.innerText=''; showDashPlain();
+  }catch(e){ msg.innerText='Network error. Try again. Check internet.'; alert('Login error: '+e.message); }
+}
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('adminPass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+function previewImg(input,imgId){ var f=input.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(e){ var el=document.getElementById(imgId); el.src=e.target.result; el.style.display='block'; }; r.readAsDataURL(f); }
+window.previewImg=previewImg;
+function logout(){ location.reload(); } window.logout=logout;
+</script>
+
+<script type="importmap">
+{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
+</script>
+<script type="module">
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, addDoc, onSnapshot, query, orderBy, limit } from "firebase/firestore";
+const firebaseConfig = {
+  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
+  authDomain: "kigambo-coopos.firebaseapp.com",
+  projectId: "kigambo-coopos",
+  storageBucket: "kigambo-coopos.firebasestorage.app",
+  messagingSenderId: "711731991766",
+  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
+};
+let db=null; let app=null;
+try{ app=initializeApp(firebaseConfig); db=getFirestore(app); }catch(e){}
+let all=[]; let selectedPhone='';
+function getAdmin(){ return myAdminGlobal || { name:'Developer (Overall)', phone:'developer', role:'dev', coop:'ALL' }; }
+function fileToBase64(file){ return new Promise((res)=>{ if(!file) res(''); let r=new FileReader(); r.onload=()=>{ let img=new Image(); img.onload=()=>{ let c=document.createElement('canvas'); let max=800; let scale=Math.min(1,max/Math.max(img.width,img.height)); c.width=img.width*scale; c.height=img.height*scale; c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.7)); }; img.src=r.result; }; r.readAsDataURL(file); }); }
+async function logActivity(action, memberName, memberPhone, amount){
+  try{ let a=getAdmin(); await addDoc(collection(db,"activity"), { by:a.name, byPhone:a.phone, byRole:a.role, action:action, memberName:memberName||'', memberPhone:memberPhone||'', amount:amount||0, date:new Date().toLocaleString(), timestamp:Date.now() }); }catch(e){}
+}
+window.startFirebase=()=>{ if(!db) return; load(); loadAdmins(); loadActivity(); };
+window.createAdmin=async()=>{
+  let a=getAdmin();
+  let name=document.getElementById('aName').value.trim();
+  let phone=document.getElementById('aPhone').value.trim();
+  let pass=document.getElementById('aPass').value.trim();
+  let role=document.getElementById('aRole').value;
+  let coop=document.getElementById('aCoop').value;
+  if(!name||!phone||!pass){ alert('Enter Name, Phone, Password'); return; }
+  let ref=doc(db,"admins",phone); let snap=await getDoc(ref);
+  if(snap.exists()){ alert('Phone already used'); return; }
+  await setDoc(ref,{ name:name, phone:phone, password:pass, role:role, coop:coop, createdBy:a.name, date:new Date().toLocaleString() });
+  await logActivity('Created Admin', name, phone, 0);
+  alert('Admin Created: '+name+' ✅\nPhone: '+phone+'\nPassword: '+pass);
+  document.getElementById('aName').value=''; document.getElementById('aPhone').value=''; document.getElementById('aPass').value='';
+};
+function loadAdmins(){
+  onSnapshot(collection(db,"admins"),(snap)=>{
+    let h=''; snap.forEach(d=>{ let a=d.data(); h+=`<div class="admin-item"><div><b>${a.name}</b><br><small>${a.phone} • ${a.role==='main'?'Main Admin':'Coop Admin'} • ${a.coop}</small></div><span style="color:#16a34a;font-weight:700;">Active</span></div>`; });
+    document.getElementById('adminList').innerHTML = h || 'No admins yet — Create first one above';
+  });
+}
+function loadActivity(){
+  try{
+    let q=query(collection(db,"activity"), orderBy("timestamp","desc"), limit(30));
+    onSnapshot(q,(snap)=>{
+      let h=''; snap.forEach(d=>{ let a=d.data(); h+=`<div class="log-item"><b>✍️ ${a.by}</b> (${a.byRole==='dev'?'Developer':a.byRole==='main'?'Main Admin':'Coop Admin'}) — ${a.action} <b>${a.memberName||''}</b> ${a.amount? '('+a.amount.toLocaleString()+')':''}<br><small style="color:#888;">${a.date} • Phone: ${a.memberPhone||a.byPhone}</small></div>`; });
+      document.getElementById('activityLog').innerHTML = h || 'No activity yet';
+    });
+  }catch(e){}
+}
+function load(){ onSnapshot(collection(db,"members"),(snap)=>{ all=[]; snap.forEach(d=> all.push(d.data())); document.getElementById('tMembers').innerText=all.length; document.getElementById('tSavings').innerText=all.reduce((s,m)=>s+(m.savings||0),0).toLocaleString(); document.getElementById('tShares').innerText=all.reduce((s,m)=>s+(m.shares||0),0); document.getElementById('tCapital').innerText=all.reduce((s,m)=>s+((m.shares||0)*20000),0).toLocaleString(); render(); }); }
+window.registerMember=async()=>{ let a=getAdmin(); let name=document.getElementById('rName').value.trim(); let phone=document.getElementById('rPhone').value.trim(); let village=document.getElementById('rVillage').value.trim(); let parish=document.getElementById('rParish').value; let nin=document.getElementById('rNin').value.trim(); if(!name||!phone){ alert('Enter Name and Phone'); return; } let ref=doc(db,"members",phone); let snap=await getDoc(ref); if(snap.exists()){ alert('Already registered'); return; } let photo=await fileToBase64(document.getElementById('rPhoto').files[0]); let idFront=await fileToBase64(document.getElementById('rIdFront').files[0]); let idBack=await fileToBase64(document.getElementById('rIdBack').files[0]); let id='KIG-'+String(Date.now()).slice(-4); await setDoc(ref,{ id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:a.name, lastBy:a.name, lastAction:'Registered by '+a.name }); await logActivity('Registered Member', name, phone, 0); alert('Registered '+name+' by '+a.name+' ✅'); document.getElementById('rName').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value=''; };
+window.render=()=>{ let q=document.getElementById('search').value.toLowerCase(); let f=all.filter(m=> (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q)); let h=f.map(m=>{ let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); let capital=(m.shares||0)*20000; let avatar=m.photo?`<img class="avatar" src="${m.photo}">`:`<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>`; return `<div class="member" onclick="openEdit('${m.phone}')">${avatar}<div style="flex:1;"><b>${m.name}</b><br><small>${m.phone} • ${mid} • ${village}<br>NIN: ${m.nin||'—'} • Last: ${m.lastBy||'—
