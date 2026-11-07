@@ -20,14 +20,15 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 .member { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; cursor:pointer; align-items:center; gap:8px; }
 .avatar { width:48px; height:56px; object-fit:cover; border-radius:8px; border:2px solid #14532d; background:#eee; flex-shrink:0; }
 .back { display:inline-block; margin-top:12px; color:#2563eb; text-decoration:none; font-weight:700; }
-.hidden { display:none; }
-.popup { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; padding:16px; z-index:99; overflow-y:auto; }
-.popup-card { background:#fff; width:100%; max-width:440px; border-radius:16px; padding:20px; margin:auto; max-height:90vh; overflow-y:auto; }
+.hidden { display:none !important; }
+.popup { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:flex-start; justify-content:center; padding:16px; z-index:999; overflow-y:auto; }
+.popup-card { background:#fff; width:100%; max-width:440px; border-radius:16px; padding:20px; margin:auto; }
 .row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:14px; }
 .row span:last-child { font-weight:700; }
 .preview { width:100%; height:110px; object-fit:cover; border-radius:10px; border:1px solid #ddd; margin-top:6px; display:none; }
 .passport-preview { width:110px; height:130px; object-fit:cover; border-radius:10px; border:3px solid #14532d; display:none; margin:8px auto; }
 .role-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-top:6px; }
+.close-x { cursor:pointer; font-size:28px; line-height:1; padding:0 6px; font-weight:900; }
 </style>
 </head>
 <body>
@@ -76,16 +77,17 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 </div>
 <div id="devBox" class="card hidden" style="border:2px solid #7c3aed;">
 <b>👑 Developer Tools — Overall System</b>
-<p style="font-size:13px;color:#666;">Only Developer sees this. You can move entire system.</p>
+<p style="font-size:13px;color:#666;">Only Developer sees this.</p>
 <button class="btn btn-purple" onclick="alert('Developer: You can add new Coop here in future (Kigambo 2, 3...). Tell me to add it!')">➕ Add New Coop (Coming)</button>
 <button class="btn btn3" onclick="exportCSV()">📥 Export ALL Data</button>
 </div>
 <button class="btn btn-red" onclick="logout()">Logout 🔒</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
-<div id="popup" class="popup hidden">
+
+<div id="popup" class="popup hidden" onclick="if(event.target.id==='popup') forceClose()">
 <div class="popup-card">
-<div style="display:flex;justify-content:space-between;"><b id="pName" style="font-size:18px;"></b><span style="cursor:pointer;font-size:22px;" onclick="closePopup()">✕</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;"><b id="pName" style="font-size:18px;"></b><span class="close-x" onclick="forceClose()">✕</span></div>
 <div style="text-align:center;"><img id="ppPhoto" style="width:110px;height:130px;object-fit:cover;border-radius:10px;border:3px solid #14532d;margin:10px auto;display:none;"></div>
 <div class="row"><span>Member ID</span><span id="pId"></span></div>
 <div class="row"><span>Phone</span><span id="pPhone"></span></div>
@@ -102,9 +104,14 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <button class="btn" onclick="editAction('savings')">Add Savings 💰</button>
 <button class="btn btn-gold" onclick="editAction('shares')">Add Shares 📈</button>
 <button class="btn btn2" onclick="editAction('coffee')">Add Coffee ☕</button>
-<button class="btn btn3" onclick="closePopup()">Close</button>
+<button class="btn btn3" onclick="forceClose()">Close</button>
 </div>
 </div>
+
+<script>
+function forceClose(){ var p=document.getElementById('popup'); if(p){ p.classList.add('hidden'); p.style.display='none'; } }
+function forceOpen(){ var p=document.getElementById('popup'); if(p){ p.classList.remove('hidden'); p.style.display='flex'; } }
+</script>
 <script type="importmap">
 { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
 </script>
@@ -130,12 +137,12 @@ window.adminLogin=()=>{ let role=document.getElementById('loginRole').value; let
 function load(){ onSnapshot(collection(db,"members"),(snap)=>{ all=[]; snap.forEach(d=> all.push(d.data())); document.getElementById('tMembers').innerText=all.length; document.getElementById('tSavings').innerText=all.reduce((s,m)=>s+(m.savings||0),0).toLocaleString(); document.getElementById('tShares').innerText=all.reduce((s,m)=>s+(m.shares||0),0); document.getElementById('tCapital').innerText=all.reduce((s,m)=>s+((m.shares||0)*20000),0).toLocaleString(); render(); }); }
 window.registerMember=async()=>{ let name=document.getElementById('rName').value.trim(); let phone=document.getElementById('rPhone').value.trim(); let village=document.getElementById('rVillage').value.trim(); let parish=document.getElementById('rParish').value; let nin=document.getElementById('rNin').value.trim(); if(!name||!phone){ alert('Enter Name and Phone'); return; } let ref=doc(db,"members",phone); let snap=await getDoc(ref); if(snap.exists()){ alert('Already registered'); return; } let photo=await fileToBase64(document.getElementById('rPhoto').files[0]); let idFront=await fileToBase64(document.getElementById('rIdFront').files[0]); let idBack=await fileToBase64(document.getElementById('rIdBack').files[0]); let id='KIG-'+String(Date.now()).slice(-4); await setDoc(ref,{ id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myRole }); alert('Registered '+name+'! ID: '+id+' ☁️'); document.getElementById('rName').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value=''; }
 window.render=()=>{ let q=document.getElementById('search').value.toLowerCase(); let f=all.filter(m=> (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q)); let h=f.map(m=>{ let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); let capital=(m.shares||0)*20000; let avatar=m.photo?`<img class="avatar" src="${m.photo}">`:`<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>`; return `<div class="member" onclick="openEdit('${m.phone}')">${avatar}<div style="flex:1;"><b>${m.name}</b><br><small>${m.phone} • ${mid} • ${village}<br>NIN: ${m.nin||'—'}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.shares||0} Shares • ${capital.toLocaleString()} Capital</small></div></div>`; }).join(''); document.getElementById('list').innerHTML=h||'No members'; }
-window.openEdit=(phone)=>{ let m=all.find(x=>x.phone===phone); if(!m) return; selectedPhone=phone; let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village; document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none'; if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none'; if(m.idBack){ document.getElementById('ppBack').src=m.idBack; document.getElementById('ppBack').style.display='block'; } else document.getElementById('ppBack').style.display='none'; document.getElementById('popup').classList.remove('hidden'); }
-window.closePopup=()=>document.getElementById('popup').classList.add('hidden');
-window.editAction=async(type)=>{ let amt=parseInt(document.getElementById('editAmt').value); if(!amt||!selectedPhone){ alert('Enter amount'); return; } let ref=doc(db,"members",selectedPhone); let snap=await getDoc(ref); let d=snap.data(); if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt}); if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt}); if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt}); alert('Updated '+d.name+' ☁️'); document.getElementById('editAmt').value=''; closePopup(); }
+window.openEdit=(phone)=>{ let m=all.find(x=>x.phone===phone); if(!m) return; selectedPhone=phone; let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village; document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none'; if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none'; if(m.idBack){ document.getElementById('ppBack').src=m.idBack; document.getElementById('ppBack').style.display='block'; } else document.getElementById('ppBack').style.display='none'; forceOpen(); }
+window.closePopup=()=>{ forceClose(); }
+window.editAction=async(type)=>{ let amt=parseInt(document.getElementById('editAmt').value); if(!amt||!selectedPhone){ alert('Enter amount'); return; } let ref=doc(db,"members",selectedPhone); let snap=await getDoc(ref); let d=snap.data(); if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt}); if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt}); if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt}); alert('Updated '+d.name+' ☁️'); document.getElementById('editAmt').value=''; forceClose(); }
 window.quickAdd=async(type)=>{ let phone=document.getElementById('qPhone').value.trim(); let amt=parseInt(document.getElementById('qAmt').value); if(!phone||!amt){ alert('Enter phone and amount'); return; } let ref=doc(db,"members",phone); let snap=await getDoc(ref); if(!snap.exists()){ alert('Not found'); return; } let d=snap.data(); if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt}); if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt}); if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt}); alert('Updated '+d.name+' ☁️'); }
 window.exportCSV=()=>{ let csv='Name,Phone,ID,NIN,Village,Savings,Shares,ShareCapital,Coffee,Loan,Date\n'+all.map(m=> `${m.name},${m.phone},${m.id||''},${m.nin||''},${m.village||m.location||'Kigambo'},${m.savings||0},${m.shares||0},${(m.shares||0)*20000},${m.coffee||0},${m.loan||0},${m.date||''}`).join('\n'); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click(); }
 window.logout=()=>location.reload();
 </script>
 </body>
-</html>
+  </html>
