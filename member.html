@@ -14,22 +14,21 @@ body { margin: 0; font-family: Arial; background: #f8fafc; padding: 16px; }
 .logo span { color: #16a34a; }
 .sub { color: #666; font-size: 12px; }
 .card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-.card b { font-size: 16px; }
 input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
 .btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #16a34a; color: #fff; text-decoration: none; font-weight: 700; margin-top: 12px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
-.btn2 { background: #2563eb; }
-.btn3 { background: #0f172a; }
-.btn-red { background: #dc2626; }
+.btn2 { background: #2563eb; } .btn3 { background: #0f172a; } .btn-red { background: #dc2626; } .btn-gold { background: #d97706; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 .box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; text-align: center; }
 .box small { color: #666; font-size: 11px; }
 .box div { font-size: 18px; font-weight: 900; color: #14532d; margin-top: 4px; }
+.box-gold { background:#fffbeb; border-color:#fde68a; }
 .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
 .row span:last-child { font-weight: 700; }
 .back { display: inline-block; margin-top: 12px; color: #2563eb; text-decoration: none; font-weight: 700; font-size: 14px; }
 .hidden { display: none; }
 .footer { text-align: center; color: #888; font-size: 12px; margin-top: 16px; }
 .cloud { background:#e0f2fe; color:#0369a1; font-size:12px; padding:6px 10px; border-radius:20px; display:inline-block; margin-top:6px; }
+.note { font-size:12px; color:#666; background:#f8fafc; padding:8px; border-radius:8px; margin-top:8px; }
 </style>
 </head>
 <body>
@@ -41,7 +40,6 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 </div>
 <div id="loginBox" class="card">
 <b>👤 Member Login</b>
-<p style="color:#666;font-size:13px;">Enter your Phone Number to login. If you are new, register below.</p>
 <input id="loginPhone" placeholder="Phone Number e.g. 0771234567">
 <button class="btn" onclick="login()">Login →</button>
 <p style="text-align:center;color:#888;font-size:13px;margin:14px 0 4px;">New member?</p>
@@ -52,12 +50,7 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <input id="regName" placeholder="Full Name e.g. Tadeo Mwesigye">
 <input id="regPhone" placeholder="Phone Number e.g. 0771234567">
 <input id="regVillage" placeholder="Village e.g. Kigambo">
-<select id="regParish">
-<option>Parish: Kigambo</option>
-<option>Parish: Kyegegwa Town</option>
-<option>Parish: Ruyonza</option>
-<option>Parish: Other</option>
-</select>
+<select id="regParish"><option>Parish: Kigambo</option><option>Parish: Kyegegwa Town</option><option>Parish: Ruyonza</option><option>Parish: Other</option></select>
 <button class="btn" onclick="register()">Create My Account ✅</button>
 <button class="btn btn3" onclick="showLogin()">Back to Login</button>
 </div>
@@ -69,23 +62,36 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <div class="grid">
 <div class="box"><small>💰 SAVINGS</small><div id="mSavings">0</div><small>UGX</small></div>
 <div class="box"><small>📈 SHARES</small><div id="mShares">0</div><small>Shares</small></div>
-<div class="box"><small>💳 LOAN BALANCE</small><div id="mLoan">0</div><small>UGX</small></div>
-<div class="box"><small>☕ COFFEE THIS SEASON</small><div id="mCoffee">0</div><small>Kg</small></div>
+<div class="box box-gold"><small>🏦 SHARE CAPITAL</small><div id="mCapital">0</div><small>UGX</small></div>
+<div class="box"><small>☕ COFFEE</small><div id="mCoffee">0</div><small>Kg</small></div>
 </div>
 <div class="card">
-<b>📋 My Records</b>
+<b>📋 My Records — Separated</b>
+<div class="row"><span>💰 Savings (Withdrawable)</span><span id="mSavings2">0 UGX</span></div>
+<div class="row"><span>📈 Shares Owned</span><span id="mShares2">0 Shares</span></div>
+<div class="row"><span>🏦 Share Capital (Shares × 20,000)</span><span id="mCapital2">0 UGX</span></div>
+<div class="row"><span>💵 Total Wealth (Savings + Capital)</span><span id="mTotal">0 UGX</span></div>
+<div class="row"><span>💳 Loan Balance</span><span id="mLoan">0 UGX</span></div>
+<div class="row"><span>☕ Coffee Delivered</span><span id="mCoffee2">0 Kg</span></div>
 <div class="row"><span>Join Date</span><span id="mDate"></span></div>
 <div class="row"><span>Status</span><span style="color:#16a34a;">● Active</span></div>
-<div class="row"><span>Total Savings</span><span id="mSavings2">0 UGX</span></div>
-<div class="row"><span>Total Shares Value</span><span id="mSharesVal">0 UGX</span></div>
-<div class="row"><span>Coffee Delivered</span><span id="mCoffee2">0 Kg</span></div>
 </div>
 <div class="card">
-<b>➕ Add My Savings / Coffee</b>
-<p style="color:#666;font-size:13px;">Saved to Cloud - Admin will see it instantly.</p>
-<input id="addSavings" type="number" placeholder="Add Savings UGX e.g. 50000">
+<b>➕ Add Savings</b>
+<p style="color:#666;font-size:13px;">Savings only — does NOT increase Shares.</p>
+<input id="addSavings" type="number" placeholder="Savings UGX e.g. 50000">
 <button class="btn" onclick="addSaving()">Add Savings 💰</button>
-<input id="addCoffee" type="number" placeholder="Add Coffee Kg e.g. 20">
+</div>
+<div class="card">
+<b>📈 Buy Shares</b>
+<p style="color:#666;font-size:13px;">1 Share = 20,000 UGX. Shares only — does NOT increase Savings.</p>
+<input id="buyShares" type="number" placeholder="Number of Shares e.g. 2">
+<button class="btn btn-gold" onclick="buyShare()">Buy Shares 📈 (20,000 each)</button>
+<div class="note">Example: Buy 2 Shares = 40,000 UGX Share Capital. Your Share Capital will be updated, Savings stays same.</div>
+</div>
+<div class="card">
+<b>☕ Add Coffee</b>
+<input id="addCoffee" type="number" placeholder="Coffee Kg e.g. 20">
 <button class="btn btn2" onclick="addCoffee()">Add Coffee ☕</button>
 </div>
 <button class="btn btn-red" onclick="logout()">Logout</button>
@@ -139,52 +145,56 @@ window.login = async () => {
   listenMember(phone);
 }
 function showDashboard(m){
-  let shares = Math.floor((m.savings||0)/20000);
+  let shares = m.shares||0;
+  let capital = shares * 20000;
   let village = m.village || m.location || 'Kigambo';
   document.getElementById('loginBox').classList.add('hidden');
   document.getElementById('registerBox').classList.add('hidden');
   document.getElementById('dashBox').classList.remove('hidden');
   document.getElementById('mName').innerText = m.name;
-  document.getElementById('mId').innerText = m.id;
+  document.getElementById('mId').innerText = m.id || ('KIG-'+String(m.phone).slice(-4));
   document.getElementById('mPhone').innerText = m.phone;
   document.getElementById('mVillage').innerText = village;
   document.getElementById('mDate').innerText = m.date || '';
   document.getElementById('mSavings').innerText = (m.savings||0).toLocaleString();
   document.getElementById('mSavings2').innerText = (m.savings||0).toLocaleString() + ' UGX';
   document.getElementById('mShares').innerText = shares;
-  document.getElementById('mSharesVal').innerText = (shares * 20000).toLocaleString() + ' UGX';
-  document.getElementById('mLoan').innerText = (m.loan||0).toLocaleString();
+  document.getElementById('mShares2').innerText = shares + ' Shares';
+  document.getElementById('mCapital').innerText = capital.toLocaleString();
+  document.getElementById('mCapital2').innerText = capital.toLocaleString() + ' UGX';
+  document.getElementById('mTotal').innerText = ((m.savings||0)+capital).toLocaleString() + ' UGX';
+  document.getElementById('mLoan').innerText = (m.loan||0).toLocaleString() + ' UGX';
   document.getElementById('mCoffee').innerText = m.coffee||0;
   document.getElementById('mCoffee2').innerText = (m.coffee||0) + ' Kg';
 }
 function listenMember(phone){
   onSnapshot(doc(db, "members", phone), (snap)=>{
-    if(snap.exists()){
-      currentData = snap.data();
-      showDashboard(currentData);
-    }
+    if(snap.exists()){ currentData = snap.data(); showDashboard(currentData); }
   });
 }
 window.addSaving = async () => {
   let amt = parseInt(document.getElementById('addSavings').value);
   if(!amt || amt<=0){ alert('Enter amount'); return; }
-  let newSav = (currentData.savings||0) + amt;
-  let newShares = Math.floor(newSav / 20000);
-  await updateDoc(doc(db, "members", currentPhone), { savings: newSav, shares: newShares });
+  await updateDoc(doc(db, "members", currentPhone), { savings: (currentData.savings||0) + amt });
   document.getElementById('addSavings').value='';
-  alert('Savings added to Cloud: '+amt.toLocaleString()+' UGX ☁️');
+  alert('Savings added: '+amt.toLocaleString()+' UGX. Shares NOT changed ☁️');
+}
+window.buyShare = async () => {
+  let n = parseInt(document.getElementById('buyShares').value);
+  if(!n || n<=0){ alert('Enter number of shares'); return; }
+  let newShares = (currentData.shares||0) + n;
+  await updateDoc(doc(db, "members", currentPhone), { shares: newShares });
+  document.getElementById('buyShares').value='';
+  alert('You bought '+n+' Shares! New total: '+newShares+' Shares = '+(newShares*20000).toLocaleString()+' UGX Capital ☁️');
 }
 window.addCoffee = async () => {
   let kg = parseInt(document.getElementById('addCoffee').value);
   if(!kg || kg<=0){ alert('Enter Kg'); return; }
   await updateDoc(doc(db, "members", currentPhone), { coffee: (currentData.coffee||0) + kg });
   document.getElementById('addCoffee').value='';
-  alert('Coffee added to Cloud: '+kg+' Kg ☁️');
+  alert('Coffee added: '+kg+' Kg ☁️');
 }
-window.logout = () => {
-  localStorage.removeItem('kigambo_current');
-  location.reload();
-}
+window.logout = () => { localStorage.removeItem('kigambo_current'); location.reload(); }
 if(currentPhone) listenMember(currentPhone);
 </script>
 </body>
