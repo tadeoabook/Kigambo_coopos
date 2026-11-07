@@ -3,7 +3,6 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Member - KIGAMBO CoopOS</title>
-<link rel="icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14532d">
 <style>
@@ -34,14 +33,12 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 </style>
 </head>
 <body>
-
 <div class="top">
 <img src="logo.png" class="logo-img">
 <div class="logo">KIGAMBO <span>THE GREATER</span></div>
 <p class="sub">Member Dashboard • KIGAMBO 1 - Kyegegwa</p>
 <div class="cloud">☁️ Connected to Firebase Cloud</div>
 </div>
-
 <div id="loginBox" class="card">
 <b>👤 Member Login</b>
 <p style="color:#666;font-size:13px;">Enter your Phone Number to login. If you are new, register below.</p>
@@ -50,7 +47,6 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <p style="text-align:center;color:#888;font-size:13px;margin:14px 0 4px;">New member?</p>
 <button class="btn btn2" onclick="showRegister()">Register New Member</button>
 </div>
-
 <div id="registerBox" class="card hidden">
 <b>📝 Register New Member</b>
 <input id="regName" placeholder="Full Name e.g. Tadeo Mwesigye">
@@ -65,20 +61,17 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <button class="btn" onclick="register()">Create My Account ✅</button>
 <button class="btn btn3" onclick="showLogin()">Back to Login</button>
 </div>
-
 <div id="dashBox" class="hidden">
 <div class="card">
 <b>👋 Hello, <span id="mName"></span></b>
 <p style="color:#666;font-size:13px;margin:4px 0 0;">Member ID: <b id="mId"></b> • Phone: <span id="mPhone"></span><br>Village: <span id="mVillage"></span> • KIGAMBO 1</p>
 </div>
-
 <div class="grid">
 <div class="box"><small>💰 SAVINGS</small><div id="mSavings">0</div><small>UGX</small></div>
 <div class="box"><small>📈 SHARES</small><div id="mShares">0</div><small>Shares</small></div>
 <div class="box"><small>💳 LOAN BALANCE</small><div id="mLoan">0</div><small>UGX</small></div>
 <div class="box"><small>☕ COFFEE THIS SEASON</small><div id="mCoffee">0</div><small>Kg</small></div>
 </div>
-
 <div class="card">
 <b>📋 My Records</b>
 <div class="row"><span>Join Date</span><span id="mDate"></span></div>
@@ -87,7 +80,6 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <div class="row"><span>Total Shares Value</span><span id="mSharesVal">0 UGX</span></div>
 <div class="row"><span>Coffee Delivered</span><span id="mCoffee2">0 Kg</span></div>
 </div>
-
 <div class="card">
 <b>➕ Add My Savings / Coffee</b>
 <p style="color:#666;font-size:13px;">Saved to Cloud - Admin will see it instantly.</p>
@@ -96,21 +88,16 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <input id="addCoffee" type="number" placeholder="Add Coffee Kg e.g. 20">
 <button class="btn btn2" onclick="addCoffee()">Add Coffee ☕</button>
 </div>
-
 <button class="btn btn-red" onclick="logout()">Logout</button>
 </div>
-
 <a class="back" href="index.html">← Back to Home</a>
 <p class="footer">KIGAMBO THE GREATER • Data saved in Firebase Cloud<br>Kyegegwa, Uganda 🇺🇬</p>
-
 <script type="importmap">
 { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
 </script>
-
 <script type="module">
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
-
 const firebaseConfig = {
   apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
   authDomain: "kigambo-coopos.firebaseapp.com",
@@ -123,10 +110,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let currentPhone = localStorage.getItem('kigambo_current') || '';
 let currentData = null;
-
 window.showRegister = () => { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden'); }
 window.showLogin = () => { document.getElementById('registerBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
-
 window.register = async () => {
   let name = document.getElementById('regName').value.trim();
   let phone = document.getElementById('regPhone').value.trim();
@@ -136,16 +121,14 @@ window.register = async () => {
   let ref = doc(db, "members", phone);
   let snap = await getDoc(ref);
   if(snap.exists()){ alert('This phone already registered. Please Login.'); showLogin(); return; }
-  // Get count for ID - use timestamp based ID for cloud
   let id = 'KIG-' + String(Date.now()).slice(-4);
-  let data = { id:id, name:name, phone:phone, village:village, parish:parish, savings:0, shares:0, loan:0, coffee:0, date: new Date().toLocaleDateString() };
+  let data = { id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, savings:0, shares:0, loan:0, coffee:0, date: new Date().toLocaleDateString() };
   await setDoc(ref, data);
   localStorage.setItem('kigambo_current', phone);
   currentPhone = phone;
   alert('Welcome '+name+'! Your Member ID is '+id+' - Saved to Cloud ☁️');
   listenMember(phone);
 }
-
 window.login = async () => {
   let phone = document.getElementById('loginPhone').value.trim();
   if(!phone){ alert('Enter phone number'); return; }
@@ -155,25 +138,25 @@ window.login = async () => {
   currentPhone = phone;
   listenMember(phone);
 }
-
 function showDashboard(m){
+  let shares = Math.floor((m.savings||0)/20000);
+  let village = m.village || m.location || 'Kigambo';
   document.getElementById('loginBox').classList.add('hidden');
   document.getElementById('registerBox').classList.add('hidden');
   document.getElementById('dashBox').classList.remove('hidden');
   document.getElementById('mName').innerText = m.name;
   document.getElementById('mId').innerText = m.id;
   document.getElementById('mPhone').innerText = m.phone;
-  document.getElementById('mVillage').innerText = m.village;
-  document.getElementById('mDate').innerText = m.date;
+  document.getElementById('mVillage').innerText = village;
+  document.getElementById('mDate').innerText = m.date || '';
   document.getElementById('mSavings').innerText = (m.savings||0).toLocaleString();
   document.getElementById('mSavings2').innerText = (m.savings||0).toLocaleString() + ' UGX';
-  document.getElementById('mShares').innerText = m.shares||0;
-  document.getElementById('mSharesVal').innerText = ((m.shares||0) * 20000).toLocaleString() + ' UGX';
+  document.getElementById('mShares').innerText = shares;
+  document.getElementById('mSharesVal').innerText = (shares * 20000).toLocaleString() + ' UGX';
   document.getElementById('mLoan').innerText = (m.loan||0).toLocaleString();
   document.getElementById('mCoffee').innerText = m.coffee||0;
   document.getElementById('mCoffee2').innerText = (m.coffee||0) + ' Kg';
 }
-
 function listenMember(phone){
   onSnapshot(doc(db, "members", phone), (snap)=>{
     if(snap.exists()){
@@ -182,7 +165,6 @@ function listenMember(phone){
     }
   });
 }
-
 window.addSaving = async () => {
   let amt = parseInt(document.getElementById('addSavings').value);
   if(!amt || amt<=0){ alert('Enter amount'); return; }
@@ -205,6 +187,5 @@ window.logout = () => {
 }
 if(currentPhone) listenMember(currentPhone);
 </script>
-
 </body>
 </html>
