@@ -176,4 +176,160 @@ function logActivity(action, memberName, memberPhone, amount){
   var list=getActivity(); list.push({ by:myAdmin.name, byPhone:myAdmin.phone, byRole:myAdmin.role, action:action, memberName:memberName||'', memberPhone:memberPhone||'', amount:amount||0, date:new Date().toLocaleString() });
   saveActivity(list); renderActivity();
 }
-function show
+function showDash(){
+  document.getElementById('loginBox').style.display='none';
+  var d=document.getElementById('dashBox'); d.classList.remove('hidden'); d.style.display='block';
+  var label = myAdmin.role==='dev' ? '👑 Developer — Overall System' : myAdmin.role==='main' ? '👨‍💼 Main Admin — All Coops' : '🏡 Coop Admin — '+myAdmin.coop;
+  document.getElementById('roleName').innerText=myAdmin.name;
+  var badge=document.getElementById('roleBadge'); badge.innerText=label;
+  badge.style.background = myAdmin.role==='dev' ? '#7c3aed' : myAdmin.role==='main' ? '#dc2626' : '#16a34a'; badge.style.color='#fff';
+  document.getElementById('myPhoneShow').innerText=myAdmin.phone;
+  if(myAdmin.role==='dev'){ var db=document.getElementById('devBox'); db.classList.remove('hidden'); db.style.display='block'; }
+  all=getMembers(); renderAdminList(); renderActivity(); updateTotals(); render(); renderLoans(); updateNet(); markUnsynced();
+}
+function doLogin(){
+  var phone=document.getElementById('loginPhone').value.trim();
+  var pass=document.getElementById('adminPass').value.trim();
+  var msg=document.getElementById('loginMsg');
+  if(!phone||!pass){ msg.innerText='Enter Phone and Password'; return; }
+  if(phone==='developer' && pass==='dev123'){ myAdmin={ name:'Developer (Overall)', phone:'developer', role:'dev', coop:'ALL' }; showDash(); return; }
+  var found=getAdmins().find(function(x){ return x.phone===phone; });
+  if(!found){ msg.innerText='Admin not found. Ask Developer to create your account.'; return; }
+  if(found.password!==pass){ msg.innerText='Wrong password 🔒'; return; }
+  myAdmin={ name:found.name, phone:found.phone, role:found.role, coop:found.coop }; showDash();
+}
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('adminPass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+function doCreateAdmin(){
+  var name=document.getElementById('aName').value.trim();
+  var phone=document.getElementById('aPhone').value.trim();
+  var pass=document.getElementById('aPass').value.trim();
+  var role=document.getElementById('aRole').value;
+  var coop=document.getElementById('aCoop').value;
+  if(!name||!phone||!pass){ alert('Enter Name, Phone, Password'); return; }
+  var list=getAdmins();
+  if(list.find(function(x){ return x.phone===phone; })){ alert('Phone already used'); return; }
+  list.push({ name:name, phone:phone, password:pass, role:role, coop:coop });
+  localStorage.setItem('kigambo_admins', JSON.stringify(list));
+  renderAdminList(); markUnsynced();
+  logActivity('Created Admin', name, phone, 0);
+  document.getElementById('createMsg').innerText='Admin Created ✅ '+name+' — Remember to Sync to Cloud when online!';
+  alert('Admin Created: '+name+' ✅\nPhone: '+phone+'\nPassword: '+pass+'\n⚠️ Tap SYNC when you get internet to save to Cloud!');
+  document.getElementById('aName').value=''; document.getElementById('aPhone').value=''; document.getElementById('aPass').value='';
+}
+document.getElementById('createBtn').addEventListener('click', doCreateAdmin);
+function previewImg(input,imgId){ var f=input.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(e){ var el=document.getElementById(imgId); el.src=e.target.result; el.style.display='block'; }; r.readAsDataURL(f); }
+function fileToBase64(file){ return new Promise(function(res){ if(!file) res(''); var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){ var c=document.createElement('canvas'); var max=800; var scale=Math.min(1,max/Math.max(img.width,img.height)); c.width=img.width*scale; c.height=img.height*scale; c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.7)); }; img.src=r.result; }; r.readAsDataURL(file); }); }
+function updateTotals(){
+  document.getElementById('tMembers').innerText=all.length;
+  document.getElementById('tSavings').innerText=all.reduce(function(s,m){ return s+(m.savings||0); },0).toLocaleString();
+  document.getElementById('tShares').innerText=all.reduce(function(s,m){ return s+(m.shares||0); },0);
+  document.getElementById('tCapital').innerText=all.reduce(function(s,m){ return s+((m.shares||0)*20000); },0).toLocaleString();
+  document.getElementById('tLoans').innerText=all.reduce(function(s,m){ return s+(m.loan||0); },0).toLocaleString();
+  document.getElementById('tLoanMembers').innerText=all.filter(function(m){ return (m.loan||0)>0; }).length;
+}
+async function doRegister(){
+  var name=document.getElementById('rName').value.trim();
+  var phone=document.getElementById('rPhone').value.trim();
+  var village=document.getElementById('rVillage').value.trim();
+  var parish=document.getElementById('rParish').value;
+  var nin=document.getElementById('rNin').value.trim();
+  if(!name||!phone){ alert('Enter Name and Phone'); return; }
+  if(all.find(function(x){ return x.phone===phone; })){ alert('Already registered'); return; }
+  var photo=await fileToBase64(document.getElementById('rPhoto').files[0]);
+  var idFront=await fileToBase64(document.getElementById('rIdFront').files[0]);
+  var idBack=await fileToBase64(document.getElementById('rIdBack').files[0]);
+  var id='KIG-'+String(Date.now()).slice(-4);
+  var m={ id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myAdmin.name, lastBy:myAdmin.name };
+  all.push(m); saveMembers(all); updateTotals(); render(); renderLoans();
+  logActivity('Registered Member', name, phone, 0);
+  alert('Registered '+name+' by '+myAdmin.name+' ✅ — Remember to Sync when online!');
+  document.getElementById('rName').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value='';
+}
+document.getElementById('regBtn').addEventListener('click', doRegister);
+function render(){
+  var q=(document.getElementById('search').value||'').toLowerCase();
+  var f=all.filter(function(m){ return (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q); });
+  var h=f.map(function(m){
+    var village=m.village||m.location||'Kigambo'; var mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); var capital=(m.shares||0)*20000;
+    var avatar=m.photo?'<img class="avatar" src="'+m.photo+'">':'<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>';
+    var loanTag=(m.loan||0)>0?'<br><small style="color:#ea580c;font-weight:700;">💳 Loan: '+(m.loan||0).toLocaleString()+'</small>':'';
+    return '<div class="member" onclick="openEdit(\''+m.phone+'\')">'+avatar+'<div style="flex:1;"><b>'+m.name+'</b><br><small>'+m.phone+' • '+mid+' • '+village+'<br>NIN: '+(m.nin||'—')+' • Last: '+(m.lastBy||'—')+'</small>'+loanTag+'</div><div style="text-align:right;"><b>'+(m.savings||0).toLocaleString()+' UGX</b><br><small>'+(m.shares||0)+' Shares • '+capital.toLocaleString()+' Capital</small></div></div>';
+  }).join('');
+  document.getElementById('list').innerHTML=h||'No members';
+}
+function openEdit(phone){
+  var m=all.find(function(x){ return x.phone===phone; }); if(!m) return; selectedPhone=phone;
+  var village=m.village||m.location||'Kigambo'; var mid=m.id||('KIG-'+String(m.phone||'').slice(-4));
+  document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village;
+  document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; document.getElementById('pBy').innerText=m.lastBy||m.registeredBy||'—';
+  if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none';
+  if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none';
+  if(m.idBack){ document.getElementById('ppBack').src=m.idBack; document.getElementById('ppBack').style.display='block'; } else document.getElementById('ppBack').style.display='none';
+  forceOpen();
+}
+function editAction(type){
+  var amt=parseInt(document.getElementById('editAmt').value); if(!amt||!selectedPhone){ alert('Enter amount'); return; }
+  var m=all.find(function(x){ return x.phone===selectedPhone; }); if(!m) return;
+  var label=''; 
+  if(type==='savings'){ m.savings=(m.savings||0)+amt; label='Added Savings'; }
+  if(type==='shares'){ m.shares=(m.shares||0)+amt; label='Added Shares'; }
+  if(type==='coffee'){ m.coffee=(m.coffee||0)+amt; label='Added Coffee'; }
+  if(type==='loan'){ m.loan=(m.loan||0)+amt; label='Gave Loan 💳'; }
+  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay amount is more than loan balance ('+(m.loan||0).toLocaleString()+')'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
+  m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render(); renderLoans();
+  logActivity(label, m.name, selectedPhone, amt);
+  alert(label+' for '+m.name+' by '+myAdmin.name+' ✅ — Loan balance now: '+(m.loan||0).toLocaleString()); document.getElementById('editAmt').value=''; forceClose();
+}
+function quickAdd(type){
+  var phone=document.getElementById('qPhone').value.trim(); var amt=parseInt(document.getElementById('qAmt').value);
+  if(!phone||!amt){ alert('Enter phone and amount'); return; }
+  var m=all.find(function(x){ return x.phone===phone; }); if(!m){ alert('Not found'); return; }
+  var label='';
+  if(type==='savings'){ m.savings=(m.savings||0)+amt; label='Added Savings'; }
+  if(type==='shares'){ m.shares=(m.shares||0)+amt; label='Added Shares'; }
+  if(type==='coffee'){ m.coffee=(m.coffee||0)+amt; label='Added Coffee'; }
+  if(type==='loan'){ m.loan=(m.loan||0)+amt; label='Gave Loan 💳'; }
+  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay more than loan balance'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
+  m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render(); renderLoans();
+  logActivity(label, m.name, phone, amt);
+  alert(label+' for '+m.name+' by '+myAdmin.name+' ✅ — Loan balance: '+(m.loan||0).toLocaleString());
+}
+function exportCSV(){
+  var csv='Name,Phone,ID,NIN,Village,Savings,Shares,ShareCapital,Coffee,Loan,LastBy,Date\n'+all.map(function(m){ return m.name+','+m.phone+','+(m.id||'')+','+(m.nin||'')+','+(m.village||'Kigambo')+','+(m.savings||0)+','+(m.shares||0)+','+((m.shares||0)*20000)+','+(m.coffee||0)+','+(m.loan||0)+','+(m.lastBy||'')+','+(m.date||''); }).join('\n');
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click();
+}
+function downloadBackup(){
+  var data={ admins:getAdmins(), members:getMembers(), activity:getActivity(), exported:new Date().toLocaleString() };
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'})); a.download='kigambo-backup-'+Date.now()+'.json'; a.click();
+  alert('Backup downloaded ✅ Keep this file safe!');
+}
+async function doSync(){
+  if(!navigator.onLine){ alert('You are OFFLINE. Connect to internet first, then tap Sync again.'); return; }
+  var btn=document.getElementById('syncBtn'); btn.innerText='Syncing... Please wait...';
+  try{
+    var appMod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    var mod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'syncApp');
+    var db=mod.getFirestore(app);
+    var admins=getAdmins(); var members=getMembers(); var activity=getActivity();
+    for(var i=0;i<admins.length;i++){ await mod.setDoc(mod.doc(db,"admins",admins[i].phone), admins[i]); }
+    for(var j=0;j<members.length;j++){ await mod.setDoc(mod.doc(db,"members",members[j].phone), members[j]); }
+    for(var k=0;k<activity.length;k++){ await mod.addDoc(mod.collection(db,"activity"), activity[k]); }
+    var snap=await mod.getDocs(mod.collection(db,"members"));
+    var cloudMembers=[]; snap.forEach(function(d){ cloudMembers.push(d.data()); });
+    var merged=all.slice();
+    cloudMembers.forEach(function(cm){ if(!merged.find(function(x){ return x.phone===cm.phone; })) merged.push(cm); });
+    all=merged; saveMembers(all); updateTotals(); render(); renderLoans();
+    btn.innerText='☁️ Sync Now To Cloud (When Online)';
+    alert('✅ SYNCED! '+members.length+' members + '+admins.length+' admins saved to Cloud Firebase. Safe now even if phone is lost!');
+    localStorage.setItem('kigambo_last_sync', new Date().toLocaleString());
+  }catch(e){
+    btn.innerText='☁️ Sync Now To Cloud (When Online)';
+    alert('Sync failed: '+e.message+'\n\nYour data is STILL SAFE in phone + Backup file. Tap Download Backup for now.');
+  }
+}
+document.getElementById('syncBtn').addEventListener('click', doSync);
+</script>
+</body>
+</html>
