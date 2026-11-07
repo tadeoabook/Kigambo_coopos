@@ -16,7 +16,7 @@ body { margin: 0; font-family: Arial; background: #f8fafc; padding: 16px; }
 .card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
 input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
 .btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #16a34a; color: #fff; text-decoration: none; font-weight: 700; margin-top: 12px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
-.btn2 { background: #2563eb; } .btn3 { background: #0f172a; } .btn-red { background: #dc2626; } .btn-gold { background: #d97706; }
+.btn2 { background: #2563eb; } .btn3 { background: #0f172a; } .btn-red { background: #dc2626; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 .box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; text-align: center; }
 .box small { color: #666; font-size: 11px; }
@@ -28,7 +28,8 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 .hidden { display: none; }
 .footer { text-align: center; color: #888; font-size: 12px; margin-top: 16px; }
 .cloud { background:#e0f2fe; color:#0369a1; font-size:12px; padding:6px 10px; border-radius:20px; display:inline-block; margin-top:6px; }
-.note { font-size:12px; color:#666; background:#f8fafc; padding:8px; border-radius:8px; margin-top:8px; }
+.view-tag { background:#fef3c7; color:#92400e; font-size:11px; padding:4px 8px; border-radius:20px; font-weight:700; }
+.info { background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; font-size:13px; color:#14532d; text-align:center; margin-top:12px; }
 </style>
 </head>
 <body>
@@ -37,6 +38,7 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <div class="logo">KIGAMBO <span>THE GREATER</span></div>
 <p class="sub">Member Dashboard • KIGAMBO 1 - Kyegegwa</p>
 <div class="cloud">☁️ Connected to Firebase Cloud</div>
+<div style="margin-top:8px;"><span class="view-tag">👀 VIEW ONLY • Only Admin Can Add</span></div>
 </div>
 <div id="loginBox" class="card">
 <b>👤 Member Login</b>
@@ -66,7 +68,7 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <div class="box"><small>☕ COFFEE</small><div id="mCoffee">0</div><small>Kg</small></div>
 </div>
 <div class="card">
-<b>📋 My Records — Separated</b>
+<b>📋 My Records — View Only</b>
 <div class="row"><span>💰 Savings (Withdrawable)</span><span id="mSavings2">0 UGX</span></div>
 <div class="row"><span>📈 Shares Owned</span><span id="mShares2">0 Shares</span></div>
 <div class="row"><span>🏦 Share Capital (Shares × 20,000)</span><span id="mCapital2">0 UGX</span></div>
@@ -76,23 +78,9 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 <div class="row"><span>Join Date</span><span id="mDate"></span></div>
 <div class="row"><span>Status</span><span style="color:#16a34a;">● Active</span></div>
 </div>
-<div class="card">
-<b>➕ Add Savings</b>
-<p style="color:#666;font-size:13px;">Savings only — does NOT increase Shares.</p>
-<input id="addSavings" type="number" placeholder="Savings UGX e.g. 50000">
-<button class="btn" onclick="addSaving()">Add Savings 💰</button>
-</div>
-<div class="card">
-<b>📈 Buy Shares</b>
-<p style="color:#666;font-size:13px;">1 Share = 20,000 UGX. Shares only — does NOT increase Savings.</p>
-<input id="buyShares" type="number" placeholder="Number of Shares e.g. 2">
-<button class="btn btn-gold" onclick="buyShare()">Buy Shares 📈 (20,000 each)</button>
-<div class="note">Example: Buy 2 Shares = 40,000 UGX Share Capital. Your Share Capital will be updated, Savings stays same.</div>
-</div>
-<div class="card">
-<b>☕ Add Coffee</b>
-<input id="addCoffee" type="number" placeholder="Coffee Kg e.g. 20">
-<button class="btn btn2" onclick="addCoffee()">Add Coffee ☕</button>
+<div class="info">
+<b>ℹ️ How to Add Savings / Shares / Coffee?</b><br>
+Please go to the Coop Office or contact Admin.<br>Only Admin can add to your account.<br>This keeps your money safe and prevents fake entries.
 </div>
 <button class="btn btn-red" onclick="logout()">Logout</button>
 </div>
@@ -103,7 +91,7 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 </script>
 <script type="module">
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
   authDomain: "kigambo-coopos.firebaseapp.com",
@@ -115,7 +103,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let currentPhone = localStorage.getItem('kigambo_current') || '';
-let currentData = null;
 window.showRegister = () => { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden'); }
 window.showLogin = () => { document.getElementById('registerBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
 window.register = async () => {
@@ -169,33 +156,11 @@ function showDashboard(m){
 }
 function listenMember(phone){
   onSnapshot(doc(db, "members", phone), (snap)=>{
-    if(snap.exists()){ currentData = snap.data(); showDashboard(currentData); }
+    if(snap.exists()){ showDashboard(snap.data()); }
   });
-}
-window.addSaving = async () => {
-  let amt = parseInt(document.getElementById('addSavings').value);
-  if(!amt || amt<=0){ alert('Enter amount'); return; }
-  await updateDoc(doc(db, "members", currentPhone), { savings: (currentData.savings||0) + amt });
-  document.getElementById('addSavings').value='';
-  alert('Savings added: '+amt.toLocaleString()+' UGX. Shares NOT changed ☁️');
-}
-window.buyShare = async () => {
-  let n = parseInt(document.getElementById('buyShares').value);
-  if(!n || n<=0){ alert('Enter number of shares'); return; }
-  let newShares = (currentData.shares||0) + n;
-  await updateDoc(doc(db, "members", currentPhone), { shares: newShares });
-  document.getElementById('buyShares').value='';
-  alert('You bought '+n+' Shares! New total: '+newShares+' Shares = '+(newShares*20000).toLocaleString()+' UGX Capital ☁️');
-}
-window.addCoffee = async () => {
-  let kg = parseInt(document.getElementById('addCoffee').value);
-  if(!kg || kg<=0){ alert('Enter Kg'); return; }
-  await updateDoc(doc(db, "members", currentPhone), { coffee: (currentData.coffee||0) + kg });
-  document.getElementById('addCoffee').value='';
-  alert('Coffee added: '+kg+' Kg ☁️');
 }
 window.logout = () => { localStorage.removeItem('kigambo_current'); location.reload(); }
 if(currentPhone) listenMember(currentPhone);
 </script>
 </body>
-</html>
+  </html>
