@@ -15,7 +15,6 @@ body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
 input { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
 .btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; font-size:15px; }
 .btn2 { background:#2563eb; }
-.btn3 { background:#0f172a; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
 .box { background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; text-align:center; }
 .box div { font-size:18px; font-weight:900; color:#14532d; }
@@ -32,24 +31,20 @@ input { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-
 <p style="color:#666;font-size:12px;">Cooperative Dashboard • KIGAMBO 1</p>
 <div class="cloud">☁️ Live from Firebase Cloud</div>
 </div>
-
 <div class="grid">
 <div class="box"><small>👥 MEMBERS</small><div id="totalMembers">0</div></div>
 <div class="box"><small>💰 TOTAL SAVINGS</small><div id="totalSavings">0</div></div>
 <div class="box"><small>📈 TOTAL SHARES</small><div id="totalShares">0</div></div>
 <div class="box"><small>☕ TOTAL COFFEE</small><div id="totalCoffee">0 Kg</div></div>
 </div>
-
 <div class="card">
 <b>🔍 Find Member</b>
 <input id="search" placeholder="Search by Name or Phone..." oninput="render()">
 </div>
-
 <div class="card">
 <b>👥 All Members (Live)</b>
 <div id="list"><p style="color:#888;">Loading from Cloud...</p></div>
 </div>
-
 <div class="card">
 <b>➕ Add Savings for a Member</b>
 <input id="phoneAdd" placeholder="Member Phone e.g. 0771234567">
@@ -58,9 +53,7 @@ input { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-
 <input id="coffeeAdd" type="number" placeholder="Coffee Kg e.g. 20">
 <button class="btn btn2" onclick="addCoffee()">Add Coffee ☕</button>
 </div>
-
 <a class="back" href="index.html">← Back to Home</a>
-
 <script type="importmap">
 { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
 </script>
@@ -81,11 +74,10 @@ let allMembers = [];
 onSnapshot(collection(db, "members"), (snap)=>{
   allMembers = [];
   snap.forEach(d=> allMembers.push(d.data()));
-  // Sort by savings high to low
   allMembers.sort((a,b)=> (b.savings||0)-(a.savings||0));
   document.getElementById('totalMembers').innerText = allMembers.length;
   document.getElementById('totalSavings').innerText = allMembers.reduce((s,m)=> s+(m.savings||0),0).toLocaleString();
-  document.getElementById('totalShares').innerText = allMembers.reduce((s,m)=> s+(m.shares||0),0);
+  document.getElementById('totalShares').innerText = allMembers.reduce((s,m)=> s+Math.floor((m.savings||0)/20000),0);
   document.getElementById('totalCoffee').innerText = allMembers.reduce((s,m)=> s+(m.coffee||0),0) + ' Kg';
   render();
 });
@@ -95,7 +87,9 @@ window.render = () => {
   let html = '';
   if(filtered.length===0) html = '<p style="color:#888;">No members found. Register a member first.</p>';
   filtered.forEach(m=>{
-    html += `<div class="member"><div><b>${m.name}</b><br><small>${m.phone} • ${m.id} • ${m.village||''}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.coffee||0} Kg • ${m.shares||0} Shares</small></div></div>`;
+    let village = m.village || m.location || 'Kigambo';
+    let shares = Math.floor((m.savings||0)/20000);
+    html += `<div class="member"><div><b>${m.name}</b><br><small>${m.phone} • ${m.id} • ${village}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.coffee||0} Kg • ${shares} Shares</small></div></div>`;
   });
   document.getElementById('list').innerHTML = html;
 }
