@@ -12,48 +12,71 @@ body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
 .card { background:#fff; padding:16px; border-radius:12px; margin-top:12px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
 input { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
 .btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; }
-.btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; }
+.btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; } .btn-gold { background:#d97706; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
 .box { background:#fff; border:1px solid #e2e8f0; padding:12px; border-radius:10px; text-align:center; }
 .box div { font-size:18px; font-weight:900; color:#14532d; }
-.member { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; }
+.member { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; cursor:pointer; }
 .back { display:inline-block; margin-top:12px; color:#2563eb; text-decoration:none; font-weight:700; }
 .hidden { display:none; }
+.popup { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; padding:16px; z-index:99; }
+.popup-card { background:#fff; width:100%; max-width:420px; border-radius:16px; padding:20px; }
+.row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:14px; }
+.row span:last-child { font-weight:700; }
 </style>
 </head>
 <body>
-<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO ADMIN</div><p style="font-size:12px;opacity:.8;">KIGAMBO 1 - Kyegegwa • ☁️ Firebase Cloud</p></div>
-
+<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO ADMIN</div><p style="font-size:12px;opacity:.8;">KIGAMBO 1 - Kyegegwa • ☁️ Firebase Cloud • ✏️ Can Edit</p></div>
 <div id="loginBox" class="card">
 <b>🔐 Admin Login</b>
 <input id="adminPass" type="password" placeholder="Admin Password">
 <button class="btn" onclick="adminLogin()">Login →</button>
 <p style="font-size:12px;color:#888;">Default password: <b>admin123</b></p>
 </div>
-
 <div id="dashBox" class="hidden">
 <div class="grid">
 <div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div>
 <div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div>
 <div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div>
-<div class="box"><small>☕ COFFEE</small><div id="tCoffee">0</div></div>
+<div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div>
 </div>
 <div class="card">
-<b>🔍 Search Members</b>
+<b>🔍 Search Members — Tap to Edit</b>
 <input id="search" placeholder="Name or Phone..." oninput="render()">
 <div id="list">Loading...</div>
 </div>
 <div class="card">
 <b>➕ Quick Actions</b>
 <input id="qPhone" placeholder="Member Phone">
-<input id="qAmt" type="number" placeholder="Amount / Kg">
-<button class="btn" onclick="quickAdd('savings')">Add Savings</button>
-<button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee</button>
+<input id="qAmt" type="number" placeholder="Amount / Number of Shares / Kg">
+<button class="btn" onclick="quickAdd('savings')">Add Savings 💰</button>
+<button class="btn btn-gold" onclick="quickAdd('shares')">Add Shares 📈</button>
+<button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee ☕</button>
 <button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button>
 </div>
 <button class="btn btn-red" onclick="logout()">Logout</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
+
+<div id="popup" class="popup hidden">
+<div class="popup-card">
+<div style="display:flex;justify-content:space-between;"><b id="pName" style="font-size:18px;"></b><span style="cursor:pointer;font-size:22px;" onclick="closePopup()">✕</span></div>
+<p style="color:#888;font-size:12px;">✏️ Admin Edit View</p>
+<div class="row"><span>Member ID</span><span id="pId"></span></div>
+<div class="row"><span>Phone</span><span id="pPhone"></span></div>
+<div class="row"><span>Village</span><span id="pVillage"></span></div>
+<div class="row"><span>💰 Savings</span><span id="pSavings"></span></div>
+<div class="row"><span>📈 Shares</span><span id="pShares"></span></div>
+<div class="row"><span>🏦 Share Capital</span><span id="pCapital"></span></div>
+<div class="row"><span>☕ Coffee</span><span id="pCoffee"></span></div>
+<div class="row"><span>💳 Loan</span><span id="pLoan"></span></div>
+<input id="editAmt" type="number" placeholder="Enter Amount / Shares / Kg">
+<button class="btn" onclick="editAction('savings')">Add Savings 💰</button>
+<button class="btn btn-gold" onclick="editAction('shares')">Add Shares 📈</button>
+<button class="btn btn2" onclick="editAction('coffee')">Add Coffee ☕</button>
+<button class="btn btn3" onclick="closePopup()">Close</button>
+</div>
+</div>
 
 <script type="importmap">
 { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
@@ -72,6 +95,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let all = [];
+let selectedPhone = '';
 window.adminLogin = () => {
   if(document.getElementById('adminPass').value === 'admin123'){
     document.getElementById('loginBox').classList.add('hidden');
@@ -84,8 +108,8 @@ function load(){
     all = []; snap.forEach(d=> all.push(d.data()));
     document.getElementById('tMembers').innerText = all.length;
     document.getElementById('tSavings').innerText = all.reduce((s,m)=> s+(m.savings||0),0).toLocaleString();
-    document.getElementById('tShares').innerText = all.reduce((s,m)=> s+Math.floor((m.savings||0)/20000),0);
-    document.getElementById('tCoffee').innerText = all.reduce((s,m)=> s+(m.coffee||0),0) + ' Kg';
+    document.getElementById('tShares').innerText = all.reduce((s,m)=> s+(m.shares||0),0);
+    document.getElementById('tCapital').innerText = all.reduce((s,m)=> s+((m.shares||0)*20000),0).toLocaleString();
     render();
   });
 }
@@ -94,11 +118,42 @@ window.render = () => {
   let f = all.filter(m=> (m.name||'').toLowerCase().includes(q) || (m.phone||'').includes(q));
   let h = f.map(m=> {
     let village = m.village || m.location || 'Kigambo';
-    let shares = Math.floor((m.savings||0)/20000);
     let mid = m.id || m.memberId || ('KIG-' + String(m.phone||'').slice(-4));
-    return `<div class="member"><div><b>${m.name}</b><br><small>${m.phone} • ${mid} • ${village}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.coffee||0} Kg • ${shares} Shares</small></div></div>`;
+    let capital = (m.shares||0)*20000;
+    return `<div class="member" onclick="openEdit('${m.phone}')"><div><b>${m.name}</b><br><small>${m.phone} • ${mid} • ${village}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.shares||0} Shares • ${capital.toLocaleString()} Capital</small><br><small>${m.coffee||0} Kg • Tap to Edit ✏️</small></div></div>`;
   }).join('');
   document.getElementById('list').innerHTML = h || 'No members';
+}
+window.openEdit = (phone) => {
+  let m = all.find(x=> x.phone===phone);
+  if(!m) return;
+  selectedPhone = phone;
+  let village = m.village || m.location || 'Kigambo';
+  let mid = m.id || m.memberId || ('KIG-' + String(m.phone||'').slice(-4));
+  document.getElementById('pName').innerText = m.name;
+  document.getElementById('pId').innerText = mid;
+  document.getElementById('pPhone').innerText = m.phone;
+  document.getElementById('pVillage').innerText = village;
+  document.getElementById('pSavings').innerText = (m.savings||0).toLocaleString() + ' UGX';
+  document.getElementById('pShares').innerText = (m.shares||0) + ' Shares';
+  document.getElementById('pCapital').innerText = ((m.shares||0)*20000).toLocaleString() + ' UGX';
+  document.getElementById('pCoffee').innerText = (m.coffee||0) + ' Kg';
+  document.getElementById('pLoan').innerText = (m.loan||0).toLocaleString() + ' UGX';
+  document.getElementById('popup').classList.remove('hidden');
+}
+window.closePopup = () => document.getElementById('popup').classList.add('hidden');
+window.editAction = async (type) => {
+  let amt = parseInt(document.getElementById('editAmt').value);
+  if(!amt || !selectedPhone){ alert('Enter amount'); return; }
+  let ref = doc(db, "members", selectedPhone);
+  let snap = await getDoc(ref);
+  let d = snap.data();
+  if(type==='savings') await updateDoc(ref, { savings:(d.savings||0)+amt });
+  if(type==='shares') await updateDoc(ref, { shares:(d.shares||0)+amt });
+  if(type==='coffee') await updateDoc(ref, { coffee:(d.coffee||0)+amt });
+  alert('Updated '+d.name+' ☁️');
+  document.getElementById('editAmt').value='';
+  closePopup();
 }
 window.quickAdd = async (type) => {
   let phone = document.getElementById('qPhone').value.trim();
@@ -108,15 +163,16 @@ window.quickAdd = async (type) => {
   let snap = await getDoc(ref);
   if(!snap.exists()){ alert('Not found'); return; }
   let d = snap.data();
-  if(type==='savings'){ let ns=(d.savings||0)+amt; await updateDoc(ref,{savings:ns, shares:Math.floor(ns/20000)}); }
-  else { await updateDoc(ref,{coffee:(d.coffee||0)+amt}); }
+  if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt});
+  if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt});
+  if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt});
   alert('Updated '+d.name+' ☁️');
 }
 window.exportCSV = () => {
-  let csv = 'Name,Phone,ID,Village,Savings,Shares,Coffee,Date\n' + all.map(m=> `${m.name},${m.phone},${m.id||m.memberId||('KIG-'+String(m.phone||'').slice(-4))},${m.village||m.location||'Kigambo'},${m.savings||0},${Math.floor((m.savings||0)/20000)},${m.coffee||0},${m.date||''}`).join('\n');
+  let csv = 'Name,Phone,ID,Village,Savings,Shares,ShareCapital,Coffee,Loan,Date\n' + all.map(m=> `${m.name},${m.phone},${m.id||m.memberId||('KIG-'+String(m.phone||'').slice(-4))},${m.village||m.location||'Kigambo'},${m.savings||0},${m.shares||0},${(m.shares||0)*20000},${m.coffee||0},${m.loan||0},${m.date||''}`).join('\n');
   let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click();
 }
 window.logout = () => location.reload();
 </script>
 </body>
-</html>
+                                        </html>
