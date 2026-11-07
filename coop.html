@@ -14,52 +14,72 @@ body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
 .card { background:#fff; padding:16px; border-radius:12px; margin-top:12px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
 input { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
 .btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; font-size:15px; }
-.btn2 { background:#2563eb; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
 .box { background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; text-align:center; }
 .box div { font-size:18px; font-weight:900; color:#14532d; }
-.member { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #eee; }
+.member { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #eee; cursor:pointer; }
 .member b { font-size:14px; }
 .member small { color:#666; }
 .back { display:inline-block; margin-top:12px; color:#2563eb; text-decoration:none; font-weight:700; }
 .cloud { background:#e0f2fe; color:#0369a1; font-size:12px; padding:6px 10px; border-radius:20px; display:inline-block; margin-top:6px; }
+.popup { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; padding:16px; z-index:99; }
+.popup-card { background:#fff; width:100%; max-width:420px; border-radius:16px; padding:20px; }
+.row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:14px; }
+.row span:last-child { font-weight:700; }
+.hidden { display:none; }
+.view-tag { background:#fef3c7; color:#92400e; font-size:11px; padding:4px 8px; border-radius:20px; font-weight:700; }
 </style>
 </head>
 <body>
 <div class="top">
 <div class="logo">KIGAMBO <span>THE GREATER</span></div>
-<p style="color:#666;font-size:12px;">Cooperative Dashboard • KIGAMBO 1</p>
+<p style="color:#666;font-size:12px;">Cooperative Dashboard • KIGAMBO 1 • <span class="view-tag">👀 VIEW ONLY</span></p>
 <div class="cloud">☁️ Live from Firebase Cloud</div>
 </div>
 <div class="grid">
 <div class="box"><small>👥 MEMBERS</small><div id="totalMembers">0</div></div>
 <div class="box"><small>💰 TOTAL SAVINGS</small><div id="totalSavings">0</div></div>
 <div class="box"><small>📈 TOTAL SHARES</small><div id="totalShares">0</div></div>
-<div class="box"><small>☕ TOTAL COFFEE</small><div id="totalCoffee">0 Kg</div></div>
+<div class="box"><small>🏦 SHARE CAPITAL</small><div id="totalCapital">0</div></div>
 </div>
 <div class="card">
 <b>🔍 Find Member</b>
 <input id="search" placeholder="Search by Name or Phone..." oninput="render()">
+<p style="font-size:12px;color:#888;">Tap any member to VIEW their full information. No changes can be made here.</p>
 </div>
 <div class="card">
-<b>👥 All Members (Live)</b>
+<b>👥 All Members (Tap to View)</b>
 <div id="list"><p style="color:#888;">Loading from Cloud...</p></div>
 </div>
-<div class="card">
-<b>➕ Add Savings for a Member</b>
-<input id="phoneAdd" placeholder="Member Phone e.g. 0771234567">
-<input id="amtAdd" type="number" placeholder="Amount UGX e.g. 50000">
-<button class="btn" onclick="addSavings()">Add Savings 💰</button>
-<input id="coffeeAdd" type="number" placeholder="Coffee Kg e.g. 20">
-<button class="btn btn2" onclick="addCoffee()">Add Coffee ☕</button>
-</div>
 <a class="back" href="index.html">← Back to Home</a>
+
+<div id="popup" class="popup hidden">
+<div class="popup-card">
+<div style="display:flex;justify-content:space-between;align-items:center;"><b style="font-size:18px;" id="pName"></b><span style="cursor:pointer;font-size:22px;" onclick="closePopup()">✕</span></div>
+<p style="color:#888;font-size:12px;">👀 View Only • No editing here • Only Admin can change</p>
+<div class="row"><span>Member ID</span><span id="pId"></span></div>
+<div class="row"><span>Phone</span><span id="pPhone"></span></div>
+<div class="row"><span>Village / Parish</span><span id="pVillage"></span></div>
+<div class="row"><span>Join Date</span><span id="pDate"></span></div>
+<div class="row"><span>Status</span><span style="color:#16a34a;">● Active</span></div>
+<div style="background:#f0fdf4;padding:12px;border-radius:10px;margin-top:10px;">
+<div class="row"><span>💰 Savings</span><span id="pSavings"></span></div>
+<div class="row"><span>📈 Shares</span><span id="pShares"></span></div>
+<div class="row"><span>🏦 Share Capital</span><span id="pCapital"></span></div>
+<div class="row"><span>☕ Coffee</span><span id="pCoffee"></span></div>
+<div class="row"><span>💳 Loan Balance</span><span id="pLoan"></span></div>
+<div class="row"><span>💵 Total Wealth (Savings + Capital)</span><span id="pTotal"></span></div>
+</div>
+<button class="btn" style="background:#0f172a;" onclick="closePopup()">Close</button>
+</div>
+</div>
+
 <script type="importmap">
 { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
 </script>
 <script type="module">
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
   authDomain: "kigambo-coopos.firebaseapp.com",
@@ -77,46 +97,42 @@ onSnapshot(collection(db, "members"), (snap)=>{
   allMembers.sort((a,b)=> (b.savings||0)-(a.savings||0));
   document.getElementById('totalMembers').innerText = allMembers.length;
   document.getElementById('totalSavings').innerText = allMembers.reduce((s,m)=> s+(m.savings||0),0).toLocaleString();
-  document.getElementById('totalShares').innerText = allMembers.reduce((s,m)=> s+Math.floor((m.savings||0)/20000),0);
-  document.getElementById('totalCoffee').innerText = allMembers.reduce((s,m)=> s+(m.coffee||0),0) + ' Kg';
+  document.getElementById('totalShares').innerText = allMembers.reduce((s,m)=> s+(m.shares||0),0);
+  document.getElementById('totalCapital').innerText = allMembers.reduce((s,m)=> s+((m.shares||0)*20000),0).toLocaleString();
   render();
 });
 window.render = () => {
   let q = document.getElementById('search').value.toLowerCase();
   let filtered = allMembers.filter(m=> (m.name||'').toLowerCase().includes(q) || (m.phone||'').includes(q));
   let html = '';
-  if(filtered.length===0) html = '<p style="color:#888;">No members found. Register a member first.</p>';
-  filtered.forEach(m=>{
+  if(filtered.length===0) html = '<p style="color:#888;">No members found.</p>';
+  filtered.forEach((m,i)=>{
     let village = m.village || m.location || 'Kigambo';
-    let shares = Math.floor((m.savings||0)/20000);
-    html += `<div class="member"><div><b>${m.name}</b><br><small>${m.phone} • ${m.id} • ${village}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.coffee||0} Kg • ${shares} Shares</small></div></div>`;
+    let mid = m.id || m.memberId || ('KIG-' + String(m.phone||'').slice(-4));
+    let capital = (m.shares||0)*20000;
+    html += `<div class="member" onclick="viewMember(${allMembers.indexOf(m)})"><div><b>${m.name}</b><br><small>${m.phone} • ${mid} • ${village}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.shares||0} Shares • ${capital.toLocaleString()} Capital</small><br><small>${m.coffee||0} Kg Coffee</small></div></div>`;
   });
   document.getElementById('list').innerHTML = html;
 }
-window.addSavings = async () => {
-  let phone = document.getElementById('phoneAdd').value.trim();
-  let amt = parseInt(document.getElementById('amtAdd').value);
-  if(!phone || !amt){ alert('Enter phone and amount'); return; }
-  let ref = doc(db, "members", phone);
-  let snap = await getDoc(ref);
-  if(!snap.exists()){ alert('Member not found in Cloud'); return; }
-  let d = snap.data();
-  let newSav = (d.savings||0)+amt;
-  await updateDoc(ref, { savings:newSav, shares: Math.floor(newSav/20000) });
-  alert('Added '+amt.toLocaleString()+' UGX to '+d.name+' ☁️');
-  document.getElementById('amtAdd').value='';
+window.viewMember = (idx) => {
+  let m = allMembers[idx];
+  let village = m.village || m.location || 'Kigambo';
+  let mid = m.id || m.memberId || ('KIG-' + String(m.phone||'').slice(-4));
+  let capital = (m.shares||0)*20000;
+  document.getElementById('pName').innerText = m.name;
+  document.getElementById('pId').innerText = mid;
+  document.getElementById('pPhone').innerText = m.phone;
+  document.getElementById('pVillage').innerText = village + ' • ' + (m.parish||'Kigambo');
+  document.getElementById('pDate').innerText = m.date || '-';
+  document.getElementById('pSavings').innerText = (m.savings||0).toLocaleString() + ' UGX';
+  document.getElementById('pShares').innerText = (m.shares||0) + ' Shares';
+  document.getElementById('pCapital').innerText = capital.toLocaleString() + ' UGX';
+  document.getElementById('pCoffee').innerText = (m.coffee||0) + ' Kg';
+  document.getElementById('pLoan').innerText = (m.loan||0).toLocaleString() + ' UGX';
+  document.getElementById('pTotal').innerText = ((m.savings||0)+capital).toLocaleString() + ' UGX';
+  document.getElementById('popup').classList.remove('hidden');
 }
-window.addCoffee = async () => {
-  let phone = document.getElementById('phoneAdd').value.trim();
-  let kg = parseInt(document.getElementById('coffeeAdd').value);
-  if(!phone || !kg){ alert('Enter phone and Kg'); return; }
-  let ref = doc(db, "members", phone);
-  let snap = await getDoc(ref);
-  if(!snap.exists()){ alert('Member not found'); return; }
-  await updateDoc(ref, { coffee: (snap.data().coffee||0)+kg });
-  alert('Added '+kg+' Kg coffee ☁️');
-  document.getElementById('coffeeAdd').value='';
-}
+window.closePopup = () => document.getElementById('popup').classList.add('hidden');
 </script>
 </body>
 </html>
