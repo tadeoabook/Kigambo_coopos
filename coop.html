@@ -8,97 +8,107 @@
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
-.top { background:#fff; padding:18px; border-radius:16px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.08); }
-.logo { font-size:22px; font-weight:900; color:#14532d; }
-.logo span { color:#16a34a; }
+.top { background:#14532d; color:#fff; padding:18px; border-radius:16px; text-align:center; }
 .card { background:#fff; padding:16px; border-radius:12px; margin-top:12px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
 input, select { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
 label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-top:12px; }
-.btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; font-size:15px; }
-.btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; } .btn-gold { background:#d97706; }
+.btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; }
+.btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; } .btn-gold { background:#d97706; } .btn-purple { background:#7c3aed; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
-.box { background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; text-align:center; }
+.box { background:#fff; border:1px solid #e2e8f0; padding:12px; border-radius:10px; text-align:center; }
 .box div { font-size:18px; font-weight:900; color:#14532d; }
-.member { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #eee; cursor:pointer; gap:8px; }
+.member { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; cursor:pointer; align-items:center; gap:8px; }
 .avatar { width:48px; height:56px; object-fit:cover; border-radius:8px; border:2px solid #14532d; background:#eee; flex-shrink:0; }
 .back { display:inline-block; margin-top:12px; color:#2563eb; text-decoration:none; font-weight:700; }
-.cloud { background:#e0f2fe; color:#0369a1; font-size:12px; padding:6px 10px; border-radius:20px; display:inline-block; margin-top:6px; }
+.hidden { display:none !important; }
 .popup { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:flex-start; justify-content:center; padding:16px; z-index:999; overflow-y:auto; }
 .popup-card { background:#fff; width:100%; max-width:440px; border-radius:16px; padding:20px; margin:auto; }
 .row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:14px; }
 .row span:last-child { font-weight:700; }
-.hidden { display:none !important; }
-.role-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-top:6px; }
-.role-dev { background:#7c3aed; color:#fff; } .role-main { background:#dc2626; color:#fff; } .role-coop { background:#16a34a; color:#fff; }
 .preview { width:100%; height:110px; object-fit:cover; border-radius:10px; border:1px solid #ddd; margin-top:6px; display:none; }
 .passport-preview { width:110px; height:130px; object-fit:cover; border-radius:10px; border:3px solid #14532d; display:none; margin:8px auto; }
+.role-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-top:6px; }
 .close-x { cursor:pointer; font-size:28px; line-height:1; padding:0 6px; font-weight:900; }
+.log-item { padding:10px 0; border-bottom:1px solid #eee; font-size:13px; }
+.log-item b { color:#14532d; }
+.admin-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:13px; }
 </style>
 </head>
 <body>
-<div class="top">
-<div class="logo">KIGAMBO <span>THE GREATER</span></div>
-<p style="color:#666;font-size:12px;">Cooperative Dashboard • KIGAMBO 1</p>
-<div class="cloud">☁️ Live from Firebase Cloud</div>
-</div>
+<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO COOP — KIGAMBO 1</div><p style="font-size:12px;opacity:.8;">Coop Admins • Main Admin • Developer • Every Action is Recorded ✍️</p></div>
+
 <div id="loginBox" class="card">
-<div style="text-align:center;font-size:48px;">🔒</div>
-<b style="font-size:18px;">Coop Admin Login — Restricted</b>
-<p style="color:#666;font-size:13px;">Only Coop Admin, Main Admin & Developer can open this page.</p>
-<label>Who are you?</label>
-<select id="loginRole">
-<option value="coop">🏡 Coop Admin — KIGAMBO 1</option>
-<option value="main">👨‍💼 Main Admin — All Coops</option>
-<option value="dev">👑 Developer — Overall System</option>
-</select>
-<input id="loginPass" type="password" placeholder="Enter Password">
-<button class="btn" onclick="coopLogin()">Unlock Coop Dashboard →</button>
+<b>🔐 Coop Login — Your Own Account</b>
+<p style="font-size:13px;color:#666;">Each admin has his own Phone + Password.<br>Your name will appear on everything you do.</p>
+<input id="loginPhone" placeholder="Your Phone e.g. 0771234567">
+<input id="adminPass" type="password" placeholder="Your Password">
+<button class="btn" onclick="adminLogin()">Login →</button>
 <div style="background:#fef3c7;padding:10px;border-radius:10px;font-size:12px;margin-top:12px;color:#92400e;">
-<b>Passwords:</b><br>🏡 Coop Admin: <b>kigambo123</b><br>👨‍💼 Main Admin: <b>admin123</b><br>👑 Developer: <b>dev123</b>
+<b>First Time? Developer Login:</b><br>Phone: <b>developer</b><br>Password: <b>dev123</b><br>Use this to create first Admins.
 </div>
 </div>
+
 <div id="dashBox" class="hidden">
-<div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><p style="font-size:12px;color:#666;margin:4px 0 0;">Coop: <b>KIGAMBO 1</b></p></div>
+<div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small style="color:#666;">Phone: <span id="myPhoneShow"></span> • Coop: <b>KIGAMBO 1</b> • All your actions will show your name</small></div>
+
 <div class="grid">
-<div class="box"><small>👥 MEMBERS</small><div id="totalMembers">0</div></div>
-<div class="box"><small>💰 TOTAL SAVINGS</small><div id="totalSavings">0</div></div>
-<div class="box"><small>📈 TOTAL SHARES</small><div id="totalShares">0</div></div>
-<div class="box"><small>🏦 SHARE CAPITAL</small><div id="totalCapital">0</div></div>
+<div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div>
+<div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div>
+<div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div>
+<div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div>
 </div>
+
+<div id="devBox" class="card hidden" style="border:2px solid #7c3aed;">
+<b>👑 Developer — Create New Admins</b>
+<p style="font-size:13px;color:#666;">Only Developer can create admins. Create as many Main Admins & Coop Admins as you want.</p>
+<input id="aName" placeholder="Admin Full Name e.g. Tadeo Mwesigye">
+<input id="aPhone" placeholder="Admin Phone e.g. 0771234567">
+<input id="aPass" placeholder="Admin Password e.g. tadeo123">
+<select id="aRole"><option value="main">👨‍💼 Main Admin — All Coops</option><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option></select>
+<select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select>
+<button class="btn btn-purple" onclick="createAdmin()">Create Admin Account ✅</button>
+<div id="adminList"><p style="color:#888;font-size:13px;">Loading admins...</p></div>
+</div>
+
 <div class="card" style="border:2px solid #16a34a;">
-<b>📝 Register New Member — Coop Admin</b>
+<b>📝 Register New Member</b>
 <input id="rName" placeholder="Full Name">
-<input id="rPhone" placeholder="Phone e.g. 0771234567">
-<input id="rVillage" placeholder="Village e.g. Kigambo">
+<input id="rPhone" placeholder="Phone">
+<input id="rVillage" placeholder="Village">
 <select id="rParish"><option>Parish: Kigambo</option><option>Parish: Kyegegwa Town</option><option>Parish: Ruyonza</option><option>Parish: Other</option></select>
 <input id="rNin" placeholder="NIN Number">
-<label>📸 Passport / Profile Photo</label>
-<input id="rPhoto" type="file" accept="image/*" capture="user" onchange="previewImg(this,'pPhoto')">
-<img id="pPhoto" class="passport-preview">
-<label>🪪 ID Front</label>
-<input id="rIdFront" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pFront')">
-<img id="pFront" class="preview">
-<label>🪪 ID Back</label>
-<input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')">
-<img id="pBack" class="preview">
+<label>📸 Passport Photo</label><input id="rPhoto" type="file" accept="image/*" capture="user" onchange="previewImg(this,'pPhoto')"><img id="pPhoto" class="passport-preview">
+<label>🪪 ID Front</label><input id="rIdFront" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pFront')"><img id="pFront" class="preview">
+<label>🪪 ID Back</label><input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')"><img id="pBack" class="preview">
 <button class="btn" onclick="registerMember()">Register Member ✅</button>
 </div>
+
 <div class="card">
-<b>🔍 Find Member — Tap to View & Edit</b>
-<input id="search" placeholder="Search by Name or Phone or NIN..." oninput="render()">
-<div id="list"><p style="color:#888;">Loading...</p></div>
+<b>🔍 Search Members</b>
+<input id="search" placeholder="Name or Phone or NIN..." oninput="render()">
+<div id="list">Loading...</div>
 </div>
+
 <div class="card">
 <b>➕ Quick Actions</b>
-<input id="phoneAdd" placeholder="Member Phone">
-<input id="amtAdd" type="number" placeholder="Amount / Shares / Kg">
+<input id="qPhone" placeholder="Member Phone">
+<input id="qAmt" type="number" placeholder="Amount / Shares / Kg">
 <button class="btn" onclick="quickAdd('savings')">Add Savings 💰</button>
 <button class="btn btn-gold" onclick="quickAdd('shares')">Add Shares 📈</button>
 <button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee ☕</button>
+<button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button>
 </div>
+
+<div class="card" style="border:2px solid #f59e0b;">
+<b>📜 Activity Log — Who Did What?</b>
+<p style="font-size:12px;color:#666;">Every action shows who did it. Latest first.</p>
+<div id="activityLog"><p style="color:#888;">Loading activity...</p></div>
+</div>
+
 <button class="btn btn-red" onclick="logout()">Logout 🔒</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
+
 <div id="popup" class="popup hidden" onclick="if(event.target.id==='popup') forceClose()">
 <div class="popup-card">
 <div style="display:flex;justify-content:space-between;align-items:center;"><b id="pName" style="font-size:18px;"></b><span class="close-x" onclick="forceClose()">✕</span></div>
@@ -112,49 +122,11 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <div class="row"><span>🏦 Share Capital</span><span id="pCapital"></span></div>
 <div class="row"><span>☕ Coffee</span><span id="pCoffee"></span></div>
 <div class="row"><span>💳 Loan</span><span id="pLoan"></span></div>
+<div class="row"><span>✍️ Last Action By</span><span id="pBy" style="color:#7c3aed;"></span></div>
 <p style="font-size:13px;"><b>ID Front:</b></p><img id="ppFront" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;">
 <p style="font-size:13px;"><b>ID Back:</b></p><img id="ppBack" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;">
 <input id="editAmt" type="number" placeholder="Enter Amount / Shares / Kg">
 <button class="btn" onclick="editAction('savings')">Add Savings 💰</button>
 <button class="btn btn-gold" onclick="editAction('shares')">Add Shares 📈</button>
 <button class="btn btn2" onclick="editAction('coffee')">Add Coffee ☕</button>
-<button class="btn btn3" onclick="forceClose()">Close</button>
-</div>
-</div>
-<script>
-function forceClose(){ var p=document.getElementById('popup'); if(p){ p.classList.add('hidden'); p.style.display='none'; } }
-function forceOpen(){ var p=document.getElementById('popup'); if(p){ p.classList.remove('hidden'); p.style.display='flex'; } }
-</script>
-<script type="importmap">
-{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
-</script>
-<script type="module">
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot } from "firebase/firestore";
-const firebaseConfig = {
-  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
-  authDomain: "kigambo-coopos.firebaseapp.com",
-  projectId: "kigambo-coopos",
-  storageBucket: "kigambo-coopos.firebasestorage.app",
-  messagingSenderId: "711731991766",
-  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-let allMembers = []; let selectedPhone=''; let myRole='';
-const PASSWORDS={ coop:'kigambo123', main:'admin123', dev:'dev123' };
-const ROLE_NAMES={ coop:'Coop Admin — KIGAMBO 1', main:'Main Admin — All Coops', dev:'Developer — Overall System' };
-window.coopLogin=()=>{ let role=document.getElementById('loginRole').value; let pass=document.getElementById('loginPass').value; if(pass===PASSWORDS[role]){ myRole=role; document.getElementById('loginBox').classList.add('hidden'); document.getElementById('dashBox').classList.remove('hidden'); document.getElementById('roleName').innerText=ROLE_NAMES[role]; let badge=document.getElementById('roleBadge'); badge.innerText=ROLE_NAMES[role]; badge.className='role-badge '+(role==='dev'?'role-dev':role==='main'?'role-main':'role-coop'); load(); } else alert('Wrong password. Access Denied 🔒'); }
-function fileToBase64(file){ return new Promise((res)=>{ if(!file) res(''); let r=new FileReader(); r.onload=()=>{ let img=new Image(); img.onload=()=>{ let c=document.createElement('canvas'); let max=800; let scale=Math.min(1,max/Math.max(img.width,img.height)); c.width=img.width*scale; c.height=img.height*scale; c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.7)); }; img.src=r.result; }; r.readAsDataURL(file); }); }
-window.previewImg=(input,imgId)=>{ let f=input.files[0]; if(!f) return; let r=new FileReader(); r.onload=e=>{ let el=document.getElementById(imgId); el.src=e.target.result; el.style.display='block'; }; r.readAsDataURL(f); }
-function load(){ onSnapshot(collection(db,"members"),(snap)=>{ allMembers=[]; snap.forEach(d=> allMembers.push(d.data())); allMembers.sort((a,b)=>(b.savings||0)-(a.savings||0)); document.getElementById('totalMembers').innerText=allMembers.length; document.getElementById('totalSavings').innerText=allMembers.reduce((s,m)=>s+(m.savings||0),0).toLocaleString(); document.getElementById('totalShares').innerText=allMembers.reduce((s,m)=>s+(m.shares||0),0); document.getElementById('totalCapital').innerText=allMembers.reduce((s,m)=>s+((m.shares||0)*20000),0).toLocaleString(); render(); }); }
-window.registerMember=async()=>{ let name=document.getElementById('rName').value.trim(); let phone=document.getElementById('rPhone').value.trim(); let village=document.getElementById('rVillage').value.trim(); let parish=document.getElementById('rParish').value; let nin=document.getElementById('rNin').value.trim(); if(!name||!phone){ alert('Enter Name and Phone'); return; } let ref=doc(db,"members",phone); let snap=await getDoc(ref); if(snap.exists()){ alert('Already registered'); return; } let photo=await fileToBase64(document.getElementById('rPhoto').files[0]); let idFront=await fileToBase64(document.getElementById('rIdFront').files[0]); let idBack=await fileToBase64(document.getElementById('rIdBack').files[0]); let id='KIG-'+String(Date.now()).slice(-4); await setDoc(ref,{ id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myRole }); alert('Registered '+name+'! ID: '+id+' ☁️'); document.getElementById('rName').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value=''; }
-window.render=()=>{ let q=document.getElementById('search').value.toLowerCase(); let filtered=allMembers.filter(m=> (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q)); let html=''; if(filtered.length===0) html='<p style="color:#888;">No members found.</p>'; filtered.forEach(m=>{ let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); let capital=(m.shares||0)*20000; let avatar=m.photo?`<img class="avatar" src="${m.photo}">`:`<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>`; html+=`<div class="member" onclick="viewEdit('${m.phone}')">${avatar}<div style="flex:1;"><b>${m.name}</b><br><small>${m.phone} • ${mid} • ${village}<br>NIN: ${m.nin||'—'}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.shares||0} Shares • ${capital.toLocaleString()} Capital</small><br><small>${m.coffee||0} Kg • Tap to Edit ✏️</small></div></div>`; }); document.getElementById('list').innerHTML=html; }
-window.viewEdit=(phone)=>{ let m=allMembers.find(x=>x.phone===phone); if(!m) return; selectedPhone=phone; let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village; document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none'; if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none'; if(m.idBack){ document.getElementById('ppBack').src=m.idBack; document.getElementById('ppBack').style.display='block'; } else document.getElementById('ppBack').style.display='none'; forceOpen(); }
-window.closePopup=()=>{ forceClose(); }
-window.editAction=async(type)=>{ let amt=parseInt(document.getElementById('editAmt').value); if(!amt||!selectedPhone){ alert('Enter amount'); return; } let ref=doc(db,"members",selectedPhone); let snap=await getDoc(ref); let d=snap.data(); if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt}); if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt}); if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt}); alert('Updated '+d.name+' ☁️'); document.getElementById('editAmt').value=''; forceClose(); }
-window.quickAdd=async(type)=>{ let phone=document.getElementById('phoneAdd').value.trim(); let amt=parseInt(document.getElementById('amtAdd').value); if(!phone||!amt){ alert('Enter phone and amount'); return; } let ref=doc(db,"members",phone); let snap=await getDoc(ref); if(!snap.exists()){ alert('Member not found'); return; } let d=snap.data(); if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt}); if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt}); if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt}); alert('Updated '+d.name+' ☁️'); }
-window.logout=()=>{ location.reload(); }
-</script>
-</body>
-  </html>
+<button class="btn
