@@ -84,7 +84,7 @@ function load(){
     all = []; snap.forEach(d=> all.push(d.data()));
     document.getElementById('tMembers').innerText = all.length;
     document.getElementById('tSavings').innerText = all.reduce((s,m)=> s+(m.savings||0),0).toLocaleString();
-    document.getElementById('tShares').innerText = all.reduce((s,m)=> s+(m.shares||0),0);
+    document.getElementById('tShares').innerText = all.reduce((s,m)=> s+Math.floor((m.savings||0)/20000),0);
     document.getElementById('tCoffee').innerText = all.reduce((s,m)=> s+(m.coffee||0),0) + ' Kg';
     render();
   });
@@ -92,7 +92,11 @@ function load(){
 window.render = () => {
   let q = document.getElementById('search').value.toLowerCase();
   let f = all.filter(m=> (m.name||'').toLowerCase().includes(q) || (m.phone||'').includes(q));
-  let h = f.map(m=> `<div class="member"><div><b>${m.name}</b><br><small>${m.phone} • ${m.id} • ${m.village||''}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.coffee||0} Kg • ${m.shares||0} Shares</small></div></div>`).join('');
+  let h = f.map(m=> {
+    let village = m.village || m.location || 'Kigambo';
+    let shares = Math.floor((m.savings||0)/20000);
+    return `<div class="member"><div><b>${m.name}</b><br><small>${m.phone} • ${m.id} • ${village}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.coffee||0} Kg • ${shares} Shares</small></div></div>`;
+  }).join('');
   document.getElementById('list').innerHTML = h || 'No members';
 }
 window.quickAdd = async (type) => {
@@ -108,7 +112,7 @@ window.quickAdd = async (type) => {
   alert('Updated '+d.name+' ☁️');
 }
 window.exportCSV = () => {
-  let csv = 'Name,Phone,ID,Village,Savings,Shares,Coffee,Date\n' + all.map(m=> `${m.name},${m.phone},${m.id},${m.village||''},${m.savings||0},${m.shares||0},${m.coffee||0},${m.date||''}`).join('\n');
+  let csv = 'Name,Phone,ID,Village,Savings,Shares,Coffee,Date\n' + all.map(m=> `${m.name},${m.phone},${m.id},${m.village||m.location||'Kigambo'},${m.savings||0},${Math.floor((m.savings||0)/20000)},${m.coffee||0},${m.date||''}`).join('\n');
   let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click();
 }
 window.logout = () => location.reload();
