@@ -14,9 +14,9 @@ body { margin: 0; font-family: Arial; background: #f8fafc; padding: 16px; }
 .logo span { color: #16a34a; }
 .sub { color: #666; font-size: 12px; }
 .card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
+input { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
 .btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #16a34a; color: #fff; text-decoration: none; font-weight: 700; margin-top: 12px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
-.btn2 { background: #2563eb; } .btn3 { background: #0f172a; } .btn-red { background: #dc2626; }
+.btn-red { background: #dc2626; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 .box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; text-align: center; }
 .box small { color: #666; font-size: 11px; }
@@ -29,6 +29,9 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 .footer { text-align: center; color: #888; font-size: 12px; margin-top: 16px; }
 .cloud { background:#e0f2fe; color:#0369a1; font-size:12px; padding:6px 10px; border-radius:20px; display:inline-block; margin-top:6px; }
 .view-tag { background:#fef3c7; color:#92400e; font-size:11px; padding:4px 8px; border-radius:20px; font-weight:700; }
+.passport { width:110px; height:130px; object-fit:cover; border-radius:10px; border:3px solid #14532d; display:block; margin:0 auto 8px auto; background:#eee; }
+.profile-wrap { text-align:center; }
+.id-thumb { width:100%; height:90px; object-fit:cover; border-radius:8px; border:1px solid #ddd; margin-top:6px; }
 .info { background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; border-radius:10px; font-size:13px; color:#14532d; text-align:center; margin-top:12px; }
 </style>
 </head>
@@ -42,24 +45,18 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 </div>
 <div id="loginBox" class="card">
 <b>👤 Member Login</b>
+<p style="color:#666;font-size:13px;">Enter your Phone Number to view your account.<br>Only members registered by Admin can login.</p>
 <input id="loginPhone" placeholder="Phone Number e.g. 0771234567">
 <button class="btn" onclick="login()">Login →</button>
-<p style="text-align:center;color:#888;font-size:13px;margin:14px 0 4px;">New member?</p>
-<button class="btn btn2" onclick="showRegister()">Register New Member</button>
-</div>
-<div id="registerBox" class="card hidden">
-<b>📝 Register New Member</b>
-<input id="regName" placeholder="Full Name e.g. Tadeo Mwesigye">
-<input id="regPhone" placeholder="Phone Number e.g. 0771234567">
-<input id="regVillage" placeholder="Village e.g. Kigambo">
-<select id="regParish"><option>Parish: Kigambo</option><option>Parish: Kyegegwa Town</option><option>Parish: Ruyonza</option><option>Parish: Other</option></select>
-<button class="btn" onclick="register()">Create My Account ✅</button>
-<button class="btn btn3" onclick="showLogin()">Back to Login</button>
+<div class="info">Not yet a member?<br>Visit Coop Office with your <b>National ID</b> to be registered by Admin.</div>
 </div>
 <div id="dashBox" class="hidden">
 <div class="card">
-<b>👋 Hello, <span id="mName"></span></b>
-<p style="color:#666;font-size:13px;margin:4px 0 0;">Member ID: <b id="mId"></b> • Phone: <span id="mPhone"></span><br>Village: <span id="mVillage"></span> • KIGAMBO 1</p>
+<div class="profile-wrap">
+<img id="mPhoto" class="passport" src="logo.png">
+<b style="font-size:18px;">👋 <span id="mName"></span></b>
+<p style="color:#666;font-size:13px;margin:4px 0 0;">Member ID: <b id="mId"></b> • Phone: <span id="mPhone"></span><br>Village: <span id="mVillage"></span> • KIGAMBO 1<br>NIN: <b id="mNin"></b> • <span style="color:#16a34a;">● Verified Member</span></p>
+</div>
 </div>
 <div class="grid">
 <div class="box"><small>💰 SAVINGS</small><div id="mSavings">0</div><small>UGX</small></div>
@@ -69,19 +66,25 @@ input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #
 </div>
 <div class="card">
 <b>📋 My Records — View Only</b>
-<div class="row"><span>💰 Savings (Withdrawable)</span><span id="mSavings2">0 UGX</span></div>
+<div class="row"><span>💰 Savings</span><span id="mSavings2">0 UGX</span></div>
 <div class="row"><span>📈 Shares Owned</span><span id="mShares2">0 Shares</span></div>
 <div class="row"><span>🏦 Share Capital (Shares × 20,000)</span><span id="mCapital2">0 UGX</span></div>
-<div class="row"><span>💵 Total Wealth (Savings + Capital)</span><span id="mTotal">0 UGX</span></div>
+<div class="row"><span>💵 Total Wealth</span><span id="mTotal">0 UGX</span></div>
 <div class="row"><span>💳 Loan Balance</span><span id="mLoan">0 UGX</span></div>
 <div class="row"><span>☕ Coffee Delivered</span><span id="mCoffee2">0 Kg</span></div>
 <div class="row"><span>Join Date</span><span id="mDate"></span></div>
 <div class="row"><span>Status</span><span style="color:#16a34a;">● Active</span></div>
 </div>
-<div class="info">
-<b>ℹ️ How to Add Savings / Shares / Coffee?</b><br>
-Please go to the Coop Office or contact Admin.<br>Only Admin can add to your account.<br>This keeps your money safe and prevents fake entries.
+<div class="card">
+<b>🪪 My ID Documents (View Only)</b>
+<p style="font-size:12px;color:#888;">Stored securely. Only you and Admin can see this.</p>
+<p style="font-size:13px;"><b>ID Front:</b></p>
+<img id="mIdFront" class="id-thumb" src="">
+<p style="font-size:13px;"><b>ID Back:</b></p>
+<img id="mIdBack" class="id-thumb" src="">
+<p id="noId" style="font-size:13px;color:#888;">No ID photos yet — Admin will add them.</p>
 </div>
+<div class="info">ℹ️ To Add Savings / Shares / Coffee, visit Coop Office.<br>Only Admin can add to your account.</div>
 <button class="btn btn-red" onclick="logout()">Logout</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
@@ -91,7 +94,7 @@ Please go to the Coop Office or contact Admin.<br>Only Admin can add to your acc
 </script>
 <script type="module">
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "firebase/firestore";
+import { getFirestore, doc, getDoc, onSnapshot } from "firebase/firestore";
 const firebaseConfig = {
   apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
   authDomain: "kigambo-coopos.firebaseapp.com",
@@ -103,30 +106,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let currentPhone = localStorage.getItem('kigambo_current') || '';
-window.showRegister = () => { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('registerBox').classList.remove('hidden'); }
-window.showLogin = () => { document.getElementById('registerBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
-window.register = async () => {
-  let name = document.getElementById('regName').value.trim();
-  let phone = document.getElementById('regPhone').value.trim();
-  let village = document.getElementById('regVillage').value.trim();
-  let parish = document.getElementById('regParish').value;
-  if(!name || !phone){ alert('Please enter Name and Phone'); return; }
-  let ref = doc(db, "members", phone);
-  let snap = await getDoc(ref);
-  if(snap.exists()){ alert('This phone already registered. Please Login.'); showLogin(); return; }
-  let id = 'KIG-' + String(Date.now()).slice(-4);
-  let data = { id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, savings:0, shares:0, loan:0, coffee:0, date: new Date().toLocaleDateString() };
-  await setDoc(ref, data);
-  localStorage.setItem('kigambo_current', phone);
-  currentPhone = phone;
-  alert('Welcome '+name+'! Your Member ID is '+id+' - Saved to Cloud ☁️');
-  listenMember(phone);
-}
 window.login = async () => {
   let phone = document.getElementById('loginPhone').value.trim();
   if(!phone){ alert('Enter phone number'); return; }
   let snap = await getDoc(doc(db, "members", phone));
-  if(!snap.exists()){ alert('Not found in Cloud. Please Register first.'); showRegister(); return; }
+  if(!snap.exists()){ alert('Not found. You must be registered by Admin at Coop Office with your National ID.'); return; }
   localStorage.setItem('kigambo_current', phone);
   currentPhone = phone;
   listenMember(phone);
@@ -136,12 +120,12 @@ function showDashboard(m){
   let capital = shares * 20000;
   let village = m.village || m.location || 'Kigambo';
   document.getElementById('loginBox').classList.add('hidden');
-  document.getElementById('registerBox').classList.add('hidden');
   document.getElementById('dashBox').classList.remove('hidden');
   document.getElementById('mName').innerText = m.name;
   document.getElementById('mId').innerText = m.id || ('KIG-'+String(m.phone).slice(-4));
   document.getElementById('mPhone').innerText = m.phone;
   document.getElementById('mVillage').innerText = village;
+  document.getElementById('mNin').innerText = m.nin || 'Not Provided';
   document.getElementById('mDate').innerText = m.date || '';
   document.getElementById('mSavings').innerText = (m.savings||0).toLocaleString();
   document.getElementById('mSavings2').innerText = (m.savings||0).toLocaleString() + ' UGX';
@@ -153,6 +137,10 @@ function showDashboard(m){
   document.getElementById('mLoan').innerText = (m.loan||0).toLocaleString() + ' UGX';
   document.getElementById('mCoffee').innerText = m.coffee||0;
   document.getElementById('mCoffee2').innerText = (m.coffee||0) + ' Kg';
+  if(m.photo) document.getElementById('mPhoto').src = m.photo;
+  if(m.idFront){ document.getElementById('mIdFront').src = m.idFront; document.getElementById('mIdFront').style.display='block'; } else document.getElementById('mIdFront').style.display='none';
+  if(m.idBack){ document.getElementById('mIdBack').src = m.idBack; document.getElementById('mIdBack').style.display='block'; } else document.getElementById('mIdBack').style.display='none';
+  document.getElementById('noId').style.display = (m.idFront||m.idBack) ? 'none' : 'block';
 }
 function listenMember(phone){
   onSnapshot(doc(db, "members", phone), (snap)=>{
@@ -163,4 +151,4 @@ window.logout = () => { localStorage.removeItem('kigambo_current'); location.rel
 if(currentPhone) listenMember(currentPhone);
 </script>
 </body>
-  </html>
+</html>
