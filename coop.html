@@ -38,8 +38,6 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 </head>
 <body>
 <div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO COOP — KIGAMBO 1</div><p style="font-size:12px;opacity:.8;">FINAL • Real Email + Real Phone • OTP • Offline + Sync • Loans ✍️</p></div>
-
-<!-- LOGIN -->
 <div id="loginBox" class="card">
 <b>🔐 Coop Login — Real Account</b>
 <p style="font-size:13px;color:#666;">Login with <b>Real Email OR Real Phone</b> + Password.</p>
@@ -50,12 +48,8 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <span class="small-link" onclick="showRecover()">❓ Forgot Password? Click to Recover</span>
 <span class="small-link" onclick="showOtpVerify()">🔑 Have OTP Code? Click to Activate Account</span>
 <button class="btn btn-teal" id="recoverBtn" type="button">🔄 Recover Admins From Cloud</button>
-<div style="background:#fef3c7;padding:10px;border-radius:10px;font-size:12px;margin-top:12px;color:#92400e;">
-<b>Developer Login:</b><br>Email: <b>developer@kigambo.com</b><br>Phone: <b>developer</b><br>Password: <b>dev123</b>
+<p style="font-size:11px;color:#888;text-align:center;margin-top:10px;">Only registered admins can login. Contact KIGAMBO management for account.</p>
 </div>
-</div>
-
-<!-- RECOVER -->
 <div id="recoverBox" class="card hidden">
 <b>🔓 Recover Your Password</b>
 <p style="font-size:13px;color:#666;">Enter your real Phone or Email, answer your secret question, set new password.</p>
@@ -70,8 +64,6 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <p id="recMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p>
 <span class="small-link" onclick="hideRecover()">← Back to Login</span>
 </div>
-
-<!-- OTP VERIFY -->
 <div id="otpBox" class="card hidden">
 <b>🔑 Activate With OTP</b>
 <p style="font-size:13px;color:#666;">Developer sent you a 6-digit OTP via WhatsApp/SMS. Enter it to activate.</p>
@@ -81,26 +73,11 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <p id="otpMsg" style="font-size:13px;text-align:center;color:#dc2626;"></p>
 <span class="small-link" onclick="hideOtp()">← Back to Login</span>
 </div>
-
-<!-- DASH -->
 <div id="dashBox" class="hidden">
 <div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small style="color:#666;">Email: <span id="myEmailShow"></span> • Phone: <span id="myPhoneShow"></span></small><br><small style="color:#16a34a;font-weight:700;">✅ Verified Account</small></div>
-<div class="sync-bar">
-<b>☁️ Cloud Sync — Safety Backup</b><br>
-<small>Status: <span id="netStatus">Checking...</span> • <span id="unsyncedCount">0</span></small><br>
-<button class="btn btn-teal" id="syncBtn" type="button" style="margin-top:8px;">☁️ Sync Now To Cloud</button>
-</div>
-<div class="grid">
-<div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div>
-<div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div>
-<div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div>
-<div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div>
-</div>
-<div class="grid">
-<div class="box" style="border:2px solid #ea580c;"><small>💳 TOTAL LOANS OUT</small><div id="tLoans" style="color:#ea580c;">0</div></div>
-<div class="box" style="border:2px solid #db2777;"><small>👥 MEMBERS WITH LOAN</small><div id="tLoanMembers" style="color:#db2777;">0</div></div>
-</div>
-
+<div class="sync-bar"><b>☁️ Cloud Sync — Safety Backup</b><br><small>Status: <span id="netStatus">Checking...</span> • <span id="unsyncedCount">0</span></small><br><button class="btn btn-teal" id="syncBtn" type="button" style="margin-top:8px;">☁️ Sync Now To Cloud</button></div>
+<div class="grid"><div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div><div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div><div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div><div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div></div>
+<div class="grid"><div class="box" style="border:2px solid #ea580c;"><small>💳 TOTAL LOANS OUT</small><div id="tLoans" style="color:#ea580c;">0</div></div><div class="box" style="border:2px solid #db2777;"><small>👥 MEMBERS WITH LOAN</small><div id="tLoanMembers" style="color:#db2777;">0</div></div></div>
 <div id="devBox" class="card hidden" style="border:2px solid #7c3aed;">
 <b>👑 Developer — Create REAL Admin (All Passwords Visible To You)</b>
 <p style="font-size:12px;color:#666;">Use REAL email + REAL phone. OTP will be generated. Send OTP to admin via WhatsApp.</p>
@@ -115,15 +92,11 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <input id="aSecA" placeholder="Secret Answer e.g. Nyabukiko">
 <button class="btn btn-purple" id="createBtn" type="button">Create Admin + Generate OTP ✅</button>
 <p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p>
-<div id="otpDisplay" class="otp-box hidden">
-<b>🔑 OTP FOR THIS ADMIN — SEND VIA WHATSAPP:</b><br>
-<span id="otpShow" class="otp-code">000000</span><br>
-<small id="otpForWho"></small><br>
-<button class="btn btn2" onclick="copyOtp()">📋 Copy OTP</button>
-</div>
+<div id="otpDisplay" class="otp-box hidden"><b>🔑 OTP FOR THIS ADMIN — SEND VIA WHATSAPP:</b><br><span id="otpShow" class="otp-code">000000</span><br><small id="otpForWho"></small><br><button class="btn btn2" onclick="copyOtp()">📋 Copy OTP</button></div>
 <div id="adminList"></div>
+<button class="btn btn-red" onclick="clearAllTest()">🧹 Clear All Test Data — Start Clean For Real</button>
+<p style="font-size:11px;color:#888;text-align:center;">This deletes ALL members + admins in THIS phone. Do Sync first if you want backup.</p>
 </div>
-
 <div class="card" style="border:2px solid #16a34a;">
 <b>📝 Register New Member — Real Phone Required</b>
 <input id="rName" placeholder="Full Name">
@@ -137,56 +110,14 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <label>🪪 ID Back</label><input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')"><img id="pBack" class="preview">
 <button class="btn" id="regBtn" type="button">Register Member ✅</button>
 </div>
-<div class="card">
-<b>🔍 Search Members</b>
-<input id="search" placeholder="Name or Phone or NIN or Email..." oninput="render()">
-<div id="list">No members yet</div>
-</div>
-<div class="card">
-<b>➕ Quick Actions</b>
-<input id="qPhone" placeholder="Member Phone">
-<input id="qAmt" type="number" placeholder="Amount / Shares / Kg">
-<button class="btn" onclick="quickAdd('savings')">Add Savings 💰</button>
-<button class="btn btn-gold" onclick="quickAdd('shares')">Add Shares 📈</button>
-<button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee ☕</button>
-<button class="btn btn-orange" onclick="quickAdd('loan')">Give Loan 💳</button>
-<button class="btn btn-pink" onclick="quickAdd('repay')">Repay Loan 💵</button>
-<button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button>
-<button class="btn btn-teal" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button>
-</div>
+<div class="card"><b>🔍 Search Members</b><input id="search" placeholder="Name or Phone or NIN or Email..." oninput="render()"><div id="list">No members yet</div></div>
+<div class="card"><b>➕ Quick Actions</b><input id="qPhone" placeholder="Member Phone"><input id="qAmt" type="number" placeholder="Amount / Shares / Kg"><button class="btn" onclick="quickAdd('savings')">Add Savings 💰</button><button class="btn btn-gold" onclick="quickAdd('shares')">Add Shares 📈</button><button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee ☕</button><button class="btn btn-orange" onclick="quickAdd('loan')">Give Loan 💳</button><button class="btn btn-pink" onclick="quickAdd('repay')">Repay Loan 💵</button><button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button><button class="btn btn-teal" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button></div>
 <div class="card loan-box"><b>💳 Loans — Who Owes?</b><div id="loanList">No loans yet</div></div>
 <div class="card" style="border:2px solid #f59e0b;"><b>📜 Activity Log — Who Did What?</b><div id="activityLog">No activity yet</div></div>
 <button class="btn btn-red" onclick="location.reload()">Logout 🔒</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
-
-<div id="popup" class="popup hidden" onclick="if(event.target.id==='popup') forceClose()">
-<div class="popup-card">
-<div style="display:flex;justify-content:space-between;align-items:center;"><b id="pName" style="font-size:18px;"></b><span class="close-x" onclick="forceClose()">✕</span></div>
-<div style="text-align:center;"><img id="ppPhoto" style="width:110px;height:130px;object-fit:cover;border-radius:10px;border:3px solid #14532d;margin:10px auto;display:none;"></div>
-<div class="row"><span>Member ID</span><span id="pId"></span></div>
-<div class="row"><span>Phone</span><span id="pPhone"></span></div>
-<div class="row"><span>Email</span><span id="pEmail"></span></div>
-<div class="row"><span>NIN</span><span id="pNin"></span></div>
-<div class="row"><span>Village</span><span id="pVillage"></span></div>
-<div class="row"><span>💰 Savings</span><span id="pSavings"></span></div>
-<div class="row"><span>📈 Shares</span><span id="pShares"></span></div>
-<div class="row"><span>🏦 Share Capital</span><span id="pCapital"></span></div>
-<div class="row"><span>☕ Coffee</span><span id="pCoffee"></span></div>
-<div class="row"><span>💳 Loan Balance</span><span id="pLoan" style="color:#ea580c;"></span></div>
-<div class="row"><span>✍️ Last Action By</span><span id="pBy" style="color:#7c3aed;"></span></div>
-<p style="font-size:13px;"><b>ID Front:</b></p><img id="ppFront" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;">
-<p style="font-size:13px;"><b>ID Back:</b></p><img id="ppBack" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;">
-<input id="editAmt" type="number" placeholder="Enter Amount / Shares / Kg">
-<button class="btn" onclick="editAction('savings')">Add Savings 💰</button>
-<button class="btn btn-gold" onclick="editAction('shares')">Add Shares 📈</button>
-<button class="btn btn2" onclick="editAction('coffee')">Add Coffee ☕</button>
-<button class="btn btn-orange" onclick="editAction('loan')">Give Loan 💳</button>
-<button class="btn btn-pink" onclick="editAction('repay')">Repay Loan 💵</button>
-<button class="btn btn3" onclick="forceClose()">Close</button>
-</div>
-</div>
-
+<div id="popup" class="popup hidden" onclick="if(event.target.id==='popup') forceClose()"><div class="popup-card"><div style="display:flex;justify-content:space-between;align-items:center;"><b id="pName" style="font-size:18px;"></b><span class="close-x" onclick="forceClose()">✕</span></div><div style="text-align:center;"><img id="ppPhoto" style="width:110px;height:130px;object-fit:cover;border-radius:10px;border:3px solid #14532d;margin:10px auto;display:none;"></div><div class="row"><span>Member ID</span><span id="pId"></span></div><div class="row"><span>Phone</span><span id="pPhone"></span></div><div class="row"><span>Email</span><span id="pEmail"></span></div><div class="row"><span>NIN</span><span id="pNin"></span></div><div class="row"><span>Village</span><span id="pVillage"></span></div><div class="row"><span>💰 Savings</span><span id="pSavings"></span></div><div class="row"><span>📈 Shares</span><span id="pShares"></span></div><div class="row"><span>🏦 Share Capital</span><span id="pCapital"></span></div><div class="row"><span>☕ Coffee</span><span id="pCoffee"></span></div><div class="row"><span>💳 Loan Balance</span><span id="pLoan" style="color:#ea580c;"></span></div><div class="row"><span>✍️ Last Action By</span><span id="pBy" style="color:#7c3aed;"></span></div><p style="font-size:13px;"><b>ID Front:</b></p><img id="ppFront" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;"><p style="font-size:13px;"><b>ID Back:</b></p><img id="ppBack" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;"><input id="editAmt" type="number" placeholder="Enter Amount / Shares / Kg"><button class="btn" onclick="editAction('savings')">Add Savings 💰</button><button class="btn btn-gold" onclick="editAction('shares')">Add Shares 📈</button><button class="btn btn2" onclick="editAction('coffee')">Add Coffee ☕</button><button class="btn btn-orange" onclick="editAction('loan')">Give Loan 💳</button><button class="btn btn-pink" onclick="editAction('repay')">Repay Loan 💵</button><button class="btn btn3" onclick="forceClose()">Close</button></div></div>
 <script>
 function forceClose(){ var p=document.getElementById('popup'); p.classList.add('hidden'); p.style.display='none'; }
 function forceOpen(){ var p=document.getElementById('popup'); p.classList.remove('hidden'); p.style.display='flex'; }
@@ -207,6 +138,7 @@ function hideRecover(){ document.getElementById('recoverBox').classList.add('hid
 function showOtpVerify(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('otpBox').classList.remove('hidden'); document.getElementById('recoverBox').classList.add('hidden'); }
 function hideOtp(){ document.getElementById('otpBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
 function copyOtp(){ navigator.clipboard.writeText(lastOtp); alert('OTP Copied: '+lastOtp+' — Send to admin via WhatsApp'); }
+function clearAllTest(){ if(!confirm('⚠️ CLEAR ALL? This deletes ALL members + admins + activity in THIS phone. Are you sure?')) return; localStorage.removeItem('kigambo_members'); localStorage.removeItem('kigambo_admins'); localStorage.removeItem('kigambo_activity'); all=[]; updateTotals(); render(); renderLoans(); renderAdminList(); renderActivity(); alert('✅ Cleared! Phone is now CLEAN for REAL registering.'); }
 function renderAdminList(){
   var list=getAdmins(); var el=document.getElementById('adminList');
   if(list.length===0){ el.innerHTML='<p style="color:#888;">No admins yet</p>'; return; }
@@ -248,9 +180,9 @@ function doLogin(){
   var pass=document.getElementById('adminPass').value.trim();
   var msg=document.getElementById('loginMsg');
   if(!login||!pass){ msg.innerText='Enter Email/Phone and Password'; return; }
-  if((login==='developer'||login==='developer@kigambo.com') && pass==='dev123'){ myAdmin={ name:'Developer (Overall)', phone:'developer', email:'developer@kigambo.com', role:'dev', coop:'ALL' }; showDash(); return; }
+  if((login==='developer'||login==='developer@kigambo.com') && pass==='Kigambo@2026'){ myAdmin={ name:'Developer (Overall)', phone:'developer', email:'developer@kigambo.com', role:'dev', coop:'ALL' }; showDash(); return; }
   var found=getAdmins().find(function(x){ return (x.phone===login || (x.email||'').toLowerCase()===login); });
-  if(!found){ msg.innerText='Account not found. Tap Recover From Cloud or ask Developer to create you.'; return; }
+  if(!found){ msg.innerText='Account not found. Ask Developer to create you.'; return; }
   if(found.password!==pass){ msg.innerText='Wrong password 🔒 — Tap Forgot Password to recover.'; return; }
   if(!found.verified){ msg.innerText='⏳ Account NOT verified. Tap "Have OTP Code?" and enter OTP sent by Developer via WhatsApp.'; return; }
   myAdmin={ name:found.name, phone:found.phone, email:found.email, role:found.role, coop:found.coop }; showDash();
@@ -260,9 +192,9 @@ document.getElementById('adminPass').addEventListener('keydown', function(e){ if
 function findForRecover(){
   var login=document.getElementById('recLogin').value.trim().toLowerCase();
   var msg=document.getElementById('recMsg');
-  if((login==='developer'||login==='developer@kigambo.com')){ msg.innerText='Developer cannot recover here. Developer password is dev123.'; return; }
+  if((login==='developer'||login==='developer@kigambo.com')){ msg.innerText='Developer recovery is private. Contact Developer directly.'; return; }
   var found=getAdmins().find(function(x){ return x.phone===login || (x.email||'').toLowerCase()===login; });
-  if(!found){ msg.innerText='Account not found. Check phone/email.'; return; }
+  if(!found){ msg.innerText='Account not found.'; return; }
   recoverTarget=found;
   document.getElementById('recQ').innerText='Secret Question: '+(found.secQ||"Mother's Maiden Name?");
   document.getElementById('recStep2').classList.remove('hidden');
@@ -297,7 +229,7 @@ async function doRecover(){
   try{
     var appMod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
     var mod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'recoverApp2');
+    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'recoverApp3');
     var db=mod.getFirestore(app);
     var snapA=await mod.getDocs(mod.collection(db,"admins"));
     var admins=[]; snapA.forEach(function(d){ admins.push(d.data()); });
@@ -334,8 +266,8 @@ function doCreateAdmin(){
   document.getElementById('otpDisplay').classList.remove('hidden');
   document.getElementById('otpShow').innerText=otp;
   document.getElementById('otpForWho').innerText='For: '+name+' ('+phone+') • Pass: '+pass;
-  document.getElementById('createMsg').innerText='Admin Created ✅ Send OTP '+otp+' to '+phone+' via WhatsApp. Admin must verify OTP before login.';
-  alert('Admin Created ✅\nName: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nPass: '+pass+'\nOTP: '+otp+'\n\n👉 Send OTP to admin via WhatsApp NOW. Admin taps "Have OTP Code?" to activate.');
+  document.getElementById('createMsg').innerText='Admin Created ✅ Send OTP '+otp+' to '+phone+' via WhatsApp.';
+  alert('Admin Created ✅\nName: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nPass: '+pass+'\nOTP: '+otp+'\n\n👉 Send OTP to admin via WhatsApp NOW.');
   document.getElementById('aName').value=''; document.getElementById('aEmail').value=''; document.getElementById('aPhone').value=''; document.getElementById('aPass').value=''; document.getElementById('aSecA').value='';
 }
 document.getElementById('createBtn').addEventListener('click', doCreateAdmin);
@@ -367,7 +299,7 @@ async function doRegister(){
   var m={ id:id, name:name, email:email||'', phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myAdmin.name, lastBy:myAdmin.name };
   all.push(m); saveMembers(all); updateTotals(); render(); renderLoans();
   logActivity('Registered Member', name, phone, 0);
-  alert('Registered '+name+' by '+myAdmin.name+' ✅ — Remember to Sync!');
+  alert('Registered '+name+' ✅ — Remember to Sync!');
   document.getElementById('rName').value=''; document.getElementById('rEmail').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value='';
 }
 document.getElementById('regBtn').addEventListener('click', doRegister);
@@ -388,68 +320,4 @@ function openEdit(phone){
   document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pEmail').innerText=m.email||'Not Provided'; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village;
   document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; document.getElementById('pBy').innerText=m.lastBy||m.registeredBy||'—';
   if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none';
-  if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none';
-  if(m.idBack){ document.getElementById('ppBack').src=m.idBack; document.getElementById('ppBack').style.display='block'; } else document.getElementById('ppBack').style.display='none';
-  forceOpen();
-}
-function editAction(type){
-  var amt=parseInt(document.getElementById('editAmt').value); if(!amt||!selectedPhone){ alert('Enter amount'); return; }
-  var m=all.find(function(x){ return x.phone===selectedPhone; }); if(!m) return;
-  var label=''; 
-  if(type==='savings'){ m.savings=(m.savings||0)+amt; label='Added Savings'; }
-  if(type==='shares'){ m.shares=(m.shares||0)+amt; label='Added Shares'; }
-  if(type==='coffee'){ m.coffee=(m.coffee||0)+amt; label='Added Coffee'; }
-  if(type==='loan'){ m.loan=(m.loan||0)+amt; label='Gave Loan 💳'; }
-  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay more than loan balance'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
-  m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render(); renderLoans();
-  logActivity(label, m.name, selectedPhone, amt);
-  alert(label+' for '+m.name+' ✅ — Loan: '+(m.loan||0).toLocaleString()); document.getElementById('editAmt').value=''; forceClose();
-}
-function quickAdd(type){
-  var phone=document.getElementById('qPhone').value.trim(); var amt=parseInt(document.getElementById('qAmt').value);
-  if(!phone||!amt){ alert('Enter phone and amount'); return; }
-  var m=all.find(function(x){ return x.phone===phone; }); if(!m){ alert('Not found'); return; }
-  var label='';
-  if(type==='savings'){ m.savings=(m.savings||0)+amt; label='Added Savings'; }
-  if(type==='shares'){ m.shares=(m.shares||0)+amt; label='Added Shares'; }
-  if(type==='coffee'){ m.coffee=(m.coffee||0)+amt; label='Added Coffee'; }
-  if(type==='loan'){ m.loan=(m.loan||0)+amt; label='Gave Loan 💳'; }
-  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay more than loan'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
-  m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render(); renderLoans();
-  logActivity(label, m.name, phone, amt);
-  alert(label+' for '+m.name+' ✅ — Loan: '+(m.loan||0).toLocaleString());
-}
-function exportCSV(){
-  var csv='Name,Email,Phone,ID,NIN,Village,Savings,Shares,ShareCapital,Coffee,Loan,LastBy,Date\n'+all.map(function(m){ return m.name+','+(m.email||'')+','+m.phone+','+(m.id||'')+','+(m.nin||'')+','+(m.village||'Kigambo')+','+(m.savings||0)+','+(m.shares||0)+','+((m.shares||0)*20000)+','+(m.coffee||0)+','+(m.loan||0)+','+(m.lastBy||'')+','+(m.date||''); }).join('\n');
-  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click();
-}
-function downloadBackup(){
-  var data={ admins:getAdmins(), members:getMembers(), activity:getActivity(), exported:new Date().toLocaleString() };
-  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'})); a.download='kigambo-backup-'+Date.now()+'.json'; a.click();
-  alert('Backup downloaded ✅');
-}
-async function doSync(){
-  if(!navigator.onLine){ alert('You are OFFLINE. Connect then Sync.'); return; }
-  var btn=document.getElementById('syncBtn'); btn.innerText='Syncing...';
-  try{
-    var appMod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    var mod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'syncAppFinal');
-    var db=mod.getFirestore(app);
-    var admins=getAdmins(); var members=getMembers(); var activity=getActivity();
-    for(var i=0;i<admins.length;i++){ await mod.setDoc(mod.doc(db,"admins",admins[i].phone), admins[i]); }
-    for(var j=0;j<members.length;j++){ await mod.setDoc(mod.doc(db,"members",members[j].phone), members[j]); }
-    for(var k=0;k<activity.length;k++){ await mod.addDoc(mod.collection(db,"activity"), activity[k]); }
-    var snap=await mod.getDocs(mod.collection(db,"members"));
-    var cloudMembers=[]; snap.forEach(function(d){ cloudMembers.push(d.data()); });
-    var merged=all.slice();
-    cloudMembers.forEach(function(cm){ if(!merged.find(function(x){ return x.phone===cm.phone; })) merged.push(cm); });
-    all=merged; saveMembers(all); updateTotals(); render(); renderLoans();
-    btn.innerText='☁️ Sync Now To Cloud';
-    alert('✅ SYNCED! '+members.length+' members + '+admins.length+' admins saved to Cloud. Safe!');
-  }catch(e){ btn.innerText='☁️ Sync Now To Cloud'; alert('Sync failed: '+e.message); }
-}
-document.getElementById('syncBtn').addEventListener('click', doSync);
-</script>
-</body>
-  </html>
+  if(m
