@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coop - KIGAMBO CoopOS</title>
+<title>Coop - KIGAMBO CoopOS FINAL</title>
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
@@ -31,28 +31,64 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 .admin-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:13px; }
 .sync-bar { background:#ecfdf5; border:2px solid #0d9488; padding:12px; border-radius:12px; margin-top:12px; text-align:center; }
 .loan-box { background:#fff7ed; border:2px solid #ea580c; padding:12px; border-radius:12px; margin-top:12px; }
+.otp-box { background:#eff6ff; border:2px solid #2563eb; padding:14px; border-radius:12px; margin-top:12px; text-align:center; }
+.otp-code { font-size:32px; font-weight:900; letter-spacing:8px; color:#2563eb; }
+.small-link { color:#2563eb; font-size:13px; cursor:pointer; text-decoration:underline; display:block; text-align:center; margin-top:10px; }
 </style>
 </head>
 <body>
-<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO COOP — KIGAMBO 1</div><p style="font-size:12px;opacity:.8;">Offline First • Sync When Online • Loans • Every Action is Recorded ✍️</p></div>
+<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO COOP — KIGAMBO 1</div><p style="font-size:12px;opacity:.8;">FINAL • Real Email + Real Phone • OTP • Offline + Sync • Loans ✍️</p></div>
+
+<!-- LOGIN -->
 <div id="loginBox" class="card">
-<b>🔐 Coop Login</b>
-<p style="font-size:13px;color:#666;">Works offline. Each admin has his own Phone + Password.</p>
-<input id="loginPhone" placeholder="Your Phone e.g. developer">
+<b>🔐 Coop Login — Real Account</b>
+<p style="font-size:13px;color:#666;">Login with <b>Real Email OR Real Phone</b> + Password.</p>
+<input id="loginPhone" placeholder="Email OR Phone e.g. tadeo@gmail.com OR 0771234567">
 <input id="adminPass" type="password" placeholder="Your Password">
 <button class="btn" id="loginBtn" type="button">Login →</button>
 <p id="loginMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p>
+<span class="small-link" onclick="showRecover()">❓ Forgot Password? Click to Recover</span>
+<span class="small-link" onclick="showOtpVerify()">🔑 Have OTP Code? Click to Activate Account</span>
+<button class="btn btn-teal" id="recoverBtn" type="button">🔄 Recover Admins From Cloud</button>
 <div style="background:#fef3c7;padding:10px;border-radius:10px;font-size:12px;margin-top:12px;color:#92400e;">
-<b>First Time? Developer Login:</b><br>Phone: <b>developer</b><br>Password: <b>dev123</b>
+<b>Developer Login:</b><br>Email: <b>developer@kigambo.com</b><br>Phone: <b>developer</b><br>Password: <b>dev123</b>
 </div>
 </div>
+
+<!-- RECOVER -->
+<div id="recoverBox" class="card hidden">
+<b>🔓 Recover Your Password</b>
+<p style="font-size:13px;color:#666;">Enter your real Phone or Email, answer your secret question, set new password.</p>
+<input id="recLogin" placeholder="Your Phone or Email">
+<button class="btn btn2" onclick="findForRecover()">Find My Account →</button>
+<div id="recStep2" class="hidden">
+<p id="recQ" style="font-weight:700;color:#14532d;"></p>
+<input id="recAns" placeholder="Answer to secret question">
+<input id="recNewPass" placeholder="New Password (min 6 chars)">
+<button class="btn" onclick="doResetPass()">Reset Password ✅</button>
+</div>
+<p id="recMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p>
+<span class="small-link" onclick="hideRecover()">← Back to Login</span>
+</div>
+
+<!-- OTP VERIFY -->
+<div id="otpBox" class="card hidden">
+<b>🔑 Activate With OTP</b>
+<p style="font-size:13px;color:#666;">Developer sent you a 6-digit OTP via WhatsApp/SMS. Enter it to activate.</p>
+<input id="otpPhone" placeholder="Your Phone e.g. 0771234567">
+<input id="otpCode" placeholder="6-digit OTP e.g. 123456">
+<button class="btn btn2" onclick="verifyOtp()">Verify OTP ✅</button>
+<p id="otpMsg" style="font-size:13px;text-align:center;color:#dc2626;"></p>
+<span class="small-link" onclick="hideOtp()">← Back to Login</span>
+</div>
+
+<!-- DASH -->
 <div id="dashBox" class="hidden">
-<div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small style="color:#666;">Phone: <span id="myPhoneShow"></span> • Coop: <b>KIGAMBO 1</b></small></div>
+<div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small style="color:#666;">Email: <span id="myEmailShow"></span> • Phone: <span id="myPhoneShow"></span></small><br><small style="color:#16a34a;font-weight:700;">✅ Verified Account</small></div>
 <div class="sync-bar">
 <b>☁️ Cloud Sync — Safety Backup</b><br>
-<small id="syncStatus" style="color:#666;">Status: <span id="netStatus">Checking...</span> • <span id="unsyncedCount">0 unsynced</span></small><br>
-<button class="btn btn-teal" id="syncBtn" type="button" style="margin-top:8px;">☁️ Sync Now To Cloud (When Online)</button>
-<p style="font-size:11px;color:#666;margin:4px 0 0;">Do this when you get internet. It saves phone data to Firebase so it is safe even if phone is lost.</p>
+<small>Status: <span id="netStatus">Checking...</span> • <span id="unsyncedCount">0</span></small><br>
+<button class="btn btn-teal" id="syncBtn" type="button" style="margin-top:8px;">☁️ Sync Now To Cloud</button>
 </div>
 <div class="grid">
 <div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div>
@@ -64,21 +100,35 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <div class="box" style="border:2px solid #ea580c;"><small>💳 TOTAL LOANS OUT</small><div id="tLoans" style="color:#ea580c;">0</div></div>
 <div class="box" style="border:2px solid #db2777;"><small>👥 MEMBERS WITH LOAN</small><div id="tLoanMembers" style="color:#db2777;">0</div></div>
 </div>
+
 <div id="devBox" class="card hidden" style="border:2px solid #7c3aed;">
-<b>👑 Developer — Create New Admins</b>
-<input id="aName" placeholder="Admin Full Name e.g. Tadeo Mwesigye">
-<input id="aPhone" placeholder="Admin Phone e.g. 0771234567">
-<input id="aPass" placeholder="Admin Password e.g. tadeo123">
+<b>👑 Developer — Create REAL Admin (All Passwords Visible To You)</b>
+<p style="font-size:12px;color:#666;">Use REAL email + REAL phone. OTP will be generated. Send OTP to admin via WhatsApp.</p>
+<input id="aName" placeholder="Full Name e.g. Tadeo Mwesigye">
+<input id="aEmail" placeholder="Real Email e.g. tadeo@gmail.com">
+<input id="aPhone" placeholder="Real Phone e.g. 0771234567 (10 digits, starts 07)">
+<input id="aPass" placeholder="Password e.g. Tadeo2026 (min 6 chars)">
 <select id="aRole"><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option><option value="main">👨‍💼 Main Admin — All Coops</option></select>
 <select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select>
-<button class="btn btn-purple" id="createBtn" type="button">Create Admin Account ✅</button>
+<label>Secret Question for Recovery</label>
+<select id="aSecQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select>
+<input id="aSecA" placeholder="Secret Answer e.g. Nyabukiko">
+<button class="btn btn-purple" id="createBtn" type="button">Create Admin + Generate OTP ✅</button>
 <p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p>
+<div id="otpDisplay" class="otp-box hidden">
+<b>🔑 OTP FOR THIS ADMIN — SEND VIA WHATSAPP:</b><br>
+<span id="otpShow" class="otp-code">000000</span><br>
+<small id="otpForWho"></small><br>
+<button class="btn btn2" onclick="copyOtp()">📋 Copy OTP</button>
+</div>
 <div id="adminList"></div>
 </div>
+
 <div class="card" style="border:2px solid #16a34a;">
-<b>📝 Register New Member</b>
+<b>📝 Register New Member — Real Phone Required</b>
 <input id="rName" placeholder="Full Name">
-<input id="rPhone" placeholder="Phone">
+<input id="rEmail" placeholder="Email (optional) e.g. member@gmail.com">
+<input id="rPhone" placeholder="Real Phone e.g. 077... (10 digits)">
 <input id="rVillage" placeholder="Village">
 <select id="rParish"><option>Parish: Kigambo</option><option>Parish: Kyegegwa Town</option><option>Parish: Ruyonza</option><option>Parish: Other</option></select>
 <input id="rNin" placeholder="NIN Number">
@@ -89,7 +139,7 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 </div>
 <div class="card">
 <b>🔍 Search Members</b>
-<input id="search" placeholder="Name or Phone or NIN..." oninput="render()">
+<input id="search" placeholder="Name or Phone or NIN or Email..." oninput="render()">
 <div id="list">No members yet</div>
 </div>
 <div class="card">
@@ -101,26 +151,22 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee ☕</button>
 <button class="btn btn-orange" onclick="quickAdd('loan')">Give Loan 💳</button>
 <button class="btn btn-pink" onclick="quickAdd('repay')">Repay Loan 💵</button>
-<button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV) — Backup</button>
+<button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button>
 <button class="btn btn-teal" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button>
 </div>
-<div class="card loan-box">
-<b>💳 Loans — Who Owes?</b>
-<div id="loanList">No loans yet</div>
-</div>
-<div class="card" style="border:2px solid #f59e0b;">
-<b>📜 Activity Log — Who Did What?</b>
-<div id="activityLog">No activity yet</div>
-</div>
+<div class="card loan-box"><b>💳 Loans — Who Owes?</b><div id="loanList">No loans yet</div></div>
+<div class="card" style="border:2px solid #f59e0b;"><b>📜 Activity Log — Who Did What?</b><div id="activityLog">No activity yet</div></div>
 <button class="btn btn-red" onclick="location.reload()">Logout 🔒</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
+
 <div id="popup" class="popup hidden" onclick="if(event.target.id==='popup') forceClose()">
 <div class="popup-card">
 <div style="display:flex;justify-content:space-between;align-items:center;"><b id="pName" style="font-size:18px;"></b><span class="close-x" onclick="forceClose()">✕</span></div>
 <div style="text-align:center;"><img id="ppPhoto" style="width:110px;height:130px;object-fit:cover;border-radius:10px;border:3px solid #14532d;margin:10px auto;display:none;"></div>
 <div class="row"><span>Member ID</span><span id="pId"></span></div>
 <div class="row"><span>Phone</span><span id="pPhone"></span></div>
+<div class="row"><span>Email</span><span id="pEmail"></span></div>
 <div class="row"><span>NIN</span><span id="pNin"></span></div>
 <div class="row"><span>Village</span><span id="pVillage"></span></div>
 <div class="row"><span>💰 Savings</span><span id="pSavings"></span></div>
@@ -140,6 +186,7 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <button class="btn btn3" onclick="forceClose()">Close</button>
 </div>
 </div>
+
 <script>
 function forceClose(){ var p=document.getElementById('popup'); p.classList.add('hidden'); p.style.display='none'; }
 function forceOpen(){ var p=document.getElementById('popup'); p.classList.remove('hidden'); p.style.display='flex'; }
@@ -148,28 +195,35 @@ function getMembers(){ try{ return JSON.parse(localStorage.getItem('kigambo_memb
 function getActivity(){ try{ return JSON.parse(localStorage.getItem('kigambo_activity')||'[]'); }catch(e){ return []; } }
 function saveMembers(m){ localStorage.setItem('kigambo_members', JSON.stringify(m)); markUnsynced(); }
 function saveActivity(a){ localStorage.setItem('kigambo_activity', JSON.stringify(a)); markUnsynced(); }
-function isOnline(){ return navigator.onLine; }
-function updateNet(){ var el=document.getElementById('netStatus'); if(el) el.innerText = isOnline() ? '🟢 Online' : '🔴 Offline — Working in phone'; }
-function markUnsynced(){ var c=getMembers().length + getAdmins().length + getActivity().length; var el=document.getElementById('unsyncedCount'); if(el) el.innerText = c + ' records in phone — Sync when online'; }
+function updateNet(){ var el=document.getElementById('netStatus'); if(el) el.innerText = navigator.onLine ? '🟢 Online' : '🔴 Offline'; }
+function markUnsynced(){ var el=document.getElementById('unsyncedCount'); if(el) el.innerText = (getMembers().length+getAdmins().length+getActivity().length)+' records in phone — Sync when online'; }
 window.addEventListener('online', updateNet); window.addEventListener('offline', updateNet); updateNet();
-var myAdmin=null; var all=[]; var selectedPhone='';
+var myAdmin=null; var all=[]; var selectedPhone=''; var recoverTarget=null; var lastOtp='';
+function isValidPhone(p){ return /^07\d{8}$/.test(p) || /^256\d{9}$/.test(p) || /^\+256\d{9}$/.test(p); }
+function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function genOtp(){ return String(Math.floor(100000+Math.random()*900000)); }
+function showRecover(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('recoverBox').classList.remove('hidden'); document.getElementById('otpBox').classList.add('hidden'); }
+function hideRecover(){ document.getElementById('recoverBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+function showOtpVerify(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('otpBox').classList.remove('hidden'); document.getElementById('recoverBox').classList.add('hidden'); }
+function hideOtp(){ document.getElementById('otpBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+function copyOtp(){ navigator.clipboard.writeText(lastOtp); alert('OTP Copied: '+lastOtp+' — Send to admin via WhatsApp'); }
 function renderAdminList(){
   var list=getAdmins(); var el=document.getElementById('adminList');
-  if(list.length===0){ el.innerHTML='<p style="color:#888;">No admins yet — Create first one above</p>'; return; }
-  var h=''; list.forEach(function(a){ h+='<div class="admin-item"><div><b>'+a.name+'</b><br><small>'+a.phone+' • '+(a.role==='main'?'Main Admin':'Coop Admin')+' • '+a.coop+' • Pass: '+a.password+'</small></div><span style="color:#16a34a;font-weight:700;">Active</span></div>'; });
+  if(list.length===0){ el.innerHTML='<p style="color:#888;">No admins yet</p>'; return; }
+  var h=''; list.forEach(function(a){ h+='<div class="admin-item"><div><b>'+a.name+'</b><br><small>📧 '+(a.email||'—')+'<br>📞 '+a.phone+' • '+(a.role==='main'?'Main Admin':'Coop Admin')+' • '+a.coop+'<br>🔑 Pass: <b>'+a.password+'</b> • OTP: <b>'+(a.otp||'—')+'</b> • '+(a.verified?'✅ Verified':'⏳ Not Verified - Needs OTP')+'</small></div></div>'; });
   el.innerHTML=h;
 }
 function renderActivity(){
   var list=getActivity(); var el=document.getElementById('activityLog');
   if(list.length===0){ el.innerHTML='No activity yet'; return; }
-  var h=''; list.slice().reverse().slice(0,30).forEach(function(a){ h+='<div class="log-item"><b>✍️ '+a.by+'</b> ('+(a.byRole==='dev'?'Developer':a.byRole==='main'?'Main Admin':'Coop Admin')+') — '+a.action+' <b>'+(a.memberName||'')+'</b> '+(a.amount?'('+a.amount.toLocaleString()+')':'')+'<br><small style="color:#888;">'+a.date+'</small></div>'; });
+  var h=''; list.slice().reverse().slice(0,30).forEach(function(a){ h+='<div class="log-item"><b>✍️ '+a.by+'</b> — '+a.action+' <b>'+(a.memberName||'')+'</b> '+(a.amount?'('+a.amount.toLocaleString()+')':'')+'<br><small style="color:#888;">'+a.date+'</small></div>'; });
   el.innerHTML=h;
 }
 function renderLoans(){
   var withLoan=all.filter(function(m){ return (m.loan||0)>0; });
   var el=document.getElementById('loanList');
   if(withLoan.length===0){ el.innerHTML='No loans yet — All members clear ✅'; return; }
-  var h=''; withLoan.forEach(function(m){ h+='<div class="admin-item" onclick="openEdit(\''+m.phone+'\')"><div><b>'+m.name+'</b><br><small>'+m.phone+' • Village: '+(m.village||'Kigambo')+'</small></div><b style="color:#ea580c;">'+(m.loan||0).toLocaleString()+' UGX</b></div>'; });
+  var h=''; withLoan.forEach(function(m){ h+='<div class="admin-item" onclick="openEdit(\''+m.phone+'\')"><div><b>'+m.name+'</b><br><small>'+m.phone+' • '+(m.village||'Kigambo')+'</small></div><b style="color:#ea580c;">'+(m.loan||0).toLocaleString()+' UGX</b></div>'; });
   el.innerHTML=h;
 }
 function logActivity(action, memberName, memberPhone, amount){
@@ -177,45 +231,112 @@ function logActivity(action, memberName, memberPhone, amount){
   saveActivity(list); renderActivity();
 }
 function showDash(){
-  document.getElementById('loginBox').style.display='none';
+  document.getElementById('loginBox').style.display='none'; document.getElementById('loginBox').classList.add('hidden');
+  document.getElementById('recoverBox').classList.add('hidden'); document.getElementById('otpBox').classList.add('hidden');
   var d=document.getElementById('dashBox'); d.classList.remove('hidden'); d.style.display='block';
   var label = myAdmin.role==='dev' ? '👑 Developer — Overall System' : myAdmin.role==='main' ? '👨‍💼 Main Admin — All Coops' : '🏡 Coop Admin — '+myAdmin.coop;
   document.getElementById('roleName').innerText=myAdmin.name;
   var badge=document.getElementById('roleBadge'); badge.innerText=label;
   badge.style.background = myAdmin.role==='dev' ? '#7c3aed' : myAdmin.role==='main' ? '#dc2626' : '#16a34a'; badge.style.color='#fff';
   document.getElementById('myPhoneShow').innerText=myAdmin.phone;
+  document.getElementById('myEmailShow').innerText=myAdmin.email||'developer@kigambo.com';
   if(myAdmin.role==='dev'){ var db=document.getElementById('devBox'); db.classList.remove('hidden'); db.style.display='block'; }
   all=getMembers(); renderAdminList(); renderActivity(); updateTotals(); render(); renderLoans(); updateNet(); markUnsynced();
 }
 function doLogin(){
-  var phone=document.getElementById('loginPhone').value.trim();
+  var login=document.getElementById('loginPhone').value.trim().toLowerCase();
   var pass=document.getElementById('adminPass').value.trim();
   var msg=document.getElementById('loginMsg');
-  if(!phone||!pass){ msg.innerText='Enter Phone and Password'; return; }
-  if(phone==='developer' && pass==='dev123'){ myAdmin={ name:'Developer (Overall)', phone:'developer', role:'dev', coop:'ALL' }; showDash(); return; }
-  var found=getAdmins().find(function(x){ return x.phone===phone; });
-  if(!found){ msg.innerText='Admin not found. Ask Developer to create your account.'; return; }
-  if(found.password!==pass){ msg.innerText='Wrong password 🔒'; return; }
-  myAdmin={ name:found.name, phone:found.phone, role:found.role, coop:found.coop }; showDash();
+  if(!login||!pass){ msg.innerText='Enter Email/Phone and Password'; return; }
+  if((login==='developer'||login==='developer@kigambo.com') && pass==='dev123'){ myAdmin={ name:'Developer (Overall)', phone:'developer', email:'developer@kigambo.com', role:'dev', coop:'ALL' }; showDash(); return; }
+  var found=getAdmins().find(function(x){ return (x.phone===login || (x.email||'').toLowerCase()===login); });
+  if(!found){ msg.innerText='Account not found. Tap Recover From Cloud or ask Developer to create you.'; return; }
+  if(found.password!==pass){ msg.innerText='Wrong password 🔒 — Tap Forgot Password to recover.'; return; }
+  if(!found.verified){ msg.innerText='⏳ Account NOT verified. Tap "Have OTP Code?" and enter OTP sent by Developer via WhatsApp.'; return; }
+  myAdmin={ name:found.name, phone:found.phone, email:found.email, role:found.role, coop:found.coop }; showDash();
 }
 document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('adminPass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+function findForRecover(){
+  var login=document.getElementById('recLogin').value.trim().toLowerCase();
+  var msg=document.getElementById('recMsg');
+  if((login==='developer'||login==='developer@kigambo.com')){ msg.innerText='Developer cannot recover here. Developer password is dev123.'; return; }
+  var found=getAdmins().find(function(x){ return x.phone===login || (x.email||'').toLowerCase()===login; });
+  if(!found){ msg.innerText='Account not found. Check phone/email.'; return; }
+  recoverTarget=found;
+  document.getElementById('recQ').innerText='Secret Question: '+(found.secQ||"Mother's Maiden Name?");
+  document.getElementById('recStep2').classList.remove('hidden');
+  msg.innerText='';
+}
+function doResetPass(){
+  var ans=document.getElementById('recAns').value.trim().toLowerCase();
+  var np=document.getElementById('recNewPass').value.trim();
+  var msg=document.getElementById('recMsg');
+  if(!recoverTarget){ msg.innerText='Find account first.'; return; }
+  if(ans!==(recoverTarget.secA||'').toLowerCase()){ msg.innerText='Wrong secret answer ❌ Ask Developer to help.'; return; }
+  if(np.length<6){ msg.innerText='New password must be 6+ chars.'; return; }
+  var list=getAdmins(); var idx=list.findIndex(function(x){ return x.phone===recoverTarget.phone; });
+  list[idx].password=np; localStorage.setItem('kigambo_admins', JSON.stringify(list));
+  alert('✅ Password Reset! Now login with new password: '+np);
+  hideRecover();
+}
+function verifyOtp(){
+  var phone=document.getElementById('otpPhone').value.trim();
+  var code=document.getElementById('otpCode').value.trim();
+  var msg=document.getElementById('otpMsg');
+  var list=getAdmins(); var idx=list.findIndex(function(x){ return x.phone===phone; });
+  if(idx===-1){ msg.innerText='Admin not found.'; return; }
+  if(list[idx].otp!==code){ msg.innerText='Wrong OTP ❌ Ask Developer to resend OTP.'; return; }
+  list[idx].verified=true; localStorage.setItem('kigambo_admins', JSON.stringify(list));
+  alert('✅ Account Verified! Now login with your Email/Phone + Password.');
+  hideOtp();
+}
+async function doRecover(){
+  if(!navigator.onLine){ alert('Need internet to Recover.'); return; }
+  var btn=document.getElementById('recoverBtn'); btn.innerText='Recovering...';
+  try{
+    var appMod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    var mod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'recoverApp2');
+    var db=mod.getFirestore(app);
+    var snapA=await mod.getDocs(mod.collection(db,"admins"));
+    var admins=[]; snapA.forEach(function(d){ admins.push(d.data()); });
+    localStorage.setItem('kigambo_admins', JSON.stringify(admins));
+    var snapM=await mod.getDocs(mod.collection(db,"members"));
+    var members=[]; snapM.forEach(function(d){ members.push(d.data()); });
+    localStorage.setItem('kigambo_members', JSON.stringify(members));
+    btn.innerText='🔄 Recover Admins From Cloud';
+    alert('✅ RECOVERED! '+admins.length+' admins + '+members.length+' members from Cloud. Now login again.');
+  }catch(e){ btn.innerText='🔄 Recover Admins From Cloud'; alert('Recover failed: '+e.message); }
+}
+document.getElementById('recoverBtn').addEventListener('click', doRecover);
 function doCreateAdmin(){
   var name=document.getElementById('aName').value.trim();
+  var email=document.getElementById('aEmail').value.trim().toLowerCase();
   var phone=document.getElementById('aPhone').value.trim();
   var pass=document.getElementById('aPass').value.trim();
   var role=document.getElementById('aRole').value;
   var coop=document.getElementById('aCoop').value;
-  if(!name||!phone||!pass){ alert('Enter Name, Phone, Password'); return; }
+  var secQ=document.getElementById('aSecQ').value;
+  var secA=document.getElementById('aSecA').value.trim();
+  if(!name||!email||!phone||!pass||!secA){ alert('Fill ALL: Name, REAL Email, REAL Phone, Password, Secret Answer'); return; }
+  if(!isValidEmail(email)){ alert('❌ Email is NOT real. Must be like tadeo@gmail.com'); return; }
+  if(!isValidPhone(phone)){ alert('❌ Phone is NOT real. Must be 0771234567 (10 digits, starts 07)'); return; }
+  if(pass.length<6){ alert('Password must be 6+ chars'); return; }
   var list=getAdmins();
   if(list.find(function(x){ return x.phone===phone; })){ alert('Phone already used'); return; }
-  list.push({ name:name, phone:phone, password:pass, role:role, coop:coop });
+  if(list.find(function(x){ return (x.email||'').toLowerCase()===email; })){ alert('Email already used'); return; }
+  var otp=genOtp(); lastOtp=otp;
+  list.push({ name:name, email:email, phone:phone, password:pass, role:role, coop:coop, secQ:secQ, secA:secA, otp:otp, verified:false });
   localStorage.setItem('kigambo_admins', JSON.stringify(list));
   renderAdminList(); markUnsynced();
-  logActivity('Created Admin', name, phone, 0);
-  document.getElementById('createMsg').innerText='Admin Created ✅ '+name+' — Remember to Sync to Cloud when online!';
-  alert('Admin Created: '+name+' ✅\nPhone: '+phone+'\nPassword: '+pass+'\n⚠️ Tap SYNC when you get internet to save to Cloud!');
-  document.getElementById('aName').value=''; document.getElementById('aPhone').value=''; document.getElementById('aPass').value='';
+  logActivity('Created Admin (OTP)', name, phone, 0);
+  document.getElementById('otpDisplay').classList.remove('hidden');
+  document.getElementById('otpShow').innerText=otp;
+  document.getElementById('otpForWho').innerText='For: '+name+' ('+phone+') • Pass: '+pass;
+  document.getElementById('createMsg').innerText='Admin Created ✅ Send OTP '+otp+' to '+phone+' via WhatsApp. Admin must verify OTP before login.';
+  alert('Admin Created ✅\nName: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nPass: '+pass+'\nOTP: '+otp+'\n\n👉 Send OTP to admin via WhatsApp NOW. Admin taps "Have OTP Code?" to activate.');
+  document.getElementById('aName').value=''; document.getElementById('aEmail').value=''; document.getElementById('aPhone').value=''; document.getElementById('aPass').value=''; document.getElementById('aSecA').value='';
 }
 document.getElementById('createBtn').addEventListener('click', doCreateAdmin);
 function previewImg(input,imgId){ var f=input.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(e){ var el=document.getElementById(imgId); el.src=e.target.result; el.style.display='block'; }; r.readAsDataURL(f); }
@@ -230,26 +351,29 @@ function updateTotals(){
 }
 async function doRegister(){
   var name=document.getElementById('rName').value.trim();
+  var email=document.getElementById('rEmail').value.trim().toLowerCase();
   var phone=document.getElementById('rPhone').value.trim();
   var village=document.getElementById('rVillage').value.trim();
   var parish=document.getElementById('rParish').value;
   var nin=document.getElementById('rNin').value.trim();
   if(!name||!phone){ alert('Enter Name and Phone'); return; }
+  if(!isValidPhone(phone)){ alert('❌ Member Phone must be REAL: 077... (10 digits)'); return; }
+  if(email && !isValidEmail(email)){ alert('❌ Member Email is not valid'); return; }
   if(all.find(function(x){ return x.phone===phone; })){ alert('Already registered'); return; }
   var photo=await fileToBase64(document.getElementById('rPhoto').files[0]);
   var idFront=await fileToBase64(document.getElementById('rIdFront').files[0]);
   var idBack=await fileToBase64(document.getElementById('rIdBack').files[0]);
   var id='KIG-'+String(Date.now()).slice(-4);
-  var m={ id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myAdmin.name, lastBy:myAdmin.name };
+  var m={ id:id, name:name, email:email||'', phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myAdmin.name, lastBy:myAdmin.name };
   all.push(m); saveMembers(all); updateTotals(); render(); renderLoans();
   logActivity('Registered Member', name, phone, 0);
-  alert('Registered '+name+' by '+myAdmin.name+' ✅ — Remember to Sync when online!');
-  document.getElementById('rName').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value='';
+  alert('Registered '+name+' by '+myAdmin.name+' ✅ — Remember to Sync!');
+  document.getElementById('rName').value=''; document.getElementById('rEmail').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value='';
 }
 document.getElementById('regBtn').addEventListener('click', doRegister);
 function render(){
   var q=(document.getElementById('search').value||'').toLowerCase();
-  var f=all.filter(function(m){ return (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q); });
+  var f=all.filter(function(m){ return (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q)||(m.email||'').toLowerCase().includes(q); });
   var h=f.map(function(m){
     var village=m.village||m.location||'Kigambo'; var mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); var capital=(m.shares||0)*20000;
     var avatar=m.photo?'<img class="avatar" src="'+m.photo+'">':'<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>';
@@ -261,7 +385,7 @@ function render(){
 function openEdit(phone){
   var m=all.find(function(x){ return x.phone===phone; }); if(!m) return; selectedPhone=phone;
   var village=m.village||m.location||'Kigambo'; var mid=m.id||('KIG-'+String(m.phone||'').slice(-4));
-  document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village;
+  document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pEmail').innerText=m.email||'Not Provided'; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village;
   document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; document.getElementById('pBy').innerText=m.lastBy||m.registeredBy||'—';
   if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none';
   if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none';
@@ -276,10 +400,10 @@ function editAction(type){
   if(type==='shares'){ m.shares=(m.shares||0)+amt; label='Added Shares'; }
   if(type==='coffee'){ m.coffee=(m.coffee||0)+amt; label='Added Coffee'; }
   if(type==='loan'){ m.loan=(m.loan||0)+amt; label='Gave Loan 💳'; }
-  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay amount is more than loan balance ('+(m.loan||0).toLocaleString()+')'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
+  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay more than loan balance'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
   m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render(); renderLoans();
   logActivity(label, m.name, selectedPhone, amt);
-  alert(label+' for '+m.name+' by '+myAdmin.name+' ✅ — Loan balance now: '+(m.loan||0).toLocaleString()); document.getElementById('editAmt').value=''; forceClose();
+  alert(label+' for '+m.name+' ✅ — Loan: '+(m.loan||0).toLocaleString()); document.getElementById('editAmt').value=''; forceClose();
 }
 function quickAdd(type){
   var phone=document.getElementById('qPhone').value.trim(); var amt=parseInt(document.getElementById('qAmt').value);
@@ -290,27 +414,27 @@ function quickAdd(type){
   if(type==='shares'){ m.shares=(m.shares||0)+amt; label='Added Shares'; }
   if(type==='coffee'){ m.coffee=(m.coffee||0)+amt; label='Added Coffee'; }
   if(type==='loan'){ m.loan=(m.loan||0)+amt; label='Gave Loan 💳'; }
-  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay more than loan balance'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
+  if(type==='repay'){ if(amt>(m.loan||0)){ alert('Repay more than loan'); return; } m.loan=(m.loan||0)-amt; label='Repaid Loan 💵'; }
   m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render(); renderLoans();
   logActivity(label, m.name, phone, amt);
-  alert(label+' for '+m.name+' by '+myAdmin.name+' ✅ — Loan balance: '+(m.loan||0).toLocaleString());
+  alert(label+' for '+m.name+' ✅ — Loan: '+(m.loan||0).toLocaleString());
 }
 function exportCSV(){
-  var csv='Name,Phone,ID,NIN,Village,Savings,Shares,ShareCapital,Coffee,Loan,LastBy,Date\n'+all.map(function(m){ return m.name+','+m.phone+','+(m.id||'')+','+(m.nin||'')+','+(m.village||'Kigambo')+','+(m.savings||0)+','+(m.shares||0)+','+((m.shares||0)*20000)+','+(m.coffee||0)+','+(m.loan||0)+','+(m.lastBy||'')+','+(m.date||''); }).join('\n');
+  var csv='Name,Email,Phone,ID,NIN,Village,Savings,Shares,ShareCapital,Coffee,Loan,LastBy,Date\n'+all.map(function(m){ return m.name+','+(m.email||'')+','+m.phone+','+(m.id||'')+','+(m.nin||'')+','+(m.village||'Kigambo')+','+(m.savings||0)+','+(m.shares||0)+','+((m.shares||0)*20000)+','+(m.coffee||0)+','+(m.loan||0)+','+(m.lastBy||'')+','+(m.date||''); }).join('\n');
   var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click();
 }
 function downloadBackup(){
   var data={ admins:getAdmins(), members:getMembers(), activity:getActivity(), exported:new Date().toLocaleString() };
   var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'})); a.download='kigambo-backup-'+Date.now()+'.json'; a.click();
-  alert('Backup downloaded ✅ Keep this file safe!');
+  alert('Backup downloaded ✅');
 }
 async function doSync(){
-  if(!navigator.onLine){ alert('You are OFFLINE. Connect to internet first, then tap Sync again.'); return; }
-  var btn=document.getElementById('syncBtn'); btn.innerText='Syncing... Please wait...';
+  if(!navigator.onLine){ alert('You are OFFLINE. Connect then Sync.'); return; }
+  var btn=document.getElementById('syncBtn'); btn.innerText='Syncing...';
   try{
     var appMod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
     var mod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'syncApp');
+    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'syncAppFinal');
     var db=mod.getFirestore(app);
     var admins=getAdmins(); var members=getMembers(); var activity=getActivity();
     for(var i=0;i<admins.length;i++){ await mod.setDoc(mod.doc(db,"admins",admins[i].phone), admins[i]); }
@@ -321,15 +445,11 @@ async function doSync(){
     var merged=all.slice();
     cloudMembers.forEach(function(cm){ if(!merged.find(function(x){ return x.phone===cm.phone; })) merged.push(cm); });
     all=merged; saveMembers(all); updateTotals(); render(); renderLoans();
-    btn.innerText='☁️ Sync Now To Cloud (When Online)';
-    alert('✅ SYNCED! '+members.length+' members + '+admins.length+' admins saved to Cloud Firebase. Safe now even if phone is lost!');
-    localStorage.setItem('kigambo_last_sync', new Date().toLocaleString());
-  }catch(e){
-    btn.innerText='☁️ Sync Now To Cloud (When Online)';
-    alert('Sync failed: '+e.message+'\n\nYour data is STILL SAFE in phone + Backup file. Tap Download Backup for now.');
-  }
+    btn.innerText='☁️ Sync Now To Cloud';
+    alert('✅ SYNCED! '+members.length+' members + '+admins.length+' admins saved to Cloud. Safe!');
+  }catch(e){ btn.innerText='☁️ Sync Now To Cloud'; alert('Sync failed: '+e.message); }
 }
 document.getElementById('syncBtn').addEventListener('click', doSync);
 </script>
 </body>
-</html>
+  </html>
