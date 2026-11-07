@@ -3,125 +3,115 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin - KIGAMBO CoopOS</title>
-<link rel="icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14532d">
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Arial; background: #f8fafc; padding: 16px; }
-.top { background: #fff; padding: 18px 16px; border-radius: 16px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-.logo-img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 8px auto; border: 3px solid #14532d; }
-.logo { font-size: 22px; font-weight: 900; color: #14532d; }
-.logo span { color: #16a34a; }
-.sub { color: #666; font-size: 12px; }
-.card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
-.card b { font-size: 16px; }
-input, select { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 10px; font-size: 15px; }
-.btn { display: block; text-align: center; padding: 14px; border-radius: 10px; background: #16a34a; color: #fff; text-decoration: none; font-weight: 700; margin-top: 12px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
-.btn2 { background: #2563eb; }
-.btn-red { background: #dc2626; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-.box { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 10px; text-align: center; }
-.box small { color: #666; font-size: 11px; }
-.box div { font-size: 18px; font-weight: 900; color: #14532d; margin-top: 4px; }
-.member { background: #fff; padding: 12px; border-radius: 10px; margin-top: 10px; border-left: 4px solid #16a34a; }
-.member b { font-size: 15px; }
-.member p { color: #666; font-size: 12px; margin: 4px 0; }
-.back { display: inline-block; margin-top: 12px; color: #2563eb; text-decoration: none; font-weight: 700; font-size: 14px; }
+body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
+.top { background:#14532d; color:#fff; padding:18px; border-radius:16px; text-align:center; }
+.card { background:#fff; padding:16px; border-radius:12px; margin-top:12px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+input { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
+.btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; }
+.btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+.box { background:#fff; border:1px solid #e2e8f0; padding:12px; border-radius:10px; text-align:center; }
+.box div { font-size:18px; font-weight:900; color:#14532d; }
+.member { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; }
+.back { display:inline-block; margin-top:12px; color:#2563eb; text-decoration:none; font-weight:700; }
+.hidden { display:none; }
 </style>
 </head>
 <body>
+<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO ADMIN</div><p style="font-size:12px;opacity:.8;">KIGAMBO 1 - Kyegegwa • ☁️ Firebase Cloud</p></div>
 
-<div class="top">
-<img src="logo.png" class="logo-img">
-<div class="logo">KIGAMBO <span>THE GREATER</span></div>
-<p class="sub">Admin Dashboard • KIGAMBO 1 - Kyegegwa</p>
+<div id="loginBox" class="card">
+<b>🔐 Admin Login</b>
+<input id="adminPass" type="password" placeholder="Admin Password">
+<button class="btn" onclick="adminLogin()">Login →</button>
+<p style="font-size:12px;color:#888;">Default password: <b>admin123</b></p>
 </div>
 
+<div id="dashBox" class="hidden">
 <div class="grid">
-<div class="box"><small>👥 MEMBERS</small><div id="totalMembers">0</div></div>
-<div class="box"><small>💰 TOTAL SAVINGS</small><div id="totalSavings">0</div></div>
-<div class="box"><small>📈 SHARES</small><div id="totalShares">0</div></div>
-<div class="box"><small>☕ COFFEE</small><div id="totalCoffee">0</div></div>
+<div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div>
+<div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div>
+<div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div>
+<div class="box"><small>☕ COFFEE</small><div id="tCoffee">0</div></div>
 </div>
-
 <div class="card">
-<b>➕ Add Member</b>
-<input id="aName" placeholder="Full Name e.g. Kweyamba Patrick">
-<input id="aPhone" placeholder="Phone e.g. 0745245711">
-<input id="aVillage" placeholder="Village e.g. Nyabuliko">
-<input id="aSavings" type="number" placeholder="Savings UGX e.g. 45000">
-<button class="btn" onclick="addMember()">Add Member ✅</button>
+<b>🔍 Search Members</b>
+<input id="search" placeholder="Name or Phone..." oninput="render()">
+<div id="list">Loading...</div>
 </div>
-
 <div class="card">
-<b>💳 Give Loan</b>
-<select id="loanMember"></select>
-<input id="loanAmount" type="number" placeholder="Loan Amount UGX">
-<button class="btn btn2" onclick="giveLoan()">Give Loan 💳</button>
+<b>➕ Quick Actions</b>
+<input id="qPhone" placeholder="Member Phone">
+<input id="qAmt" type="number" placeholder="Amount / Kg">
+<button class="btn" onclick="quickAdd('savings')">Add Savings</button>
+<button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee</button>
+<button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button>
 </div>
-
-<div class="card">
-<b>👥 All Members</b>
-<div id="memberList"></div>
+<button class="btn btn-red" onclick="logout()">Logout</button>
 </div>
-
 <a class="back" href="index.html">← Back to Home</a>
-<a class="back" href="coop.html" style="margin-left:12px;">→ Go to Coop</a>
 
-<script>
-function getMembers(){ return JSON.parse(localStorage.getItem('kigambo_members') || '[]'); }
-function saveMembers(m){ localStorage.setItem('kigambo_members', JSON.stringify(m)); }
+<script type="importmap">
+{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
+</script>
+<script type="module">
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+const firebaseConfig = {
+  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
+  authDomain: "kigambo-coopos.firebaseapp.com",
+  projectId: "kigambo-coopos",
+  storageBucket: "kigambo-coopos.firebasestorage.app",
+  messagingSenderId: "711731991766",
+  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let all = [];
+window.adminLogin = () => {
+  if(document.getElementById('adminPass').value === 'admin123'){
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('dashBox').classList.remove('hidden');
+    load();
+  } else alert('Wrong password');
+}
 function load(){
-  let members = getMembers();
-  let ts=0, tsh=0, tc=0;
-  members.forEach(m=>{ ts+=m.savings||0; tsh+=m.shares||0; tc+=m.coffee||0; });
-  document.getElementById('totalMembers').innerText = members.length;
-  document.getElementById('totalSavings').innerText = ts.toLocaleString() + ' UGX';
-  document.getElementById('totalShares').innerText = tsh;
-  document.getElementById('totalCoffee').innerText = tc.toLocaleString() + ' Kg';
-  let list = document.getElementById('memberList');
-  let sel = document.getElementById('loanMember');
-  list.innerHTML=''; sel.innerHTML='';
-  members.forEach((m,i)=>{
-    list.innerHTML += `<div class="member"><b>${m.name}</b> • ${m.id}<br><p>📞 ${m.phone} • 🏡 ${m.village}</p><p>💰 ${m.savings.toLocaleString()} UGX • 📈 ${m.shares} Shares • ☕ ${m.coffee} Kg • 💳 Loan ${m.loan.toLocaleString()} UGX</p><button class="btn btn-red" style="padding:8px;font-size:13px;" onclick="deleteMember(${i})">Delete</button></div>`;
-    sel.innerHTML += `<option value="${i}">${m.name} - ${m.phone}</option>`;
+  onSnapshot(collection(db, "members"), (snap)=>{
+    all = []; snap.forEach(d=> all.push(d.data()));
+    document.getElementById('tMembers').innerText = all.length;
+    document.getElementById('tSavings').innerText = all.reduce((s,m)=> s+(m.savings||0),0).toLocaleString();
+    document.getElementById('tShares').innerText = all.reduce((s,m)=> s+(m.shares||0),0);
+    document.getElementById('tCoffee').innerText = all.reduce((s,m)=> s+(m.coffee||0),0) + ' Kg';
+    render();
   });
 }
-function addMember(){
-  let name=document.getElementById('aName').value.trim();
-  let phone=document.getElementById('aPhone').value.trim();
-  let village=document.getElementById('aVillage').value.trim();
-  let savings=parseInt(document.getElementById('aSavings').value)||0;
-  if(!name||!phone){ alert('Enter Name and Phone'); return; }
-  let members=getMembers();
-  if(members.find(x=>x.phone===phone)){ alert('Already exists'); return; }
-  let id='KIG-'+(1001+members.length);
-  members.push({id:id, name:name, phone:phone, village:village, savings:savings, shares: Math.floor(savings/20000), loan:0, coffee:0, date: new Date().toLocaleDateString()});
-  saveMembers(members);
-  alert('Added '+name+' - '+id);
-  document.getElementById('aName').value=''; document.getElementById('aPhone').value=''; document.getElementById('aVillage').value=''; document.getElementById('aSavings').value='';
-  load();
+window.render = () => {
+  let q = document.getElementById('search').value.toLowerCase();
+  let f = all.filter(m=> (m.name||'').toLowerCase().includes(q) || (m.phone||'').includes(q));
+  let h = f.map(m=> `<div class="member"><div><b>${m.name}</b><br><small>${m.phone} • ${m.id} • ${m.village||''}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.coffee||0} Kg • ${m.shares||0} Shares</small></div></div>`).join('');
+  document.getElementById('list').innerHTML = h || 'No members';
 }
-function giveLoan(){
-  let idx=document.getElementById('loanMember').value;
-  let amt=parseInt(document.getElementById('loanAmount').value);
-  if(!amt){ alert('Enter loan amount'); return; }
-  let members=getMembers();
-  members[idx].loan += amt;
-  saveMembers(members);
-  alert('Loan given: '+amt.toLocaleString()+' UGX to '+members[idx].name);
-  document.getElementById('loanAmount').value='';
-  load();
+window.quickAdd = async (type) => {
+  let phone = document.getElementById('qPhone').value.trim();
+  let amt = parseInt(document.getElementById('qAmt').value);
+  if(!phone || !amt){ alert('Enter phone and amount'); return; }
+  let ref = doc(db, "members", phone);
+  let snap = await getDoc(ref);
+  if(!snap.exists()){ alert('Not found'); return; }
+  let d = snap.data();
+  if(type==='savings'){ let ns=(d.savings||0)+amt; await updateDoc(ref,{savings:ns, shares:Math.floor(ns/20000)}); }
+  else { await updateDoc(ref,{coffee:(d.coffee||0)+amt}); }
+  alert('Updated '+d.name+' ☁️');
 }
-function deleteMember(i){
-  if(!confirm('Delete this member?')) return;
-  let members=getMembers();
-  members.splice(i,1);
-  saveMembers(members);
-  load();
+window.exportCSV = () => {
+  let csv = 'Name,Phone,ID,Village,Savings,Shares,Coffee,Date\n' + all.map(m=> `${m.name},${m.phone},${m.id},${m.village||''},${m.savings||0},${m.shares||0},${m.coffee||0},${m.date||''}`).join('\n');
+  let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click();
 }
-load();
+window.logout = () => location.reload();
 </script>
 </body>
 </html>
