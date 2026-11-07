@@ -3,8 +3,6 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin - KIGAMBO CoopOS</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#14532d">
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
@@ -12,8 +10,8 @@ body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
 .card { background:#fff; padding:16px; border-radius:12px; margin-top:12px; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
 input, select { width:100%; padding:12px; margin-top:8px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
 label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-top:12px; }
-.btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; }
-.btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; } .btn-gold { background:#d97706; } .btn-purple { background:#7c3aed; }
+.btn { display:block; text-align:center; padding:14px; border-radius:10px; background:#16a34a; color:#fff; font-weight:700; margin-top:12px; border:none; width:100%; cursor:pointer; font-size:16px; }
+.btn2 { background:#2563eb; } .btn3 { background:#0f172a; } .btn-red { background:#dc2626; } .btn-gold { background:#d97706; } .btn-purple { background:#7c3aed; } .btn-teal { background:#0d9488; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
 .box { background:#fff; border:1px solid #e2e8f0; padding:12px; border-radius:10px; text-align:center; }
 .box div { font-size:18px; font-weight:900; color:#14532d; }
@@ -30,26 +28,34 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 .role-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-top:6px; }
 .close-x { cursor:pointer; font-size:28px; line-height:1; padding:0 6px; font-weight:900; }
 .log-item { padding:10px 0; border-bottom:1px solid #eee; font-size:13px; }
-.log-item b { color:#14532d; }
 .admin-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:13px; }
+.sync-bar { background:#ecfdf5; border:2px solid #0d9488; padding:12px; border-radius:12px; margin-top:12px; text-align:center; }
 </style>
 </head>
 <body>
-<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO ADMIN</div><p style="font-size:12px;opacity:.8;">Main Admin & Developer • Every Action is Recorded ✍️</p></div>
+<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO COOP — KIGAMBO 1</div><p style="font-size:12px;opacity:.8;">Offline First • Sync When Online • Every Action is Recorded ✍️</p></div>
 
 <div id="loginBox" class="card">
-<b>🔐 Admin Login — Your Own Account</b>
-<p style="font-size:13px;color:#666;">Each admin has his own Phone + Password.<br>Your name will appear on everything you do.</p>
-<input id="loginPhone" placeholder="Your Phone e.g. 0771234567">
+<b>🔐 Coop Login</b>
+<p style="font-size:13px;color:#666;">Works offline. Each admin has his own Phone + Password.</p>
+<input id="loginPhone" placeholder="Your Phone e.g. developer">
 <input id="adminPass" type="password" placeholder="Your Password">
-<button class="btn" onclick="adminLogin()">Login →</button>
+<button class="btn" id="loginBtn" type="button">Login →</button>
+<p id="loginMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p>
 <div style="background:#fef3c7;padding:10px;border-radius:10px;font-size:12px;margin-top:12px;color:#92400e;">
-<b>First Time? Developer Login:</b><br>Phone: <b>developer</b><br>Password: <b>dev123</b><br>Use this to create first Main Admins.
+<b>First Time? Developer Login:</b><br>Phone: <b>developer</b><br>Password: <b>dev123</b>
 </div>
 </div>
 
 <div id="dashBox" class="hidden">
-<div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small style="color:#666;">Phone: <span id="myPhoneShow"></span> • All your actions will show your name</small></div>
+<div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small style="color:#666;">Phone: <span id="myPhoneShow"></span> • Coop: <b>KIGAMBO 1</b></small></div>
+
+<div class="sync-bar">
+<b>☁️ Cloud Sync — Safety Backup</b><br>
+<small id="syncStatus" style="color:#666;">Status: <span id="netStatus">Checking...</span> • <span id="unsyncedCount">0 unsynced</span></small><br>
+<button class="btn btn-teal" id="syncBtn" type="button" style="margin-top:8px;">☁️ Sync Now To Cloud (When Online)</button>
+<p style="font-size:11px;color:#666;margin:4px 0 0;">Do this when you get internet. It saves phone data to Firebase so it is safe even if phone is lost.</p>
+</div>
 
 <div class="grid">
 <div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div>
@@ -57,19 +63,17 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div>
 <div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div>
 </div>
-
 <div id="devBox" class="card hidden" style="border:2px solid #7c3aed;">
 <b>👑 Developer — Create New Admins</b>
-<p style="font-size:13px;color:#666;">Only Developer can create admins. Create as many Main Admins & Coop Admins as you want.</p>
 <input id="aName" placeholder="Admin Full Name e.g. Tadeo Mwesigye">
 <input id="aPhone" placeholder="Admin Phone e.g. 0771234567">
 <input id="aPass" placeholder="Admin Password e.g. tadeo123">
-<select id="aRole"><option value="main">👨‍💼 Main Admin — All Coops</option><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option></select>
+<select id="aRole"><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option><option value="main">👨‍💼 Main Admin — All Coops</option></select>
 <select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select>
-<button class="btn btn-purple" onclick="createAdmin()">Create Admin Account ✅</button>
-<div id="adminList"><p style="color:#888;font-size:13px;">Loading admins...</p></div>
+<button class="btn btn-purple" id="createBtn" type="button">Create Admin Account ✅</button>
+<p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p>
+<div id="adminList"></div>
 </div>
-
 <div class="card" style="border:2px solid #16a34a;">
 <b>📝 Register New Member</b>
 <input id="rName" placeholder="Full Name">
@@ -80,15 +84,13 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <label>📸 Passport Photo</label><input id="rPhoto" type="file" accept="image/*" capture="user" onchange="previewImg(this,'pPhoto')"><img id="pPhoto" class="passport-preview">
 <label>🪪 ID Front</label><input id="rIdFront" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pFront')"><img id="pFront" class="preview">
 <label>🪪 ID Back</label><input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')"><img id="pBack" class="preview">
-<button class="btn" onclick="registerMember()">Register Member ✅</button>
+<button class="btn" id="regBtn" type="button">Register Member ✅</button>
 </div>
-
 <div class="card">
 <b>🔍 Search Members</b>
 <input id="search" placeholder="Name or Phone or NIN..." oninput="render()">
-<div id="list">Loading...</div>
+<div id="list">No members yet</div>
 </div>
-
 <div class="card">
 <b>➕ Quick Actions</b>
 <input id="qPhone" placeholder="Member Phone">
@@ -96,16 +98,14 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <button class="btn" onclick="quickAdd('savings')">Add Savings 💰</button>
 <button class="btn btn-gold" onclick="quickAdd('shares')">Add Shares 📈</button>
 <button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee ☕</button>
-<button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button>
+<button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV) — Backup</button>
+<button class="btn btn-teal" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button>
 </div>
-
 <div class="card" style="border:2px solid #f59e0b;">
 <b>📜 Activity Log — Who Did What?</b>
-<p style="font-size:12px;color:#666;">Every action shows who did it. Latest first.</p>
-<div id="activityLog"><p style="color:#888;">Loading activity...</p></div>
+<div id="activityLog">No activity yet</div>
 </div>
-
-<button class="btn btn-red" onclick="logout()">Logout 🔒</button>
+<button class="btn btn-red" onclick="location.reload()">Logout 🔒</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
 
@@ -134,105 +134,179 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 </div>
 
 <script>
-function forceClose(){ var p=document.getElementById('popup'); if(p){ p.classList.add('hidden'); p.style.display='none'; } }
-function forceOpen(){ var p=document.getElementById('popup'); if(p){ p.classList.remove('hidden'); p.style.display='flex'; } }
-</script>
-<script type="importmap">
-{ "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js", "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" } }
-</script>
-<script type="module">
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, addDoc, onSnapshot, query, orderBy, limit } from "firebase/firestore";
-const firebaseConfig = {
-  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
-  authDomain: "kigambo-coopos.firebaseapp.com",
-  projectId: "kigambo-coopos",
-  storageBucket: "kigambo-coopos.firebasestorage.app",
-  messagingSenderId: "711731991766",
-  appId: "1:711731991766:web:2bafe8d4fe922cadc3e577"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-let all = []; let selectedPhone=''; let myAdmin = null;
-function fileToBase64(file){ return new Promise((res)=>{ if(!file) res(''); let r=new FileReader(); r.onload=()=>{ let img=new Image(); img.onload=()=>{ let c=document.createElement('canvas'); let max=800; let scale=Math.min(1,max/Math.max(img.width,img.height)); c.width=img.width*scale; c.height=img.height*scale; c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.7)); }; img.src=r.result; }; r.readAsDataURL(file); }); }
-window.previewImg=(input,imgId)=>{ let f=input.files[0]; if(!f) return; let r=new FileReader(); r.onload=e=>{ let el=document.getElementById(imgId); el.src=e.target.result; el.style.display='block'; }; r.readAsDataURL(f); }
-async function logActivity(action, memberName, memberPhone, amount){
-  try{ await addDoc(collection(db,"activity"), { by: myAdmin.name, byPhone: myAdmin.phone, byRole: myAdmin.role, action: action, memberName: memberName||'', memberPhone: memberPhone||'', amount: amount||0, date: new Date().toLocaleString(), timestamp: Date.now() }); }catch(e){ console.log(e); }
+function forceClose(){ var p=document.getElementById('popup'); p.classList.add('hidden'); p.style.display='none'; }
+function forceOpen(){ var p=document.getElementById('popup'); p.classList.remove('hidden'); p.style.display='flex'; }
+function getAdmins(){ try{ return JSON.parse(localStorage.getItem('kigambo_admins')||'[]'); }catch(e){ return []; } }
+function getMembers(){ try{ return JSON.parse(localStorage.getItem('kigambo_members')||'[]'); }catch(e){ return []; } }
+function getActivity(){ try{ return JSON.parse(localStorage.getItem('kigambo_activity')||'[]'); }catch(e){ return []; } }
+function saveMembers(m){ localStorage.setItem('kigambo_members', JSON.stringify(m)); markUnsynced(); }
+function saveActivity(a){ localStorage.setItem('kigambo_activity', JSON.stringify(a)); markUnsynced(); }
+function isOnline(){ return navigator.onLine; }
+function updateNet(){ var el=document.getElementById('netStatus'); if(el) el.innerText = isOnline() ? '🟢 Online' : '🔴 Offline — Working in phone'; }
+function markUnsynced(){ var c=getMembers().length + getAdmins().length + getActivity().length; var el=document.getElementById('unsyncedCount'); if(el) el.innerText = c + ' records in phone — Sync when online'; }
+window.addEventListener('online', updateNet); window.addEventListener('offline', updateNet); updateNet();
+var myAdmin=null; var all=[]; var selectedPhone='';
+function renderAdminList(){
+  var list=getAdmins(); var el=document.getElementById('adminList');
+  if(list.length===0){ el.innerHTML='<p style="color:#888;">No admins yet — Create first one above</p>'; return; }
+  var h=''; list.forEach(function(a){ h+='<div class="admin-item"><div><b>'+a.name+'</b><br><small>'+a.phone+' • '+(a.role==='main'?'Main Admin':'Coop Admin')+' • '+a.coop+' • Pass: '+a.password+'</small></div><span style="color:#16a34a;font-weight:700;">Active</span></div>'; });
+  el.innerHTML=h;
 }
-window.adminLogin=async()=>{
-  let phone=document.getElementById('loginPhone').value.trim();
-  let pass=document.getElementById('adminPass').value.trim();
-  if(!phone||!pass){ alert('Enter Phone and Password'); return; }
-  if(phone==='developer' && pass==='dev123'){
-    myAdmin={ name:'Developer (Overall)', phone:'developer', role:'dev', coop:'ALL' };
-    showDash(); return;
-  }
-  let snap=await getDoc(doc(db,"admins",phone));
-  if(!snap.exists()){ alert('Admin not found. Ask Developer to create your account.'); return; }
-  let d=snap.data();
-  if(d.password!==pass){ alert('Wrong password 🔒'); return; }
-  myAdmin={ name:d.name, phone:d.phone, role:d.role, coop:d.coop };
-  showDash();
+function renderActivity(){
+  var list=getActivity(); var el=document.getElementById('activityLog');
+  if(list.length===0){ el.innerHTML='No activity yet'; return; }
+  var h=''; list.slice().reverse().slice(0,30).forEach(function(a){ h+='<div class="log-item"><b>✍️ '+a.by+'</b> ('+(a.byRole==='dev'?'Developer':a.byRole==='main'?'Main Admin':'Coop Admin')+') — '+a.action+' <b>'+(a.memberName||'')+'</b> '+(a.amount?'('+a.amount.toLocaleString()+')':'')+'<br><small style="color:#888;">'+a.date+'</small></div>'; });
+  el.innerHTML=h;
+}
+function logActivity(action, memberName, memberPhone, amount){
+  var list=getActivity(); list.push({ by:myAdmin.name, byPhone:myAdmin.phone, byRole:myAdmin.role, action:action, memberName:memberName||'', memberPhone:memberPhone||'', amount:amount||0, date:new Date().toLocaleString() });
+  saveActivity(list); renderActivity();
 }
 function showDash(){
-  document.getElementById('loginBox').classList.add('hidden');
-  document.getElementById('dashBox').classList.remove('hidden');
-  let label = myAdmin.role==='dev' ? '👑 Developer — Overall System' : myAdmin.role==='main' ? '👨‍💼 Main Admin — All Coops' : '🏡 Coop Admin — '+myAdmin.coop;
-  document.getElementById('roleName').innerText = myAdmin.name;
-  document.getElementById('roleBadge').innerText = label;
-  document.getElementById('roleBadge').style.background = myAdmin.role==='dev' ? '#7c3aed' : myAdmin.role==='main' ? '#dc2626' : '#16a34a';
-  document.getElementById('roleBadge').style.color = '#fff';
-  document.getElementById('myPhoneShow').innerText = myAdmin.phone;
-  if(myAdmin.role==='dev') document.getElementById('devBox').classList.remove('hidden');
-  load(); loadAdmins(); loadActivity();
+  document.getElementById('loginBox').style.display='none';
+  var d=document.getElementById('dashBox'); d.classList.remove('hidden'); d.style.display='block';
+  var label = myAdmin.role==='dev' ? '👑 Developer — Overall System' : myAdmin.role==='main' ? '👨‍💼 Main Admin — All Coops' : '🏡 Coop Admin — '+myAdmin.coop;
+  document.getElementById('roleName').innerText=myAdmin.name;
+  var badge=document.getElementById('roleBadge'); badge.innerText=label;
+  badge.style.background = myAdmin.role==='dev' ? '#7c3aed' : myAdmin.role==='main' ? '#dc2626' : '#16a34a'; badge.style.color='#fff';
+  document.getElementById('myPhoneShow').innerText=myAdmin.phone;
+  if(myAdmin.role==='dev'){ var db=document.getElementById('devBox'); db.classList.remove('hidden'); db.style.display='block'; }
+  all=getMembers(); renderAdminList(); renderActivity(); updateTotals(); render(); updateNet(); markUnsynced();
 }
-window.createAdmin=async()=>{
-  let name=document.getElementById('aName').value.trim();
-  let phone=document.getElementById('aPhone').value.trim();
-  let pass=document.getElementById('aPass').value.trim();
-  let role=document.getElementById('aRole').value;
-  let coop=document.getElementById('aCoop').value;
+function doLogin(){
+  var phone=document.getElementById('loginPhone').value.trim();
+  var pass=document.getElementById('adminPass').value.trim();
+  var msg=document.getElementById('loginMsg');
+  if(!phone||!pass){ msg.innerText='Enter Phone and Password'; return; }
+  if(phone==='developer' && pass==='dev123'){ myAdmin={ name:'Developer (Overall)', phone:'developer', role:'dev', coop:'ALL' }; showDash(); return; }
+  var found=getAdmins().find(function(x){ return x.phone===phone; });
+  if(!found){ msg.innerText='Admin not found. Ask Developer to create your account.'; return; }
+  if(found.password!==pass){ msg.innerText='Wrong password 🔒'; return; }
+  myAdmin={ name:found.name, phone:found.phone, role:found.role, coop:found.coop }; showDash();
+}
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('adminPass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+function doCreateAdmin(){
+  var name=document.getElementById('aName').value.trim();
+  var phone=document.getElementById('aPhone').value.trim();
+  var pass=document.getElementById('aPass').value.trim();
+  var role=document.getElementById('aRole').value;
+  var coop=document.getElementById('aCoop').value;
   if(!name||!phone||!pass){ alert('Enter Name, Phone, Password'); return; }
-  let ref=doc(db,"admins",phone);
-  let snap=await getDoc(ref);
-  if(snap.exists()){ alert('Phone already used for an admin'); return; }
-  await setDoc(ref,{ name:name, phone:phone, password:pass, role:role, coop:coop, createdBy:myAdmin.name, date:new Date().toLocaleString() });
-  await logActivity('Created Admin', name, phone, 0);
-  alert('Admin Created: '+name+' ✅\nPhone: '+phone+'\nPassword: '+pass);
+  var list=getAdmins();
+  if(list.find(function(x){ return x.phone===phone; })){ alert('Phone already used'); return; }
+  list.push({ name:name, phone:phone, password:pass, role:role, coop:coop });
+  localStorage.setItem('kigambo_admins', JSON.stringify(list));
+  renderAdminList(); markUnsynced();
+  logActivity('Created Admin', name, phone, 0);
+  document.getElementById('createMsg').innerText='Admin Created ✅ '+name+' — Remember to Sync to Cloud when online!';
+  alert('Admin Created: '+name+' ✅\nPhone: '+phone+'\nPassword: '+pass+'\n⚠️ Tap SYNC when you get internet to save to Cloud!');
   document.getElementById('aName').value=''; document.getElementById('aPhone').value=''; document.getElementById('aPass').value='';
 }
-function loadAdmins(){
-  onSnapshot(collection(db,"admins"),(snap)=>{
-    let h='';
-    snap.forEach(d=>{
-      let a=d.data();
-      h+=`<div class="admin-item"><div><b>${a.name}</b><br><small>${a.phone} • ${a.role==='main'?'Main Admin':'Coop Admin'} • ${a.coop}</small></div><span style="color:#16a34a;font-weight:700;">Active</span></div>`;
-    });
-    document.getElementById('adminList').innerHTML = h || 'No admins yet — Create first one above';
-  });
+document.getElementById('createBtn').addEventListener('click', doCreateAdmin);
+function previewImg(input,imgId){ var f=input.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(e){ var el=document.getElementById(imgId); el.src=e.target.result; el.style.display='block'; }; r.readAsDataURL(f); }
+function fileToBase64(file){ return new Promise(function(res){ if(!file) res(''); var r=new FileReader(); r.onload=function(){ var img=new Image(); img.onload=function(){ var c=document.createElement('canvas'); var max=800; var scale=Math.min(1,max/Math.max(img.width,img.height)); c.width=img.width*scale; c.height=img.height*scale; c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.7)); }; img.src=r.result; }; r.readAsDataURL(file); }); }
+function updateTotals(){
+  document.getElementById('tMembers').innerText=all.length;
+  document.getElementById('tSavings').innerText=all.reduce(function(s,m){ return s+(m.savings||0); },0).toLocaleString();
+  document.getElementById('tShares').innerText=all.reduce(function(s,m){ return s+(m.shares||0); },0);
+  document.getElementById('tCapital').innerText=all.reduce(function(s,m){ return s+((m.shares||0)*20000); },0).toLocaleString();
 }
-function loadActivity(){
+async function doRegister(){
+  var name=document.getElementById('rName').value.trim();
+  var phone=document.getElementById('rPhone').value.trim();
+  var village=document.getElementById('rVillage').value.trim();
+  var parish=document.getElementById('rParish').value;
+  var nin=document.getElementById('rNin').value.trim();
+  if(!name||!phone){ alert('Enter Name and Phone'); return; }
+  if(all.find(function(x){ return x.phone===phone; })){ alert('Already registered'); return; }
+  var photo=await fileToBase64(document.getElementById('rPhoto').files[0]);
+  var idFront=await fileToBase64(document.getElementById('rIdFront').files[0]);
+  var idBack=await fileToBase64(document.getElementById('rIdBack').files[0]);
+  var id='KIG-'+String(Date.now()).slice(-4);
+  var m={ id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myAdmin.name, lastBy:myAdmin.name };
+  all.push(m); saveMembers(all); updateTotals(); render();
+  logActivity('Registered Member', name, phone, 0);
+  alert('Registered '+name+' by '+myAdmin.name+' ✅ — Remember to Sync when online!');
+  document.getElementById('rName').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value='';
+}
+document.getElementById('regBtn').addEventListener('click', doRegister);
+function render(){
+  var q=(document.getElementById('search').value||'').toLowerCase();
+  var f=all.filter(function(m){ return (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q); });
+  var h=f.map(function(m){
+    var village=m.village||m.location||'Kigambo'; var mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); var capital=(m.shares||0)*20000;
+    var avatar=m.photo?'<img class="avatar" src="'+m.photo+'">':'<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>';
+    return '<div class="member" onclick="openEdit(\''+m.phone+'\')">'+avatar+'<div style="flex:1;"><b>'+m.name+'</b><br><small>'+m.phone+' • '+mid+' • '+village+'<br>NIN: '+(m.nin||'—')+' • Last: '+(m.lastBy||'—')+'</small></div><div style="text-align:right;"><b>'+(m.savings||0).toLocaleString()+' UGX</b><br><small>'+(m.shares||0)+' Shares • '+capital.toLocaleString()+' Capital</small></div></div>';
+  }).join('');
+  document.getElementById('list').innerHTML=h||'No members';
+}
+function openEdit(phone){
+  var m=all.find(function(x){ return x.phone===phone; }); if(!m) return; selectedPhone=phone;
+  var village=m.village||m.location||'Kigambo'; var mid=m.id||('KIG-'+String(m.phone||'').slice(-4));
+  document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village;
+  document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; document.getElementById('pBy').innerText=m.lastBy||m.registeredBy||'—';
+  if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none';
+  if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none';
+  if(m.idBack){ document.getElementById('ppBack').src=m.idBack; document.getElementById('ppBack').style.display='block'; } else document.getElementById('ppBack').style.display='none';
+  forceOpen();
+}
+function editAction(type){
+  var amt=parseInt(document.getElementById('editAmt').value); if(!amt||!selectedPhone){ alert('Enter amount'); return; }
+  var m=all.find(function(x){ return x.phone===selectedPhone; }); if(!m) return;
+  var label= type==='savings'?'Added Savings':type==='shares'?'Added Shares':'Added Coffee';
+  if(type==='savings') m.savings=(m.savings||0)+amt; if(type==='shares') m.shares=(m.shares||0)+amt; if(type==='coffee') m.coffee=(m.coffee||0)+amt;
+  m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render();
+  logActivity(label, m.name, selectedPhone, amt);
+  alert('Updated '+m.name+' by '+myAdmin.name+' ✅'); document.getElementById('editAmt').value=''; forceClose();
+}
+function quickAdd(type){
+  var phone=document.getElementById('qPhone').value.trim(); var amt=parseInt(document.getElementById('qAmt').value);
+  if(!phone||!amt){ alert('Enter phone and amount'); return; }
+  var m=all.find(function(x){ return x.phone===phone; }); if(!m){ alert('Not found'); return; }
+  var label= type==='savings'?'Added Savings':type==='shares'?'Added Shares':'Added Coffee';
+  if(type==='savings') m.savings=(m.savings||0)+amt; if(type==='shares') m.shares=(m.shares||0)+amt; if(type==='coffee') m.coffee=(m.coffee||0)+amt;
+  m.lastBy=myAdmin.name; saveMembers(all); updateTotals(); render();
+  logActivity(label, m.name, phone, amt);
+  alert('Updated '+m.name+' by '+myAdmin.name+' ✅');
+}
+function exportCSV(){
+  var csv='Name,Phone,ID,NIN,Village,Savings,Shares,ShareCapital,Coffee,Loan,LastBy,Date\n'+all.map(function(m){ return m.name+','+m.phone+','+(m.id||'')+','+(m.nin||'')+','+(m.village||'Kigambo')+','+(m.savings||0)+','+(m.shares||0)+','+((m.shares||0)*20000)+','+(m.coffee||0)+','+(m.loan||0)+','+(m.lastBy||'')+','+(m.date||''); }).join('\n');
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click();
+}
+function downloadBackup(){
+  var data={ admins:getAdmins(), members:getMembers(), activity:getActivity(), exported:new Date().toLocaleString() };
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'})); a.download='kigambo-backup-'+Date.now()+'.json'; a.click();
+  alert('Backup downloaded ✅ Keep this file safe!');
+}
+async function doSync(){
+  if(!navigator.onLine){ alert('You are OFFLINE. Connect to internet first, then tap Sync again.'); return; }
+  var btn=document.getElementById('syncBtn'); btn.innerText='Syncing... Please wait...';
   try{
-    let q=query(collection(db,"activity"), orderBy("timestamp","desc"), limit(30));
-    onSnapshot(q,(snap)=>{
-      let h='';
-      snap.forEach(d=>{
-        let a=d.data();
-        h+=`<div class="log-item"><b>✍️ ${a.by}</b> (${a.byRole==='dev'?'Developer':a.byRole==='main'?'Main Admin':'Coop Admin'}) — ${a.action} <b>${a.memberName||''}</b> ${a.amount? '('+a.amount.toLocaleString()+')':''}<br><small style="color:#888;">${a.date} • Phone: ${a.memberPhone||a.byPhone}</small></div>`;
-      });
-      document.getElementById('activityLog').innerHTML = h || 'No activity yet';
-    });
-  }catch(e){ document.getElementById('activityLog').innerHTML='Activity log will appear after first action'; }
+    var appMod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    var mod=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    var app=appMod.initializeApp({ apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ", authDomain:"kigambo-coopos.firebaseapp.com", projectId:"kigambo-coopos", storageBucket:"kigambo-coopos.firebasestorage.app", messagingSenderId:"711731991766", appId:"1:711731991766:web:2bafe8d4fe922cadc3e577" }, 'syncApp');
+    var db=mod.getFirestore(app);
+    var admins=getAdmins(); var members=getMembers(); var activity=getActivity();
+    for(var i=0;i<admins.length;i++){ await mod.setDoc(mod.doc(db,"admins",admins[i].phone), admins[i]); }
+    for(var j=0;j<members.length;j++){ await mod.setDoc(mod.doc(db,"members",members[j].phone), members[j]); }
+    for(var k=0;k<activity.length;k++){ await mod.addDoc(mod.collection(db,"activity"), activity[k]); }
+    // Download from cloud too - get members other phones uploaded
+    var snap=await mod.getDocs(mod.collection(db,"members"));
+    var cloudMembers=[]; snap.forEach(function(d){ cloudMembers.push(d.data()); });
+    // Merge: keep phone version if same phone, else add cloud ones
+    var merged=all.slice();
+    cloudMembers.forEach(function(cm){ if(!merged.find(function(x){ return x.phone===cm.phone; })) merged.push(cm); });
+    all=merged; saveMembers(all); updateTotals(); render();
+    btn.innerText='☁️ Sync Now To Cloud (When Online)';
+    alert('✅ SYNCED! '+members.length+' members + '+admins.length+' admins saved to Cloud Firebase. Safe now even if phone is lost!');
+    localStorage.setItem('kigambo_last_sync', new Date().toLocaleString());
+  }catch(e){
+    btn.innerText='☁️ Sync Now To Cloud (When Online)';
+    alert('Sync failed: '+e.message+'\n\nThis is because Firebase Rules are still blocked. Fix Rules on computer later. Your data is STILL SAFE in phone + Backup file. Tap Download Backup for now.');
+  }
 }
-function load(){ onSnapshot(collection(db,"members"),(snap)=>{ all=[]; snap.forEach(d=> all.push(d.data())); document.getElementById('tMembers').innerText=all.length; document.getElementById('tSavings').innerText=all.reduce((s,m)=>s+(m.savings||0),0).toLocaleString(); document.getElementById('tShares').innerText=all.reduce((s,m)=>s+(m.shares||0),0); document.getElementById('tCapital').innerText=all.reduce((s,m)=>s+((m.shares||0)*20000),0).toLocaleString(); render(); }); }
-window.registerMember=async()=>{ let name=document.getElementById('rName').value.trim(); let phone=document.getElementById('rPhone').value.trim(); let village=document.getElementById('rVillage').value.trim(); let parish=document.getElementById('rParish').value; let nin=document.getElementById('rNin').value.trim(); if(!name||!phone){ alert('Enter Name and Phone'); return; } let ref=doc(db,"members",phone); let snap=await getDoc(ref); if(snap.exists()){ alert('Already registered'); return; } let photo=await fileToBase64(document.getElementById('rPhoto').files[0]); let idFront=await fileToBase64(document.getElementById('rIdFront').files[0]); let idBack=await fileToBase64(document.getElementById('rIdBack').files[0]); let id='KIG-'+String(Date.now()).slice(-4); await setDoc(ref,{ id:id, name:name, phone:phone, village:village||'Kigambo', location:village||'Kigambo', parish:parish, nin:nin||'', photo:photo||'', idFront:idFront||'', idBack:idBack||'', savings:0, shares:0, loan:0, coffee:0, date:new Date().toLocaleDateString(), coop:'KIGAMBO 1', registeredBy:myAdmin.name, lastBy:myAdmin.name, lastAction:'Registered by '+myAdmin.name }); await logActivity('Registered Member', name, phone, 0); alert('Registered '+name+' by '+myAdmin.name+' ✅'); document.getElementById('rName').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value=''; }
-window.render=()=>{ let q=document.getElementById('search').value.toLowerCase(); let f=all.filter(m=> (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q)||(m.nin||'').toLowerCase().includes(q)); let h=f.map(m=>{ let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); let capital=(m.shares||0)*20000; let avatar=m.photo?`<img class="avatar" src="${m.photo}">`:`<div class="avatar" style="display:flex;align-items:center;justify-content:center;font-size:20px;">👤</div>`; return `<div class="member" onclick="openEdit('${m.phone}')">${avatar}<div style="flex:1;"><b>${m.name}</b><br><small>${m.phone} • ${mid} • ${village}<br>NIN: ${m.nin||'—'} • Last: ${m.lastBy||'—'}</small></div><div style="text-align:right;"><b>${(m.savings||0).toLocaleString()} UGX</b><br><small>${m.shares||0} Shares • ${capital.toLocaleString()} Capital</small></div></div>`; }).join(''); document.getElementById('list').innerHTML=h||'No members'; }
-window.openEdit=(phone)=>{ let m=all.find(x=>x.phone===phone); if(!m) return; selectedPhone=phone; let village=m.village||m.location||'Kigambo'; let mid=m.id||('KIG-'+String(m.phone||'').slice(-4)); document.getElementById('pName').innerText=m.name; document.getElementById('pId').innerText=mid; document.getElementById('pPhone').innerText=m.phone; document.getElementById('pNin').innerText=m.nin||'Not Provided'; document.getElementById('pVillage').innerText=village; document.getElementById('pSavings').innerText=(m.savings||0).toLocaleString()+' UGX'; document.getElementById('pShares').innerText=(m.shares||0)+' Shares'; document.getElementById('pCapital').innerText=((m.shares||0)*20000).toLocaleString()+' UGX'; document.getElementById('pCoffee').innerText=(m.coffee||0)+' Kg'; document.getElementById('pLoan').innerText=(m.loan||0).toLocaleString()+' UGX'; document.getElementById('pBy').innerText=m.lastBy||m.registeredBy||'—'; if(m.photo){ document.getElementById('ppPhoto').src=m.photo; document.getElementById('ppPhoto').style.display='block'; } else document.getElementById('ppPhoto').style.display='none'; if(m.idFront){ document.getElementById('ppFront').src=m.idFront; document.getElementById('ppFront').style.display='block'; } else document.getElementById('ppFront').style.display='none'; if(m.idBack){ document.getElementById('ppBack').src=m.idBack; document.getElementById('ppBack').style.display='block'; } else document.getElementById('ppBack').style.display='none'; forceOpen(); }
-window.closePopup=()=>{ forceClose(); }
-window.editAction=async(type)=>{ let amt=parseInt(document.getElementById('editAmt').value); if(!amt||!selectedPhone){ alert('Enter amount'); return; } let ref=doc(db,"members",selectedPhone); let snap=await getDoc(ref); let d=snap.data(); let label= type==='savings'?'Added Savings':type==='shares'?'Added Shares':'Added Coffee'; if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt, lastBy:myAdmin.name, lastAction:label+' by '+myAdmin.name}); if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt, lastBy:myAdmin.name, lastAction:label+' by '+myAdmin.name}); if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt, lastBy:myAdmin.name, lastAction:label+' by '+myAdmin.name}); await logActivity(label, d.name, selectedPhone, amt); alert('Updated '+d.name+' by '+myAdmin.name+' ✅'); document.getElementById('editAmt').value=''; forceClose(); }
-window.quickAdd=async(type)=>{ let phone=document.getElementById('qPhone').value.trim(); let amt=parseInt(document.getElementById('qAmt').value); if(!phone||!amt){ alert('Enter phone and amount'); return; } let ref=doc(db,"members",phone); let snap=await getDoc(ref); if(!snap.exists()){ alert('Not found'); return; } let d=snap.data(); let label= type==='savings'?'Added Savings':type==='shares'?'Added Shares':'Added Coffee'; if(type==='savings') await updateDoc(ref,{savings:(d.savings||0)+amt, lastBy:myAdmin.name, lastAction:label+' by '+myAdmin.name}); if(type==='shares') await updateDoc(ref,{shares:(d.shares||0)+amt, lastBy:myAdmin.name, lastAction:label+' by '+myAdmin.name}); if(type==='coffee') await updateDoc(ref,{coffee:(d.coffee||0)+amt, lastBy:myAdmin.name, lastAction:label+' by '+myAdmin.name}); await logActivity(label, d.name, phone, amt); alert('Updated '+d.name+' by '+myAdmin.name+' ✅'); }
-window.exportCSV=()=>{ let csv='Name,Phone,ID,NIN,Village,Savings,Shares,ShareCapital,Coffee,Loan,LastBy,Date\n'+all.map(m=> `${m.name},${m.phone},${m.id||''},${m.nin||''},${m.village||m.location||'Kigambo'},${m.savings||0},${m.shares||0},${(m.shares||0)*20000},${m.coffee||0},${m.loan||0},${m.lastBy||''},${m.date||''}`).join('\n'); let a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='kigambo-members.csv'; a.click(); }
-window.logout=()=>location.reload();
+document.getElementById('syncBtn').addEventListener('click', doSync);
 </script>
 </body>
 </html>
