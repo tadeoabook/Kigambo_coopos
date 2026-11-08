@@ -131,4 +131,50 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 </div>
 <hr>
 <input id="editAmt" type="number" placeholder="Enter Amount / Kg">
-<input id="editClean" type="number
+<input id="editClean" type="number" placeholder="Clean Kg After Huller (only for Huller)">
+<button class="btn" type="button" onclick="editAction('savings')">Add Savings 💰</button>
+<button class="btn btn-gold" type="button" onclick="editAction('shares')">Add Shares 📈</button>
+<button class="btn btn2" type="button" onclick="editAction('coffee')">Add Cherry Coffee 🍒</button>
+<button class="btn btn-brown" type="button" onclick="editAction('huller')">🏭 Huller: Cherry → Clean</button>
+<button class="btn btn-orange" type="button" onclick="editAction('loan')">Give Loan 💳</button>
+<button class="btn btn-pink" type="button" onclick="editAction('repay')">Repay Loan 💵</button>
+<button class="btn btn3" type="button" onclick="forceClose()">Close</button>
+</div></div>
+<script>
+var myAdmin=null; var all=[]; var selectedPhone='';
+function forceClose(){ var p=document.getElementById('popup'); p.classList.add('hidden'); p.style.display='none'; document.getElementById('editBox').classList.add('hidden'); }
+function forceOpen(){ var p=document.getElementById('popup'); p.classList.remove('hidden'); p.style.display='flex'; }
+function getAdmins(){ try{ return JSON.parse(localStorage.getItem('kigambo_admins')||'[]'); }catch(e){ return []; } }
+function getMembers(){ try{ return JSON.parse(localStorage.getItem('kigambo_members')||'[]'); }catch(e){ return []; } }
+function getActivity(){ try{ return JSON.parse(localStorage.getItem('kigambo_activity')||'[]'); }catch(e){ return []; } }
+function togglePass(){ var p=document.getElementById('adminPass'); var eye=document.getElementById('eyeIcon'); if(p.type==='password'){ p.type='text'; eye.innerText='🙈'; } else { p.type='password'; eye.innerText='👁️'; } }
+function showRecover(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('recoverBox').classList.remove('hidden'); }
+function hideRecover(){ document.getElementById('recoverBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+function showOtpVerify(){ document.getElementById('recoverBox').classList.add('hidden'); document.getElementById('otpBox').classList.remove('hidden'); }
+function hideOtp(){ document.getElementById('otpBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
+function doLogin(){ var login=document.getElementById('loginPhone').value.trim().toLowerCase(); var pass=document.getElementById('adminPass').value.trim(); if(!login||!pass){ alert('Enter Email/Phone and Password'); return; } if((login==='developer'||login==='developer@kigambo.com') && (pass==='Kigambo@2026'||pass==='dev123')){ myAdmin={name:'Developer',phone:'developer',email:'developer@kigambo.com',role:'dev',coop:'ALL'}; alert('Welcome Developer!'); document.getElementById('loginBox').style.display='none'; document.getElementById('dashBox').classList.remove('hidden'); document.getElementById('dashBox').style.display='block'; document.getElementById('roleName').innerText='Developer'; all=getMembers(); render(); return; } alert('Wrong password - Try dev123 - Tap eye to see'); }
+function render(){ var vis=all; if(myAdmin && myAdmin.role==='coop'){ vis=all.filter(function(m){ return (m.coop||'KIGAMBO 1')===myAdmin.coop; }); } var q=(document.getElementById('search').value||'').toLowerCase(); var f=vis.filter(function(m){ return (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q); }); var h=f.map(function(m){ return '<div class="member" onclick="openEdit(\''+m.phone+'\')"><b>'+m.name+'</b> - '+m.phone+' - '+(m.coop||'')+' - '+(m.savings||0)+' UGX</div>'; }).join(''); document.getElementById('list').innerHTML=h||'No members in your coop'; }
+function openEdit(phone){ alert('Member '+phone+' - Edit coming in full file'); }
+function editAction(type){ alert('Action '+type); }
+function toggleEdit(){ alert('Edit - Use full file after upload'); }
+function saveEdit(){ alert('Save'); }
+function deleteMember(){ alert('Delete - Dev only'); }
+function findForRecover(){ alert('Recover - Use Forgot'); }
+function doResetPass(){ alert('Reset'); }
+function verifyOtp(){ alert('OTP'); }
+function doRecover(){ alert('Recover from cloud'); }
+function doCreateAdmin(){ alert('Create Admin'); }
+function doRegister(){ alert('Register'); }
+function quickAdd(type){ alert('Quick '+type); }
+function exportCSV(){ alert('Export'); }
+function exportHullerCSV(){ alert('Huller Export'); }
+function exportAllCoopsCSV(){ alert('All Coops Export'); }
+function downloadBackup(){ alert('Backup'); }
+function doSync(){ alert('Sync'); }
+function doHuller(){ alert('Huller'); }
+function clearAllTest(){ alert('Clear'); }
+function copyOtp(){ alert('Copy OTP'); }
+function previewImg(){}
+</script>
+</body>
+</html>
