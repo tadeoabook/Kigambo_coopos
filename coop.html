@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coop - KIGAMBO CoopOS + HULLER</title>
+<title>Coop - KIGAMBO CoopOS + HULLER FINAL</title>
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
@@ -43,61 +43,51 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 <div id="loginBox" class="card">
 <b>🔐 Coop Login — Real Account</b>
 <p style="font-size:13px;color:#666;">Login with <b>Real Email OR Real Phone</b> + Password.</p>
-<input id="loginPhone" placeholder="Email OR Phone">
-<input id="adminPass" type="password" placeholder="Your Password">
+<input id="loginPhone" placeholder="Email OR Phone" autocomplete="username">
+<div style="position:relative;">
+<input id="adminPass" type="password" placeholder="Your Password" autocomplete="current-password" style="padding-right:48px;">
+<span onclick="togglePass()" id="eyeIcon" style="position:absolute;right:12px;top:20px;cursor:pointer;font-size:22px;">👁️</span>
+</div>
 <button class="btn" id="loginBtn" type="button">Login →</button>
-<p id="loginMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p>
+<p id="loginMsg" style="color:#dc2626;font-size:13px;text-align:center;min-height:18px;"></p>
 <span class="small-link" onclick="showRecover()">❓ Forgot Password? Click to Recover</span>
-<span class="small-link" onclick="showOtpVerify()">🔑 Have OTP Code? Click to Activate Account</span>
-<button class="btn btn-teal" id="recoverBtn" type="button">🔄 Recover Admins From Cloud</button>
 <p style="font-size:11px;color:#888;text-align:center;margin-top:10px;">Only registered admins can login.</p>
 </div>
-<div id="recoverBox" class="card hidden"><b>🔓 Recover Your Password</b><input id="recLogin" placeholder="Your Phone or Email"><button class="btn btn2" onclick="findForRecover()">Find My Account →</button><div id="recStep2" class="hidden"><p id="recQ" style="font-weight:700;color:#14532d;"></p><input id="recAns" placeholder="Answer to secret question"><input id="recNewPass" placeholder="New Password (min 6 chars)"><button class="btn" onclick="doResetPass()">Reset Password ✅</button></div><p id="recMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p><span class="small-link" onclick="hideRecover()">← Back to Login</span></div>
+<div id="recoverBox" class="card hidden">
+<b>🔓 Recover Your Password</b>
+<p style="font-size:13px;color:#666;">Enter Phone/Email, answer secret question, set new password.</p>
+<input id="recLogin" placeholder="Your Phone or Email">
+<button class="btn btn2" onclick="findForRecover()">Find My Account →</button>
+<div id="recStep2" class="hidden">
+<p id="recQ" style="font-weight:700;color:#14532d;"></p>
+<input id="recAns" placeholder="Answer to secret question">
+<div style="position:relative;">
+<input id="recNewPass" type="password" placeholder="New Password (min 6 chars)" style="padding-right:48px;">
+<span onclick="var p=document.getElementById('recNewPass'); p.type=p.type==='password'?'text':'password'; this.innerText=p.type==='password'?'👁️':'🙈';" style="position:absolute;right:12px;top:20px;cursor:pointer;font-size:22px;">👁️</span>
+</div>
+<button class="btn" onclick="doResetPass()">Reset Password ✅</button>
+</div>
+<p id="recMsg" style="color:#dc2626;font-size:13px;text-align:center;"></p>
+<hr style="margin:16px 0;">
+<span class="small-link" onclick="showOtpVerify()">🔑 Have OTP Code? Click to Activate Account</span>
+<button class="btn btn-teal" id="recoverBtn" type="button" style="font-size:13px;">🔄 Recover Admins From Cloud (New Phone Only)</button>
+<span class="small-link" onclick="hideRecover()">← Back to Login</span>
+</div>
 <div id="otpBox" class="card hidden"><b>🔑 Activate With OTP</b><input id="otpPhone" placeholder="Your Phone"><input id="otpCode" placeholder="6-digit OTP"><button class="btn btn2" onclick="verifyOtp()">Verify OTP ✅</button><p id="otpMsg" style="font-size:13px;text-align:center;color:#dc2626;"></p><span class="small-link" onclick="hideOtp()">← Back to Login</span></div>
 <div id="dashBox" class="hidden">
 <div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small>Email: <span id="myEmailShow"></span> • Phone: <span id="myPhoneShow"></span></small></div>
 <div class="sync-bar"><b>☁️ Cloud Sync</b><br><small>Status: <span id="netStatus">Checking...</span> • <span id="unsyncedCount">0</span></small><br><button class="btn btn-teal" id="syncBtn" type="button" style="margin-top:8px;">☁️ Sync Now To Cloud</button></div>
 <div class="grid"><div class="box"><small>👥 MEMBERS</small><div id="tMembers">0</div></div><div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div><div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div><div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div></div>
-<div class="grid"><div class="box" style="border:2px solid #ea580c;"><small>💳 TOTAL LOANS OUT</small><div id="tLoans" style="color:#ea580c;">0</div></div><div class="box" style="border:2px solid #92400e;"><small>☕ HULLER — CHERRY TODAY</small><div id="tCherry" style="color:#92400e;">0 Kg</div></div></div>
-
-<!-- HULLER - THIS COOP COLLECTION - EVERYONE SEES HIS COOP -->
-<div class="card huller-box">
-<b>🏭 HULLER — KIGAMBO 1 Collection (This Coop)</b>
-<p style="font-size:12px;color:#666;">Every member who brings coffee is counted here + on his own account.</p>
-<div class="grid"><div class="box"><small>🍒 CHERRY BROUGHT (Total)</small><div id="hCherry">0 Kg</div></div><div class="box"><small>☕ CLEAN AFTER HULLER</small><div id="hClean">0 Kg</div></div></div>
-<div class="grid"><div class="box"><small>👥 MEMBERS BROUGHT COFFEE</small><div id="hMembers">0</div></div><div class="box"><small>💰 HULLER FEES</small><div id="hFees">0 UGX</div></div></div>
-<div id="hullerList" style="margin-top:10px;">No coffee yet</div>
-<button class="btn btn-brown" onclick="exportHullerCSV()">📥 Download Huller Report (Excel)</button>
-</div>
-
-<!-- ALL COOPS - ONLY MAIN + DEV -->
-<div id="allCoopBox" class="card allcoop-box hidden">
-<b>🌍 ALL COOPERATIVES — General Paper (Main Admin + Developer Only)</b>
-<p style="font-size:12px;color:#666;">This is hidden from Coop Admins. Only you + Main Admin see total of ALL coops.</p>
-<div id="allCoopList">No data yet</div>
-<div class="grid"><div class="box"><small>🍒 ALL COOPS CHERRY</small><div id="allCherry">0 Kg</div></div><div class="box"><small>☕ ALL COOPS CLEAN</small><div id="allClean">0 Kg</div></div></div>
-<button class="btn btn-purple" onclick="exportAllCoopsCSV()">📥 Download ALL COOPS General Paper (Excel)</button>
-</div>
-
-<div id="devBox" class="card hidden" style="border:2px solid #7c3aed;">
-<b>👑 Developer — Create REAL Admin</b>
-<input id="aName" placeholder="Full Name"><input id="aEmail" placeholder="Real Email"><input id="aPhone" placeholder="Real Phone 077..."><input id="aPass" placeholder="Password min 6 chars">
-<select id="aRole"><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option><option value="main">👨‍💼 Main Admin — All Coops</option></select>
-<select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select>
-<label>Secret Question</label><select id="aSecQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select>
-<input id="aSecA" placeholder="Secret Answer"><button class="btn btn-purple" id="createBtn" type="button">Create Admin + Generate OTP ✅</button><p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p>
-<div id="otpDisplay" class="otp-box hidden"><b>🔑 OTP — SEND VIA WHATSAPP:</b><br><span id="otpShow" class="otp-code">000000</span><br><small id="otpForWho"></small><br><button class="btn btn2" onclick="copyOtp()">📋 Copy OTP</button></div>
-<div id="adminList"></div>
-<button class="btn btn-red" onclick="clearAllTest()">🧹 Clear All Test Data</button>
-</div>
-
+<div class="grid"><div class="box" style="border:2px solid #ea580c;"><small>💳 TOTAL LOANS OUT</small><div id="tLoans" style="color:#ea580c;">0</div></div><div class="box" style="border:2px solid #92400e;"><small>☕ HULLER — CHERRY</small><div id="tCherry" style="color:#92400e;">0 Kg</div></div></div>
+<div class="card huller-box"><b>🏭 HULLER — KIGAMBO 1 Collection</b><div class="grid"><div class="box"><small>🍒 CHERRY BROUGHT</small><div id="hCherry">0 Kg</div></div><div class="box"><small>☕ CLEAN AFTER HULLER</small><div id="hClean">0 Kg</div></div></div><div class="grid"><div class="box"><small>👥 MEMBERS BROUGHT COFFEE</small><div id="hMembers">0</div></div><div class="box"><small>💰 HULLER FEES</small><div id="hFees">0 UGX</div></div></div><div id="hullerList" style="margin-top:10px;">No coffee yet</div><button class="btn btn-brown" onclick="exportHullerCSV()">📥 Download Huller Report (Excel)</button></div>
+<div id="allCoopBox" class="card allcoop-box hidden"><b>🌍 ALL COOPERATIVES — General Paper (Main Admin + Developer Only)</b><div id="allCoopList">No data yet</div><div class="grid"><div class="box"><small>🍒 ALL COOPS CHERRY</small><div id="allCherry">0 Kg</div></div><div class="box"><small>☕ ALL COOPS CLEAN</small><div id="allClean">0 Kg</div></div></div><button class="btn btn-purple" onclick="exportAllCoopsCSV()">📥 Download ALL COOPS General Paper (Excel)</button></div>
+<div id="devBox" class="card hidden" style="border:2px solid #7c3aed;"><b>👑 Developer — Create REAL Admin</b><input id="aName" placeholder="Full Name"><input id="aEmail" placeholder="Real Email"><input id="aPhone" placeholder="Real Phone 077..."><div style="position:relative;"><input id="aPass" type="password" placeholder="Password min 6 chars" style="padding-right:48px;"><span onclick="var p=document.getElementById('aPass'); p.type=p.type==='password'?'text':'password'; this.innerText=p.type==='password'?'👁️':'🙈';" style="position:absolute;right:12px;top:20px;cursor:pointer;font-size:22px;">👁️</span></div><select id="aRole"><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option><option value="main">👨‍💼 Main Admin — All Coops</option></select><select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select><label>Secret Question</label><select id="aSecQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select><input id="aSecA" placeholder="Secret Answer"><button class="btn btn-purple" id="createBtn" type="button">Create Admin + Generate OTP ✅</button><p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p><div id="otpDisplay" class="otp-box hidden"><b>🔑 OTP — SEND VIA WHATSAPP:</b><br><span id="otpShow" class="otp-code">000000</span><br><small id="otpForWho"></small><br><button class="btn btn2" onclick="copyOtp()">📋 Copy OTP</button></div><div id="adminList"></div><button class="btn btn-red" onclick="clearAllTest()">🧹 Clear All Test Data</button></div>
 <div class="card" style="border:2px solid #16a34a;"><b>📝 Register New Member</b><input id="rName" placeholder="Full Name"><input id="rEmail" placeholder="Email (optional)"><input id="rPhone" placeholder="Real Phone 077..."><input id="rVillage" placeholder="Village"><select id="rParish"><option>Parish: Kigambo</option><option>Parish: Kyegegwa Town</option><option>Parish: Ruyonza</option><option>Parish: Other</option></select><input id="rNin" placeholder="NIN Number"><label>📸 Passport Photo</label><input id="rPhoto" type="file" accept="image/*" capture="user" onchange="previewImg(this,'pPhoto')"><img id="pPhoto" class="passport-preview"><label>🪪 ID Front</label><input id="rIdFront" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pFront')"><img id="pFront" class="preview"><label>🪪 ID Back</label><input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')"><img id="pBack" class="preview"><button class="btn" id="regBtn" type="button">Register Member ✅</button></div>
 <div class="card"><b>🔍 Search Members</b><input id="search" placeholder="Name or Phone or NIN..." oninput="render()"><div id="list">No members yet</div></div>
-
-<div class="card"><b>➕ Quick Actions</b><input id="qPhone" placeholder="Member Phone"><input id="qAmt" type="number" placeholder="Amount / Kg"><button class="btn" onclick="quickAdd('savings')">Add Savings 💰</button><button class="btn btn-gold" onclick="quickAdd('shares')">Add Shares 📈</button><button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee Cherry 🍒</button><button class="btn btn-brown" onclick="quickAdd('huller')">🏭 Process in Huller (Cherry → Clean)</button><button class="btn btn-orange" onclick="quickAdd('loan')">Give Loan 💳</button><button class="btn btn-pink" onclick="quickAdd('repay')">Repay Loan 💵</button><button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button><button class="btn btn-teal" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button></div>
-
+<div class="card"><b>➕ Quick Actions</b><input id="qPhone" placeholder="Member Phone"><input id="qAmt" type="number" placeholder="Amount / Kg"><button class="btn" onclick="quickAdd('savings')">Add Savings 💰</button><button class="btn btn-gold" onclick="quickAdd('shares')">Add Shares 📈</button><button class="btn btn2" onclick="quickAdd('coffee')">Add Coffee Cherry 🍒</button><button class="btn btn-brown" onclick="quickAdd('huller')">🏭 Process in Huller</button><button class="btn btn-orange" onclick="quickAdd('loan')">Give Loan 💳</button><button class="btn btn-pink" onclick="quickAdd('repay')">Repay Loan 💵</button><button class="btn btn3" onclick="exportCSV()">📥 Download Excel (CSV)</button><button class="btn btn-teal" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button></div>
 <div class="card loan-box"><b>💳 Loans — Who Owes?</b><div id="loanList">No loans yet</div></div>
 <div class="card" style="border:2px solid #f59e0b;"><b>📜 Activity Log</b><div id="activityLog">No activity yet</div></div>
 <button class="btn btn-red" onclick="location.reload()">Logout 🔒</button>
 </div>
-<a class="back" href="index.html">←
+<a class="back" href="index.html">← Back to Home</a>
+<div id="popup" class="popup hidden" onclick="if(event.target.id==='popup') forceClose()"><div class="popup-card"><div style="display:flex;justify-content:space-between;align-items:center;"><b id="pName" style="font-size:18px;"></b><span class="close-x" onclick="forceClose()">✕</span></div><div style="text-align:center;"><img id="ppPhoto" style="width:110px;height:130px;object-fit:cover;border-radius:10px;border:3px solid #14532d;margin:10px auto;display
