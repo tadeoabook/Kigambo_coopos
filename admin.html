@@ -16,7 +16,6 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 .box { background:#fff; border:1px solid #e2e8f0; padding:12px; border-radius:10px; text-align:center; }
 .box div { font-size:18px; font-weight:900; color:#14532d; }
 .member { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; cursor:pointer; align-items:center; gap:8px; }
-.avatar { width:48px; height:56px; object-fit:cover; border-radius:8px; border:2px solid #14532d; background:#eee; flex-shrink:0; }
 .back { display:inline-block; margin-top:12px; color:#2563eb; text-decoration:none; font-weight:700; }
 .hidden { display:none !important; }
 .popup { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); display:flex; align-items:flex-start; justify-content:center; padding:16px; z-index:999; overflow-y:auto; }
@@ -27,8 +26,6 @@ label { font-size:13px; font-weight:700; color:#14532d; display:block; margin-to
 .passport-preview { width:110px; height:130px; object-fit:cover; border-radius:10px; border:3px solid #14532d; display:none; margin:8px auto; }
 .role-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-top:6px; }
 .close-x { cursor:pointer; font-size:28px; line-height:1; padding:0 6px; font-weight:900; }
-.log-item { padding:10px 0; border-bottom:1px solid #eee; font-size:13px; }
-.admin-item { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #eee; font-size:13px; }
 .sync-bar { background:#ecfdf5; border:2px solid #0d9488; padding:12px; border-radius:12px; margin-top:12px; text-align:center; }
 .loan-box { background:#fff7ed; border:2px solid #ea580c; padding:12px; border-radius:12px; margin-top:12px; }
 .huller-box { background:#fef3c7; border:2px solid #92400e; padding:12px; border-radius:12px; margin-top:12px; }
@@ -82,8 +79,6 @@ table.report th { background:#14532d; color:#fff; }
 <div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small>Email: <span id="myEmailShow"></span> • Phone: <span id="myPhoneShow"></span></small></div>
 <div id="coopBanner" class="coop-banner hidden">🏡 You are viewing ONLY <span id="coopBannerName"></span> — You CANNOT see other coops.</div>
 <div class="sync-bar"><b>☁️ Cloud Sync</b><br><small>Status: <span id="netStatus">Checking...</span> • <span id="unsyncedCount">0</span></small><br><button class="btn btn-teal" type="button" onclick="doSync()" id="syncBtn" style="margin-top:8px;">☁️ Sync Now To Cloud</button></div>
-
-<!-- PRICE SETTINGS - MAIN ADMIN + COOP ADMIN -->
 <div class="card" style="border:2px solid #d97706;background:#fffbeb;">
 <b>⚙️ Set Prices — Main Admin & Coop Admin</b>
 <p style="font-size:12px;color:#666;">Change here, it updates ALL members automatically. No need to touch code.</p>
@@ -95,15 +90,12 @@ table.report th { background:#14532d; color:#fff; }
 <p id="priceSavedMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p>
 <small>Current: Share = <span id="curSharePrice"></span> UGX | Huller = <span id="curHullerPrice"></span> UGX / Kg</small>
 </div>
-
 <div class="grid"><div class="box"><small>👥 MEMBERS <span id="membersLabel"></span></small><div id="tMembers">0</div></div><div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div><div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div><div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div></div>
 <div class="grid"><div class="box" style="border:2px solid #ea580c;"><small>💳 TOTAL LOANS OUT</small><div id="tLoans" style="color:#ea580c;">0</div></div><div class="box" style="border:2px solid #92400e;"><small>☕ HULLER — CHERRY</small><div id="tCherry" style="color:#92400e;">0 Kg</div></div></div>
 <div class="card huller-box"><b>🏭 HULLER — <span id="hullerTitle">My Coop</span> Collection</b><div class="grid"><div class="box"><small>🍒 CHERRY BROUGHT</small><div id="hCherry">0 Kg</div></div><div class="box"><small>☕ CLEAN AFTER HULLER</small><div id="hClean">0 Kg</div></div></div><div class="grid"><div class="box"><small>👥 MEMBERS BROUGHT COFFEE</small><div id="hMembers">0</div></div><div class="box"><small>💰 HULLER FEES</small><div id="hFees">0 UGX</div></div></div><div id="hullerList" style="margin-top:10px;">No coffee yet</div><button class="btn btn-brown" type="button" onclick="exportHullerCSV()">📥 Download Huller Report (Excel) — My Coop Only</button></div>
-
-<!-- MONTHLY REPORT -->
 <div class="card" style="border:2px solid #2563eb;">
 <b>📊 Monthly Report — <span id="monthlyReportTitle">My Coop</span></b>
-<p style="font-size:12px;color:#666;" id="monthlyReportNote">Coop Admin sees only his Coop. Main Admin + Developer see ALL Coops + Total.</p>
+<p style="font-size:12px;color:#666;">Coop Admin sees only his Coop. Main Admin + Developer see ALL Coops + Total.</p>
 <label>Select Month</label>
 <input id="reportMonth" type="month">
 <button class="btn btn2" type="button" onclick="generateMonthlyReport()">Show Monthly Report 📊</button>
@@ -111,7 +103,6 @@ table.report th { background:#14532d; color:#fff; }
 <button class="btn btn3" type="button" onclick="window.print()">🖨️ Print / Save as PDF</button>
 <div id="monthlyReportDiv" style="margin-top:12px;overflow-x:auto;">Pick a month and tap Show Report</div>
 </div>
-
 <div id="allCoopBox" class="card allcoop-box hidden"><b>🌍 ALL COOPERATIVES — General Paper (Main Admin + Developer Only)</b><p style="font-size:12px;color:#666;">Coop Admins CANNOT see this.</p><div id="allCoopList">No data yet</div><div class="grid"><div class="box"><small>🍒 ALL COOPS CHERRY</small><div id="allCherry">0 Kg</div></div><div class="box"><small>☕ ALL COOPS CLEAN</small><div id="allClean">0 Kg</div></div></div><button class="btn btn-purple" type="button" onclick="exportAllCoopsCSV()">📥 Download ALL COOPS General Paper (Excel)</button></div>
 <div id="devBox" class="card hidden" style="border:2px solid #7c3aed;"><b>👑 Developer — Create REAL Admin</b><input id="aName" placeholder="Full Name"><input id="aEmail" placeholder="Real Email"><input id="aPhone" placeholder="Real Phone 077..."><div style="position:relative;"><input id="aPass" type="password" placeholder="Password min 6 chars" style="padding-right:48px;"><span onclick="var p=document.getElementById('aPass'); p.type=p.type==='password'?'text':'password'; this.innerText=p.type==='password'?'👁️':'🙈';" style="position:absolute;right:12px;top:20px;cursor:pointer;font-size:22px;">👁️</span></div><select id="aRole"><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option><option value="main">👨‍💼 Main Admin — All Coops</option></select><select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select><label>Secret Question</label><select id="aSecQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select><input id="aSecA" placeholder="Secret Answer"><button class="btn btn-purple" type="button" onclick="doCreateAdmin()">Create Admin + Generate OTP ✅</button><p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p><div id="otpDisplay" class="otp-box hidden"><b>🔑 OTP — SEND VIA WHATSAPP:</b><br><span id="otpShow" class="otp-code">000000</span><br><small id="otpForWho"></small><br><button class="btn btn2" type="button" onclick="copyOtp()">📋 Copy OTP</button></div><div id="adminList"></div><button class="btn btn-red" type="button" onclick="clearAllTest()">🧹 Clear All Test Data</button></div>
 <div class="card" style="border:2px solid #16a34a;"><b>📝 Register New Member — <span id="regCoopLabel">My Coop</span></b><input id="rName" placeholder="Full Name"><input id="rEmail" placeholder="Email (optional)"><input id="rPhone" placeholder="Real Phone 077..."><input id="rVillage" placeholder="Village"><select id="rParish"><option>Parish: Kigambo</option><option>Parish: Kyegegwa Town</option><option>Parish: Ruyonza</option><option>Parish: Other</option></select><input id="rNin" placeholder="NIN Number"><label>📸 Passport Photo</label><input id="rPhoto" type="file" accept="image/*" capture="user" onchange="previewImg(this,'pPhoto')"><img id="pPhoto" class="passport-preview"><label>🪪 ID Front</label><input id="rIdFront" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pFront')"><img id="pFront" class="preview"><label>🪪 ID Back</label><input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')"><img id="pBack" class="preview"><button class="btn" type="button" onclick="doRegister()">Register Member ✅</button></div>
@@ -141,7 +132,7 @@ table.report th { background:#14532d; color:#fff; }
 <div class="row"><span>✍️ Last Action By</span><span id="pBy" style="color:#7c3aed;"></span></div>
 <p style="font-size:13px;"><b>ID Front:</b></p><img id="ppFront" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;"><p style="font-size:13px;"><b>ID Back:</b></p><img id="ppBack" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;">
 <button onclick="editOne('savings','Savings UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Savings</button><button onclick="editOne('shares','Shares Count')" style="width:100%;padding:10px;margin:3px">✏️ Edit Shares (Count, e.g. 5 = 100,000 UGX)</button><button onclick="editOne('coffee','Cherry Coffee Kg')" style="width:100%;padding:10px;margin:3px">✏️ Edit Cherry Coffee</button><button onclick="editOne('cleanCoffee','Clean Coffee Kg')" style="width:100%;padding:10px;margin:3px">✏️ Edit Clean Coffee</button><button onclick="editOne('hullerFee','Huller Fee UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Huller Fee</button><button onclick="editOne('loan','Loan Balance UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Loan</button>
-<p id="editPermission" style="font-size:11px;text-align:center;color:#888;">Developer + Main Admin can edit ALL coops. Coop Admin can edit only his own coop members.</p>
+<p style="font-size:11px;text-align:center;color:#888;">Developer + Main Admin can edit ALL coops. Coop Admin can edit only his own coop members.</p>
 <div id="editBox" class="edit-box hidden">
 <b>✏️ CORRECT THIS MEMBER — Type CORRECT value, not ADD</b>
 <label>Full Name</label><input id="eName" placeholder="Full Name">
@@ -178,8 +169,6 @@ function forceOpen(){ var p=document.getElementById('popup'); p.classList.remove
 function getAdmins(){ try{ return JSON.parse(localStorage.getItem('kigambo_admins')||'[]'); }catch(e){ return []; } }
 function getMembers(){ try{ return JSON.parse(localStorage.getItem('kigambo_members')||'[]'); }catch(e){ return []; } }
 function getActivity(){ try{ return JSON.parse(localStorage.getItem('kigambo_activity')||'[]'); }catch(e){ return []; } }
-
-// ===== PRICES - FROM DASHBOARD =====
 function getSharePrice(){ try{ var p=JSON.parse(localStorage.getItem('kigambo_prices')||'{}'); return Number(p.share)||20000; }catch(e){ return 20000; } }
 function getHullerPrice(){ try{ var p=JSON.parse(localStorage.getItem('kigambo_prices')||'{}'); return Number(p.huller)||500; }catch(e){ return 500; } }
 function loadPrices(){
@@ -194,16 +183,14 @@ function savePrices(){
   var huller=Number(document.getElementById('setHullerPrice').value)||500;
   localStorage.setItem('kigambo_prices', JSON.stringify({share:share, huller:huller}));
   document.getElementById('priceSavedMsg').innerText='✅ Saved! Share: '+share.toLocaleString()+' UGX, Huller: '+huller.toLocaleString()+' UGX/Kg';
-  loadPrices(); render(); 
+  loadPrices(); render();
   if(selectedPhone) openEdit(selectedPhone);
 }
-
 function togglePass(){ var p=document.getElementById('adminPass'); var eye=document.getElementById('eyeIcon'); if(p.type==='password'){ p.type='text'; eye.innerText='🙈'; } else { p.type='password'; eye.innerText='👁️'; } }
 function showRecover(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('recoverBox').classList.remove('hidden'); }
 function hideRecover(){ document.getElementById('recoverBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
 function showOtpVerify(){ document.getElementById('recoverBox').classList.add('hidden'); document.getElementById('otpBox').classList.remove('hidden'); }
 function hideOtp(){ document.getElementById('otpBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
-
 function showDash(admin){
   myAdmin=admin; currentUser=admin;
   document.getElementById('loginBox').style.display='none';
@@ -223,35 +210,32 @@ function showDash(admin){
   var rm=document.getElementById('reportMonth'); if(rm && !rm.value) rm.value=new Date().toISOString().slice(0,7);
   render();
 }
-
 function doLogin(){
   var login=document.getElementById('loginPhone').value.trim().toLowerCase();
   var pass=document.getElementById('adminPass').value.trim();
-  if(!login||!pass){ document.getElementById('loginMsg').innerText='Enter Email/Phone and Password'; return; }
-  if((login==='developer'||login==='developer@kigambo.com') && (pass==='Kigambo@2026'||pass==='dev123')){
+  var msg=document.getElementById('loginMsg');
+  if(!login || !pass){ msg.innerText='Please enter Email/Phone and Password.'; return; }
+  if((login==='developer' || login==='developer@kigambo.com') && (pass==='Kigambo@2026' || pass==='dev123')){
     showDash({name:'Developer',phone:'developer',email:'developer@kigambo.com',role:'dev',coop:'ALL'});
-    alert('Welcome Developer!'); return;
+    return;
   }
   var admins=getAdmins();
-  var found=admins.find(function(a){ return (a.email||'').toLowerCase()===login || (a.phone||'')===login || (a.phone||'').replace(/\s/g,'')===login.replace(/\s/g,''); });
-  if(!found){ document.getElementById('loginMsg').innerText='Account not found. Ask Developer to create you.'; return; }
-  if(found.password!==pass && found.pass!==pass){ document.getElementById('loginMsg').innerText='Wrong password. Tap Forgot Password.'; return; }
+  var found=admins.find(function(a){ return (a.email||'').toLowerCase()===login || (a.phone||'')===login; });
+  if(!found){ msg.innerText='Account not found. Ask Developer to create you, or tap Forgot Password.'; return; }
+  if(found.password!==pass && found.pass!==pass){ msg.innerText='Wrong password. Try again or tap Forgot Password below.'; return; }
   var role = found.role==='main' ? 'main' : (found.role==='dev' ? 'dev' : 'coop');
   showDash({name:found.name, phone:found.phone, email:found.email, role:role, coop:found.coop||'KIGAMBO 1'});
 }
-
 function visibleMembers(){
   if(myAdmin && myAdmin.role==='coop'){ return all.filter(function(m){ return (m.coop||'KIGAMBO 1')===myAdmin.coop; }); }
   return all;
 }
-
 function render(){
   var vis=visibleMembers();
   var q=(document.getElementById('search').value||'').toLowerCase();
   var f=vis.filter(function(m){ return (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q); });
   var h=f.map(function(m){ return '<div class="member" onclick="openEdit(\''+m.phone+'\')"><b>'+m.name+'</b> - '+m.phone+' - '+(m.coop||'')+' - '+(m.savings||0)+' UGX</div>'; }).join('');
   document.getElementById('list').innerHTML=h||'No members in your coop';
-  // Totals for visible coop(s)
   var totSav=0, totSh=0, totLoan=0, totCherry=0, totClean=0, totFee=0;
   vis.forEach(function(m){ totSav+=Number(m.savings||0); totSh+=Number(m.shares||0); totLoan+=Number(m.loan||0); totCherry+=Number(m.coffee||0); totClean+=Number(m.cleanCoffee||0); totFee+=Number(m.hullerFee||0); });
   document.getElementById('tMembers').innerText=vis.length;
@@ -264,16 +248,14 @@ function render(){
   document.getElementById('hClean').innerText=totClean+' Kg';
   document.getElementById('hFees').innerText=totFee.toLocaleString()+' UGX';
   document.getElementById('hMembers').innerText=vis.filter(function(m){ return Number(m.coffee||0)>0; }).length;
-  // All coops totals for Main/Dev
   if(myAdmin && myAdmin.role!=='coop'){
     var allCherry=0, allClean=0; all.forEach(function(m){ allCherry+=Number(m.coffee||0); allClean+=Number(m.cleanCoffee||0); });
     document.getElementById('allCherry').innerText=allCherry+' Kg';
     document.getElementById('allClean').innerText=allClean+' Kg';
     var byCoop={}; all.forEach(function(m){ var c=m.coop||'KIGAMBO 1'; if(!byCoop[c]) byCoop[c]=0; byCoop[c]++; });
-    document.getElementById('allCoopList').innerHTML=Object.keys(byCoop).map(function(c){ return '<div class="admin-item"><b>'+c+'</b><span>'+byCoop[c]+' members</span></div>'; }).join('');
+    document.getElementById('allCoopList').innerHTML=Object.keys(byCoop).map(function(c){ return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;font-size:13px;"><b>'+c+'</b><span>'+byCoop[c]+' members</span></div>'; }).join('');
   }
 }
-
 function openEdit(phone){
   var m=all.find(function(x){ return x.phone===phone; }); if(!m) return;
   selectedPhone=phone;
@@ -302,13 +284,11 @@ function editOne(field,label){
   var v=prompt(label+' - Current: '+cur+'\nEnter NEW total (not add):'); if(v===null) return;
   v=parseInt(v)||0;
   m[field]=v;
-  // If Clean changed, auto recalc Huller Fee from Dashboard price
   if(field==='cleanCoffee'){ m.hullerFee=v*getHullerPrice(); }
   m.lastBy=currentUser?currentUser.name:'Admin';
   localStorage.setItem('kigambo_members',JSON.stringify(all));
-  alert(label+' updated to '+v); render(); openEdit(selectedPhone);
+  render(); openEdit(selectedPhone);
 }
-// FIXED: Save Corrections now SETS correct total, not ADDS
 function saveEdit(){
   var m=all.find(function(x){ return x.phone===selectedPhone; }); if(!m) return;
   function val(id){ var el=document.getElementById(id); if(!el) return null; if(el.value===''||el.value===null) return null; return el.value; }
@@ -323,11 +303,8 @@ function saveEdit(){
   if(ln!==null) m.loan=Number(ln)||0;
   m.lastBy=currentUser?currentUser.name:'Admin';
   localStorage.setItem('kigambo_members',JSON.stringify(all));
-  alert('Saved! Correct totals saved.');
   forceClose(); render();
 }
-
-// ===== MONTHLY REPORT =====
 function getMonthlyData(){
   var month=document.getElementById('reportMonth').value || new Date().toISOString().slice(0,7);
   var vis=visibleMembers();
@@ -341,8 +318,8 @@ function getMonthlyData(){
 }
 function generateMonthlyReport(){
   var d=getMonthlyData();
-  var html='<h3>Monthly Report - '+d.month+' | Share Price: '+getSharePrice().toLocaleString()+' | Huller: '+getHullerPrice().toLocaleString()+'/Kg</h3>';
-  html+='<table class="report"><tr><th>Cooperative</th><th>Members</th><th>Savings (UGX)</th><th>Shares</th><th>Share Capital (UGX)</th><th>Cherry Kg</th><th>Clean Kg</th><th>Huller Fee (UGX)</th><th>Loans Out (UGX)</th></tr>';
+  var html='<h3>Monthly Report - '+d.month+' | Share: '+getSharePrice().toLocaleString()+' | Huller: '+getHullerPrice().toLocaleString()+'/Kg</h3>';
+  html+='<table class="report"><tr><th>Cooperative</th><th>Members</th><th>Savings</th><th>Shares</th><th>Share Capital</th><th>Cherry Kg</th><th>Clean Kg</th><th>Huller Fee</th><th>Loans</th></tr>';
   var tot={count:0,savings:0,shares:0,capital:0,cherry:0,clean:0,huller:0,loans:0};
   Object.keys(d.byCoop).forEach(function(coop){
     var c=d.byCoop[coop];
@@ -352,7 +329,7 @@ function generateMonthlyReport(){
   if(myAdmin && myAdmin.role!=='coop'){
     html+='<tr style="background:#eef2ff;font-weight:900"><td>TOTAL ALL COOPS</td><td>'+tot.count+'</td><td>'+tot.savings.toLocaleString()+'</td><td>'+tot.shares+'</td><td>'+tot.capital.toLocaleString()+'</td><td>'+tot.cherry+'</td><td>'+tot.clean+'</td><td>'+tot.huller.toLocaleString()+'</td><td>'+tot.loans.toLocaleString()+'</td></tr>';
   }
-  html+='</table><p style="font-size:12px;color:#666;">Report for '+d.month+' • Generated by '+(myAdmin?myAdmin.name:'Admin')+' • Prices used: Share '+getSharePrice()+', Huller '+getHullerPrice()+'/Kg</p>';
+  html+='</table><p style="font-size:12px;color:#666;">Report for '+d.month+' • By '+(myAdmin?myAdmin.name:'Admin')+'</p>';
   document.getElementById('monthlyReportDiv').innerHTML=html;
 }
 function exportMonthlyReportCSV(){
@@ -360,14 +337,13 @@ function exportMonthlyReportCSV(){
   Object.keys(d.byCoop).forEach(function(coop){ var c=d.byCoop[coop]; csv+=coop+','+c.count+','+c.savings+','+c.shares+','+c.capital+','+c.cherry+','+c.clean+','+c.huller+','+c.loans+'\n'; });
   var blob=new Blob([csv],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Monthly_Report_'+d.month+'.csv'; a.click();
 }
-
-function deleteMember(){ alert('Delete - Dev only'); }
-function findForRecover(){ alert('Recover - Use Forgot'); }
-function doResetPass(){ alert('Reset'); }
-function verifyOtp(){ alert('OTP'); }
-function doRecover(){ alert('Recover from cloud'); }
-function doCreateAdmin(){ alert('Create Admin'); }
-function doRegister(){ alert('Register'); }
+function deleteMember(){ document.getElementById('loginMsg').innerText=''; alert('Delete - Dev only'); }
+function findForRecover(){ document.getElementById('recMsg').innerText='Use Forgot Password flow.'; }
+function doResetPass(){ document.getElementById('recMsg').innerText='Reset - check secret answer.'; }
+function verifyOtp(){ document.getElementById('otpMsg').innerText='OTP check - contact Developer.'; }
+function doRecover(){ document.getElementById('recMsg').innerText='Recover from cloud - try again.'; }
+function doCreateAdmin(){ document.getElementById('createMsg').innerText='Create Admin - contact Developer if it fails.'; }
+function doRegister(){ alert('Register - coming soon'); }
 function quickAdd(type){ alert('Quick '+type); }
 function exportCSV(){ alert('Export'); }
 function exportHullerCSV(){ alert('Huller Export'); }
