@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KIGAMBO CoopOS - FIREBASE SYNC</title>
+<title>KIGAMBO CoopOS - FIREBASE SYNC FIXED</title>
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
@@ -100,6 +100,8 @@ try { const app = initializeApp(firebaseConfig); db = getDatabase(app); window._
 
 <script>
 var myAdmin=null; var all=[]; var selectedPhone=''; var currentUser=null; var autoSyncOn=false;
+function cleanStr(v){ if(v===undefined||v===null) return ""; return String(v); }
+function cleanNum(v){ var n=Number(v); if(isNaN(n)) return 0; return n; }
 function forceClose(){ var p=document.getElementById('popup'); p.classList.add('hidden'); p.style.display='none'; document.getElementById('editBox').classList.add('hidden'); }
 function forceOpen(){ var p=document.getElementById('popup'); p.classList.remove('hidden'); p.style.display='flex'; }
 function getAdmins(){ try{ return JSON.parse(localStorage.getItem('kigambo_admins')||'[]'); }catch(e){ return []; } }
@@ -149,12 +151,16 @@ function doLogin(){
 }
 function visibleMembers(){ if(myAdmin && myAdmin.role==='coop'){ return all.filter(function(m){ return (m.coop||'KIGAMBO 1')===myAdmin.coop; }); } return all; }
 function saveAllAndRender(){ localStorage.setItem('kigambo_members', JSON.stringify(all)); render(); }
-function addActivity(text, coop){ var act=getActivity(); act.push({text:text, coop:coop||(myAdmin?myAdmin.coop:'KIGAMBO 1'), date:new Date().toISOString()}); localStorage.setItem('kigambo_activity', JSON.stringify(act)); }
+function addActivity(text, coop){ var act=getActivity(); act.push({text:cleanStr(text), coop:cleanStr(coop||(myAdmin?myAdmin.coop:'KIGAMBO 1')), date:new Date().toISOString()}); localStorage.setItem('kigambo_activity', JSON.stringify(act)); }
 function getSyncCode(){ return (document.getElementById('syncCodeInput').value.trim() || 'KIGAMBO-2026').replace(/[^a-zA-Z0-9-_]/g,'-'); }
 function setSyncMsg(txt, ok){ var el=document.getElementById('syncMsg'); el.style.color=ok?'#16a34a':'#dc2626'; el.innerText=txt; }
 function buildCloudData(){
-  var cleanMembers = getMembers().map(function(m){ return {id:m.id, name:m.name, email:m.email, phone:m.phone, village:m.village, parish:m.parish, nin:m.nin, coop:m.coop, savings:Number(m.savings||0), shares:Number(m.shares||0), coffee:Number(m.coffee||0), cleanCoffee:Number(m.cleanCoffee||0), hullerFee:Number(m.hullerFee||0), loan:Number(m.loan||0), lastBy:m.lastBy, createdAt:m.createdAt}; });
-  return {members: cleanMembers, admins: getAdmins(), prices: JSON.parse(localStorage.getItem('kigambo_prices')||'{"share":20000,"huller":500}'), activity: getActivity().slice(-50), updatedAt: new Date().toISOString(), updatedBy: myAdmin?myAdmin.name:'Admin'};
+  var cleanMembers = getMembers().map(function(m){
+    return { id: cleanStr(m.id), name: cleanStr(m.name), email: cleanStr(m.email), phone: cleanStr(m.phone), village: cleanStr(m.village), parish: cleanStr(m.parish), nin: cleanStr(m.nin), coop: cleanStr(m.coop||'KIGAMBO 1'), savings: cleanNum(m.savings), shares: cleanNum(m.shares), coffee: cleanNum(m.coffee), cleanCoffee: cleanNum(m.cleanCoffee), hullerFee: cleanNum(m.hullerFee), loan: cleanNum(m.loan), lastBy: cleanStr(m.lastBy), createdAt: cleanStr(m.createdAt) };
+  });
+  var cleanAdmins = getAdmins().map(function(a){ return { name: cleanStr(a.name), email: cleanStr(a.email), phone: cleanStr(a.phone), password: cleanStr(a.password||a.pass||''), role: cleanStr(a.role||'coop'), coop: cleanStr(a.coop||'KIGAMBO 1'), secQ: cleanStr(a.secQ||''), secA: cleanStr(a.secA||'') }; });
+  var cleanActivity = getActivity().slice(-50).map(function(a){ return { text: cleanStr(a.text), coop: cleanStr(a.coop), date: cleanStr(a.date) }; });
+  return { members: cleanMembers, admins: cleanAdmins, prices: { share: cleanNum(getSharePrice()), huller: cleanNum(getHullerPrice()) }, activity: cleanActivity, updatedAt: new Date().toISOString(), updatedBy: cleanStr(myAdmin?myAdmin.name:'Admin') };
 }
 function applyCloudData(data){
   if(!data) return;
@@ -176,8 +182,8 @@ async function doSync(){
     await window._fb.set(window._fb.ref(window._fb.db, 'kigambo/'+code), data);
     var now=new Date().toLocaleString(); localStorage.setItem('kigambo_last_sync', now); document.getElementById('lastSyncTime').innerText=now;
     document.getElementById('fbStatus').innerText='✅ Connected to Firebase'; document.getElementById('fbStatus').style.color='#16a34a';
-    setSyncMsg('✅ Synced UP to Firebase! Code: '+code+' — Other phones tap Sync DOWN with same code.', true);
-  } catch(e){ setSyncMsg('❌ Firebase failed: '+e.message+' — Check Realtime Database is Created + Rules = Test Mode.', false); }
+    setSyncMsg('✅ Synced UP to Firebase! Code: '+code+' — Other phones tap Sync DOWN.', true);
+  } catch(e){ setSyncMsg('❌ Firebase failed: '+e.message, false); }
   btn.innerText=old; btn.disabled=false;
 }
 async function syncDown(){
@@ -320,7 +326,7 @@ function doRegister(){
   var coop = (myAdmin && myAdmin.role==='coop') ? myAdmin.coop : 'KIGAMBO 1';
   msg.style.color='#2563eb'; msg.innerText='Saving...';
   Promise.all([readFile(document.getElementById('rPhoto').files[0]), readFile(document.getElementById('rIdFront').files[0]), readFile(document.getElementById('rIdBack').files[0])]).then(function(imgs){
-    var newMember={ id:'KG-'+Date.now().toString().slice(-6), name:name, email:email, phone:phone, village:village||'Kigambo', parish:parish, nin:nin, coop:coop, savings:0, shares:0, coffee:0, cleanCoffee:0, hullerFee:0, loan:0, photo:imgs[0]||'', idFront:imgs[1]||'', idBack:imgs[2]||'', lastBy:currentUser?currentUser.name:'Admin', createdAt:new Date().toISOString() };
+    var newMember={ id:'KG-'+Date.now().toString().slice(-6), name:name, email:email||'', phone:phone, village:village||'Kigambo', parish:parish||'', nin:nin||'', coop:coop, savings:0, shares:0, coffee:0, cleanCoffee:0, hullerFee:0, loan:0, photo:imgs[0]||'', idFront:imgs[1]||'', idBack:imgs[2]||'', lastBy:currentUser?currentUser.name:'Admin', createdAt:new Date().toISOString() };
     all.push(newMember); localStorage.setItem('kigambo_members', JSON.stringify(all)); addActivity('✅ Registered '+name+' ('+phone+') - '+coop+' by '+(currentUser?currentUser.name:'Admin'), coop);
     document.getElementById('rName').value=''; document.getElementById('rEmail').value=''; document.getElementById('rPhone').value=''; document.getElementById('rVillage').value=''; document.getElementById('rNin').value=''; document.getElementById('rPhoto').value=''; document.getElementById('rIdFront').value=''; document.getElementById('rIdBack').value=''; ['pPhoto','pFront','pBack'].forEach(function(id){ var el=document.getElementById(id); if(el){ el.src=''; el.style.display='none'; } });
     msg.style.color='#16a34a'; msg.innerText='✅ '+name+' registered! Now Sync UP to Firebase.'; render();
