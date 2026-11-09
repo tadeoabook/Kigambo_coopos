@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>KIGAMBO CoopOS - CLOUD SYNC</title>
+<title>KIGAMBO CoopOS - CLOUD SYNC v2</title>
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:Arial; background:#f8fafc; padding:16px; }
@@ -41,10 +41,9 @@ table.report th { background:#14532d; color:#fff; }
 </style>
 </head>
 <body>
-<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO COOP</div><p style="font-size:12px;opacity:.8;">COOP ISOLATION • EDIT • HULLER • OTP • Sync • Loans</p></div>
+<div class="top"><div style="font-size:22px;font-weight:900;">KIGAMBO COOP</div><p style="font-size:12px;opacity:.8;">COOP ISOLATION • EDIT • HULLER • OTP • Sync v2 • Loans</p></div>
 <div id="loginBox" class="card">
 <b>🔐 Coop Login — Real Account</b>
-<p style="font-size:13px;color:#666;">Login with <b>Real Email OR Real Phone</b> + Password.</p>
 <input id="loginPhone" placeholder="Email OR Phone" autocomplete="username">
 <div style="position:relative;">
 <input id="adminPass" type="password" placeholder="Your Password" style="padding-right:48px;">
@@ -53,36 +52,26 @@ table.report th { background:#14532d; color:#fff; }
 <button class="btn" type="button" onclick="doLogin()">Login →</button>
 <p id="loginMsg" style="color:#dc2626;font-size:13px;text-align:center;min-height:18px;"></p>
 <span class="small-link" onclick="showRecover()">❓ Forgot Password? Click to Recover</span>
-<p style="font-size:11px;color:#888;text-align:center;margin-top:10px;">Only registered admins can login.</p>
 </div>
 <div id="recoverBox" class="card hidden">
 <b>🔓 Recover Your Password</b>
 <input id="recLogin" placeholder="Your Phone or Email">
 <button class="btn btn2" type="button" onclick="findForRecover()">Find My Account →</button>
-<div id="recStep2" class="hidden">
-<p id="recQ" style="font-weight:700;color:#14532d;"></p>
-<input id="recAns" placeholder="Answer to secret question">
-<div style="position:relative;">
-<input id="recNewPass" type="password" placeholder="New Password (min 6 chars)" style="padding-right:48px;">
-<span onclick="var p=document.getElementById('recNewPass'); p.type=p.type==='password'?'text':'password'; this.innerText=p.type==='password'?'👁️':'🙈';" style="position:absolute;right:12px;top:20px;cursor:pointer;font-size:22px;">👁️</span>
-</div>
-<button class="btn" type="button" onclick="doResetPass()">Reset Password ✅</button>
-</div>
-<p id="recMsg" style="font-size:13px;text-align:center;"></p>
-<hr style="margin:16px 0;">
+<div id="recStep2" class="hidden"><p id="recQ" style="font-weight:700;color:#14532d;"></p><input id="recAns" placeholder="Answer to secret question"><input id="recNewPass" type="password" placeholder="New Password (min 6 chars)"><button class="btn" type="button" onclick="doResetPass()">Reset Password ✅</button></div>
+<p id="recMsg" style="font-size:13px;text-align:center;"></p><hr>
 <span class="small-link" onclick="showOtpVerify()">🔑 Have OTP Code? Click to Activate Account</span>
-<button class="btn btn-teal" type="button" onclick="doRecover()" id="recoverBtn" style="font-size:13px;">🔄 Recover Admins From Cloud (New Phone Only)</button>
+<button class="btn btn-teal" type="button" onclick="doRecover()">🔄 Recover Admins From Cloud (New Phone Only)</button>
 <span class="small-link" onclick="hideRecover()">← Back to Login</span>
 </div>
 <div id="otpBox" class="card hidden"><b>🔑 Activate With OTP</b><input id="otpPhone" placeholder="Your Phone"><input id="otpCode" placeholder="6-digit OTP"><button class="btn btn2" type="button" onclick="verifyOtp()">Verify OTP ✅</button><p id="otpMsg" style="font-size:13px;text-align:center;color:#dc2626;"></p><span class="small-link" onclick="hideOtp()">← Back to Login</span></div>
 <div id="dashBox" class="hidden">
 <div class="card" style="text-align:center;"><b>Welcome, <span id="roleName"></span></b><br><span id="roleBadge" class="role-badge"></span><br><small>Email: <span id="myEmailShow"></span> • Phone: <span id="myPhoneShow"></span></small></div>
-<div id="coopBanner" class="coop-banner hidden">🏡 You are viewing ONLY <span id="coopBannerName"></span> — You CANNOT see other coops.</div>
+<div id="coopBanner" class="coop-banner hidden">🏡 You are viewing ONLY <span id="coopBannerName"></span></div>
 
-<!-- CLOUD SYNC - NEW -->
+<!-- SYNC v2 - npoint -->
 <div class="sync-bar">
-<b>☁️ Cloud Sync — All Phones Same Data</b>
-<p style="font-size:12px;color:#666;margin:6px 0;">Step 1: Phone 1 → Sync Up → Copy Code<br>Step 2: Phone 2 → Paste Code → Join Cloud → Sync Down</p>
+<b>☁️ Cloud Sync v2 — All Phones Same Data</b>
+<p style="font-size:12px;color:#666;margin:6px 0;">Every Sync UP creates a NEW Code.<br>Always send the LATEST code to Phone 2.</p>
 <label style="text-align:left;">Sync Code (Share to other phones)</label>
 <input id="syncCodeInput" placeholder="Paste Sync Code here on Phone 2">
 <div style="font-size:13px;margin-top:8px;">Your Code: <b id="mySyncCode" style="color:#0d9488;word-break:break-all;">Not created yet</b></div>
@@ -95,35 +84,24 @@ table.report th { background:#14532d; color:#fff; }
 </div>
 
 <div class="card" style="border:2px solid #d97706;background:#fffbeb;">
-<b>⚙️ Set Prices — Main Admin & Coop Admin</b>
-<p style="font-size:12px;color:#666;">Change here, it updates ALL members automatically.</p>
-<label>1 Share Price (UGX)</label>
-<input id="setSharePrice" type="number" value="20000">
-<label>Huller Fee per 1 Kg Clean Coffee (UGX)</label>
-<input id="setHullerPrice" type="number" value="500">
+<b>⚙️ Set Prices</b>
+<label>1 Share Price (UGX)</label><input id="setSharePrice" type="number" value="20000">
+<label>Huller Fee per 1 Kg Clean Coffee (UGX)</label><input id="setHullerPrice" type="number" value="500">
 <button class="btn btn-gold" type="button" onclick="savePrices()">💾 Save Prices ✅</button>
 <p id="priceSavedMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p>
 <small>Current: Share = <span id="curSharePrice"></span> UGX | Huller = <span id="curHullerPrice"></span> UGX / Kg</small>
 </div>
 <div class="grid"><div class="box"><small>👥 MEMBERS <span id="membersLabel"></span></small><div id="tMembers">0</div></div><div class="box"><small>💰 SAVINGS</small><div id="tSavings">0</div></div><div class="box"><small>📈 SHARES</small><div id="tShares">0</div></div><div class="box"><small>🏦 SHARE CAPITAL</small><div id="tCapital">0</div></div></div>
 <div class="grid"><div class="box" style="border:2px solid #ea580c;"><small>💳 TOTAL LOANS OUT</small><div id="tLoans" style="color:#ea580c;">0</div></div><div class="box" style="border:2px solid #92400e;"><small>☕ HULLER — CHERRY</small><div id="tCherry" style="color:#92400e;">0 Kg</div></div></div>
-<div class="card huller-box"><b>🏭 HULLER — <span id="hullerTitle">My Coop</span> Collection</b><div class="grid"><div class="box"><small>🍒 CHERRY BROUGHT</small><div id="hCherry">0 Kg</div></div><div class="box"><small>☕ CLEAN AFTER HULLER</small><div id="hClean">0 Kg</div></div></div><div class="grid"><div class="box"><small>👥 MEMBERS BROUGHT COFFEE</small><div id="hMembers">0</div></div><div class="box"><small>💰 HULLER FEES</small><div id="hFees">0 UGX</div></div></div><div id="hullerList" style="margin-top:10px;">No coffee yet</div><button class="btn btn-brown" type="button" onclick="exportHullerCSV()">📥 Download Huller Report (Excel) — My Coop Only</button></div>
-<div class="card" style="border:2px solid #2563eb;">
-<b>📊 Monthly Report — <span id="monthlyReportTitle">My Coop</span></b>
-<label>Select Month</label>
-<input id="reportMonth" type="month">
-<button class="btn btn2" type="button" onclick="generateMonthlyReport()">Show Monthly Report 📊</button>
-<button class="btn btn-teal" type="button" onclick="exportMonthlyReportCSV()">📥 Download Monthly Report (Excel)</button>
-<button class="btn btn3" type="button" onclick="window.print()">🖨️ Print / Save as PDF</button>
-<div id="monthlyReportDiv" style="margin-top:12px;overflow-x:auto;">Pick a month and tap Show Report</div>
-</div>
-<div id="allCoopBox" class="card allcoop-box hidden"><b>🌍 ALL COOPERATIVES — General Paper (Main Admin + Developer Only)</b><p style="font-size:12px;color:#666;">Coop Admins CANNOT see this.</p><div id="allCoopList">No data yet</div><div class="grid"><div class="box"><small>🍒 ALL COOPS CHERRY</small><div id="allCherry">0 Kg</div></div><div class="box"><small>☕ ALL COOPS CLEAN</small><div id="allClean">0 Kg</div></div></div><button class="btn btn-purple" type="button" onclick="exportAllCoopsCSV()">📥 Download ALL COOPS General Paper (Excel)</button></div>
-<div id="devBox" class="card hidden" style="border:2px solid #7c3aed;"><b>👑 Developer — Create REAL Admin</b><input id="aName" placeholder="Full Name"><input id="aEmail" placeholder="Real Email"><input id="aPhone" placeholder="Real Phone 077..."><div style="position:relative;"><input id="aPass" type="password" placeholder="Password min 6 chars" style="padding-right:48px;"><span onclick="var p=document.getElementById('aPass'); p.type=p.type==='password'?'text':'password'; this.innerText=p.type==='password'?'👁️':'🙈';" style="position:absolute;right:12px;top:20px;cursor:pointer;font-size:22px;">👁️</span></div><select id="aRole"><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option><option value="main">👨‍💼 Main Admin — All Coops</option></select><select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select><label>Secret Question</label><select id="aSecQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select><input id="aSecA" placeholder="Secret Answer"><button class="btn btn-purple" type="button" onclick="doCreateAdmin()">Create Admin + Generate OTP ✅</button><p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p><div id="otpDisplay" class="otp-box hidden"><b>🔑 OTP — SEND VIA WHATSAPP:</b><br><span id="otpShow" class="otp-code">000000</span><br><small id="otpForWho"></small><br><button class="btn btn2" type="button" onclick="copyOtp()">📋 Copy OTP</button></div><div id="adminList"></div><button class="btn btn-red" type="button" onclick="clearAllTest()">🧹 Clear All Test Data</button></div>
+<div class="card huller-box"><b>🏭 HULLER — <span id="hullerTitle">My Coop</span></b><div class="grid"><div class="box"><small>🍒 CHERRY BROUGHT</small><div id="hCherry">0 Kg</div></div><div class="box"><small>☕ CLEAN AFTER HULLER</small><div id="hClean">0 Kg</div></div></div><div class="grid"><div class="box"><small>👥 MEMBERS BROUGHT COFFEE</small><div id="hMembers">0</div></div><div class="box"><small>💰 HULLER FEES</small><div id="hFees">0 UGX</div></div></div><div id="hullerList" style="margin-top:10px;">No coffee yet</div><button class="btn btn-brown" type="button" onclick="exportHullerCSV()">📥 Download Huller Report (Excel)</button></div>
+<div class="card" style="border:2px solid #2563eb;"><b>📊 Monthly Report — <span id="monthlyReportTitle">My Coop</span></b><label>Select Month</label><input id="reportMonth" type="month"><button class="btn btn2" type="button" onclick="generateMonthlyReport()">Show Monthly Report 📊</button><button class="btn btn-teal" type="button" onclick="exportMonthlyReportCSV()">📥 Download Monthly Report (Excel)</button><button class="btn btn3" type="button" onclick="window.print()">🖨️ Print / Save as PDF</button><div id="monthlyReportDiv" style="margin-top:12px;overflow-x:auto;">Pick a month and tap Show Report</div></div>
+<div id="allCoopBox" class="card allcoop-box hidden"><b>🌍 ALL COOPERATIVES — Main Admin + Developer Only</b><div id="allCoopList">No data yet</div><div class="grid"><div class="box"><small>🍒 ALL COOPS CHERRY</small><div id="allCherry">0 Kg</div></div><div class="box"><small>☕ ALL COOPS CLEAN</small><div id="allClean">0 Kg</div></div></div><button class="btn btn-purple" type="button" onclick="exportAllCoopsCSV()">📥 Download ALL COOPS General Paper (Excel)</button></div>
+<div id="devBox" class="card hidden" style="border:2px solid #7c3aed;"><b>👑 Developer — Create REAL Admin</b><input id="aName" placeholder="Full Name"><input id="aEmail" placeholder="Real Email"><input id="aPhone" placeholder="Real Phone 077..."><input id="aPass" type="password" placeholder="Password min 6 chars"><select id="aRole"><option value="coop">🏡 Coop Admin — KIGAMBO 1 Only</option><option value="main">👨‍💼 Main Admin — All Coops</option></select><select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option><option>Other Coop</option></select><label>Secret Question</label><select id="aSecQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select><input id="aSecA" placeholder="Secret Answer"><button class="btn btn-purple" type="button" onclick="doCreateAdmin()">Create Admin + Generate OTP ✅</button><p id="createMsg" style="font-size:13px;text-align:center;color:#16a34a;"></p><div id="otpDisplay" class="otp-box hidden"><b>🔑 OTP:</b><br><span id="otpShow" class="otp-code">000000</span><br><small id="otpForWho"></small><br><button class="btn btn2" type="button" onclick="copyOtp()">📋 Copy OTP</button></div><div id="adminList"></div><button class="btn btn-red" type="button" onclick="clearAllTest()">🧹 Clear All Test Data</button></div>
 <div class="card" style="border:2px solid #16a34a;"><b>📝 Register New Member — <span id="regCoopLabel">My Coop</span></b><input id="rName" placeholder="Full Name"><input id="rEmail" placeholder="Email (optional)"><input id="rPhone" placeholder="Real Phone 077..."><input id="rVillage" placeholder="Village"><select id="rParish"><option>Parish: Kigambo</option><option>Parish: Kyegegwa Town</option><option>Parish: Ruyonza</option><option>Parish: Other</option></select><input id="rNin" placeholder="NIN Number"><label>📸 Passport Photo</label><input id="rPhoto" type="file" accept="image/*" capture="user" onchange="previewImg(this,'pPhoto')"><img id="pPhoto" class="passport-preview"><label>🪪 ID Front</label><input id="rIdFront" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pFront')"><img id="pFront" class="preview"><label>🪪 ID Back</label><input id="rIdBack" type="file" accept="image/*" capture="environment" onchange="previewImg(this,'pBack')"><img id="pBack" class="preview"><button class="btn" type="button" onclick="doRegister()">Register Member ✅</button><p id="regMsg" style="font-size:13px;text-align:center;min-height:18px;"></p></div>
 <div class="card"><b>🔍 Search Members — <span id="searchCoopLabel">My Coop</span></b><input id="search" placeholder="Name or Phone or NIN..." oninput="render()"><div id="list">No members yet</div></div>
-<div class="card"><b>➕ Quick Actions</b><p style="font-size:12px;color:#666;">1. Type Phone 2. Type Amount 3. Tap button. For Shares: type count e.g. 5. For Huller: type Cherry Kg to process, Clean = 60% of Cherry.</p><input id="qPhone" placeholder="Member Phone"><input id="qAmt" type="number" placeholder="Amount / Kg / Shares Count"><button class="btn" type="button" onclick="quickAdd('savings')">Add Savings 💰</button><button class="btn btn-gold" type="button" onclick="quickAdd('shares')">Add Shares 📈</button><button class="btn btn2" type="button" onclick="quickAdd('coffee')">Add Coffee Cherry 🍒</button><button class="btn btn-brown" type="button" onclick="quickAdd('huller')">🏭 Process in Huller</button><button class="btn btn-orange" type="button" onclick="quickAdd('loan')">Give Loan 💳</button><button class="btn btn-pink" type="button" onclick="quickAdd('repay')">Repay Loan 💵</button><p id="quickMsg" style="font-size:13px;text-align:center;min-height:18px;"></p><button class="btn btn3" type="button" onclick="exportCSV()">📥 Download Excel (CSV) — My Coop Only</button><button class="btn btn-teal" type="button" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button></div>
-<div class="card loan-box"><b>💳 Loans — Who Owes? — My Coop Only</b><div id="loanList">No loans yet</div></div>
-<div class="card" style="border:2px solid #f59e0b;"><b>📜 Activity Log — My Coop Only</b><div id="activityLog">No activity yet</div></div>
+<div class="card"><b>➕ Quick Actions</b><input id="qPhone" placeholder="Member Phone"><input id="qAmt" type="number" placeholder="Amount / Kg / Shares Count"><button class="btn" type="button" onclick="quickAdd('savings')">Add Savings 💰</button><button class="btn btn-gold" type="button" onclick="quickAdd('shares')">Add Shares 📈</button><button class="btn btn2" type="button" onclick="quickAdd('coffee')">Add Coffee Cherry 🍒</button><button class="btn btn-brown" type="button" onclick="quickAdd('huller')">🏭 Process in Huller</button><button class="btn btn-orange" type="button" onclick="quickAdd('loan')">Give Loan 💳</button><button class="btn btn-pink" type="button" onclick="quickAdd('repay')">Repay Loan 💵</button><p id="quickMsg" style="font-size:13px;text-align:center;min-height:18px;"></p><button class="btn btn3" type="button" onclick="exportCSV()">📥 Download Excel (CSV) — My Coop Only</button><button class="btn btn-teal" type="button" onclick="downloadBackup()">💾 Download Full Backup (JSON)</button></div>
+<div class="card loan-box"><b>💳 Loans — Who Owes?</b><div id="loanList">No loans yet</div></div>
+<div class="card" style="border:2px solid #f59e0b;"><b>📜 Activity Log</b><div id="activityLog">No activity yet</div></div>
 <button class="btn btn-red" type="button" onclick="location.reload()">Logout 🔒</button>
 </div>
 <a class="back" href="index.html">← Back to Home</a>
@@ -145,35 +123,10 @@ table.report th { background:#14532d; color:#fff; }
 <div class="row"><span>💳 Loan Balance</span><span id="pLoan" style="color:#ea580c;"></span></div>
 <div class="row"><span>✍️ Last Action By</span><span id="pBy" style="color:#7c3aed;"></span></div>
 <p style="font-size:13px;"><b>ID Front:</b></p><img id="ppFront" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;"><p style="font-size:13px;"><b>ID Back:</b></p><img id="ppBack" style="width:100%;height:100px;object-fit:cover;border-radius:8px;display:none;">
-<button onclick="editOne('savings','Savings UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Savings</button><button onclick="editOne('shares','Shares Count')" style="width:100%;padding:10px;margin:3px">✏️ Edit Shares (Count, e.g. 5 = 100,000 UGX)</button><button onclick="editOne('coffee','Cherry Coffee Kg')" style="width:100%;padding:10px;margin:3px">✏️ Edit Cherry Coffee</button><button onclick="editOne('cleanCoffee','Clean Coffee Kg')" style="width:100%;padding:10px;margin:3px">✏️ Edit Clean Coffee</button><button onclick="editOne('hullerFee','Huller Fee UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Huller Fee</button><button onclick="editOne('loan','Loan Balance UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Loan</button>
-<div id="editBox" class="edit-box hidden">
-<b>✏️ CORRECT THIS MEMBER — Type CORRECT value, not ADD</b>
-<label>Full Name</label><input id="eName" placeholder="Full Name">
-<label>Phone</label><input id="ePhone" placeholder="Phone 077...">
-<label>Email</label><input id="eEmail" placeholder="Email">
-<label>NIN</label><input id="eNin" placeholder="NIN">
-<label>Village</label><input id="eVillage" placeholder="Village">
-<label>💰 Savings (Correct Total)</label><input id="eSavings" type="number" placeholder="Correct Savings">
-<label>📈 Shares (Correct Total)</label><input id="eShares" type="number" placeholder="Correct Shares">
-<label>🍒 Cherry Coffee Kg (Correct Total)</label><input id="eCoffee" type="number" placeholder="Correct Cherry Kg">
-<label>☕ Clean After Huller Kg (Correct Total)</label><input id="eClean" type="number" placeholder="Correct Clean Kg">
-<label>🏭 Huller Fee UGX (Correct Total)</label><input id="eFee" type="number" placeholder="Correct Huller Fee">
-<label>💳 Loan Balance UGX (Correct Total)</label><input id="eLoan" type="number" placeholder="Correct Loan">
-<button class="btn btn-gold" type="button" onclick="saveEdit()">💾 Save Corrections ✅</button>
-<button class="btn btn-red" type="button" onclick="deleteMember()">🗑️ Delete This Member (Dev + Main Only)</button>
-<button class="btn btn3" type="button" onclick="toggleEdit()">Cancel Edit</button>
-</div>
-<hr>
-<input id="editAmt" type="number" placeholder="Enter Amount / Kg">
-<input id="editClean" type="number" placeholder="Clean Kg After Huller (only for Huller)">
-<p id="popupMsg" style="font-size:13px;text-align:center;min-height:18px;"></p>
-<button class="btn" type="button" onclick="editAction('savings')">Add Savings 💰</button>
-<button class="btn btn-gold" type="button" onclick="editAction('shares')">Add Shares 📈</button>
-<button class="btn btn2" type="button" onclick="editAction('coffee')">Add Cherry Coffee 🍒</button>
-<button class="btn btn-brown" type="button" onclick="editAction('huller')">🏭 Huller: Cherry → Clean</button>
-<button class="btn btn-orange" type="button" onclick="editAction('loan')">Give Loan 💳</button>
-<button class="btn btn-pink" type="button" onclick="editAction('repay')">Repay Loan 💵</button>
-<button class="btn btn3" type="button" onclick="forceClose()">Close</button>
+<button onclick="editOne('savings','Savings UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Savings</button><button onclick="editOne('shares','Shares Count')" style="width:100%;padding:10px;margin:3px">✏️ Edit Shares</button><button onclick="editOne('coffee','Cherry Coffee Kg')" style="width:100%;padding:10px;margin:3px">✏️ Edit Cherry Coffee</button><button onclick="editOne('cleanCoffee','Clean Coffee Kg')" style="width:100%;padding:10px;margin:3px">✏️ Edit Clean Coffee</button><button onclick="editOne('hullerFee','Huller Fee UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Huller Fee</button><button onclick="editOne('loan','Loan Balance UGX')" style="width:100%;padding:10px;margin:3px">✏️ Edit Loan</button>
+<div id="editBox" class="edit-box hidden"><b>✏️ CORRECT THIS MEMBER</b><label>Full Name</label><input id="eName" placeholder="Full Name"><label>Phone</label><input id="ePhone" placeholder="Phone"><label>Email</label><input id="eEmail" placeholder="Email"><label>NIN</label><input id="eNin" placeholder="NIN"><label>Village</label><input id="eVillage" placeholder="Village"><label>💰 Savings</label><input id="eSavings" type="number" placeholder="Correct Savings"><label>📈 Shares</label><input id="eShares" type="number" placeholder="Correct Shares"><label>🍒 Cherry Kg</label><input id="eCoffee" type="number" placeholder="Correct Cherry"><label>☕ Clean Kg</label><input id="eClean" type="number" placeholder="Correct Clean"><label>🏭 Huller Fee</label><input id="eFee" type="number" placeholder="Correct Fee"><label>💳 Loan</label><input id="eLoan" type="number" placeholder="Correct Loan"><button class="btn btn-gold" type="button" onclick="saveEdit()">💾 Save Corrections ✅</button><button class="btn btn-red" type="button" onclick="deleteMember()">🗑️ Delete This Member</button><button class="btn btn3" type="button" onclick="toggleEdit()">Cancel Edit</button></div>
+<hr><input id="editAmt" type="number" placeholder="Enter Amount / Kg"><input id="editClean" type="number" placeholder="Clean Kg After Huller (only for Huller)"><p id="popupMsg" style="font-size:13px;text-align:center;min-height:18px;"></p>
+<button class="btn" type="button" onclick="editAction('savings')">Add Savings 💰</button><button class="btn btn-gold" type="button" onclick="editAction('shares')">Add Shares 📈</button><button class="btn btn2" type="button" onclick="editAction('coffee')">Add Cherry Coffee 🍒</button><button class="btn btn-brown" type="button" onclick="editAction('huller')">🏭 Huller: Cherry → Clean</button><button class="btn btn-orange" type="button" onclick="editAction('loan')">Give Loan 💳</button><button class="btn btn-pink" type="button" onclick="editAction('repay')">Repay Loan 💵</button><button class="btn btn3" type="button" onclick="forceClose()">Close</button>
 </div></div>
 <script>
 var myAdmin=null; var all=[]; var selectedPhone=''; var currentUser=null;
@@ -185,7 +138,7 @@ function getActivity(){ try{ return JSON.parse(localStorage.getItem('kigambo_act
 function getSharePrice(){ try{ var p=JSON.parse(localStorage.getItem('kigambo_prices')||'{}'); return Number(p.share)||20000; }catch(e){ return 20000; } }
 function getHullerPrice(){ try{ var p=JSON.parse(localStorage.getItem('kigambo_prices')||'{}'); return Number(p.huller)||500; }catch(e){ return 500; } }
 function loadPrices(){ var s=document.getElementById('setSharePrice'); var h=document.getElementById('setHullerPrice'); if(s) s.value=getSharePrice(); if(h) h.value=getHullerPrice(); var cs=document.getElementById('curSharePrice'); if(cs) cs.innerText=getSharePrice().toLocaleString(); var ch=document.getElementById('curHullerPrice'); if(ch) ch.innerText=getHullerPrice().toLocaleString(); }
-function savePrices(){ var share=Number(document.getElementById('setSharePrice').value)||20000; var huller=Number(document.getElementById('setHullerPrice').value)||500; localStorage.setItem('kigambo_prices', JSON.stringify({share:share, huller:huller})); document.getElementById('priceSavedMsg').innerText='✅ Saved! Share: '+share.toLocaleString()+' UGX, Huller: '+huller.toLocaleString()+' UGX/Kg'; loadPrices(); render(); if(selectedPhone) openEdit(selectedPhone); }
+function savePrices(){ var share=Number(document.getElementById('setSharePrice').value)||20000; var huller=Number(document.getElementById('setHullerPrice').value)||500; localStorage.setItem('kigambo_prices', JSON.stringify({share:share, huller:huller})); document.getElementById('priceSavedMsg').innerText='✅ Saved! Share: '+share.toLocaleString()+' UGX, Huller: '+huller.toLocaleString()+' UGX/Kg'; loadPrices(); render(); }
 function togglePass(){ var p=document.getElementById('adminPass'); var eye=document.getElementById('eyeIcon'); if(p.type==='password'){ p.type='text'; eye.innerText='🙈'; } else { p.type='password'; eye.innerText='👁️'; } }
 function showRecover(){ document.getElementById('loginBox').classList.add('hidden'); document.getElementById('recoverBox').classList.remove('hidden'); }
 function hideRecover(){ document.getElementById('recoverBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); }
@@ -218,13 +171,11 @@ function doLogin(){
   var pass=document.getElementById('adminPass').value.trim();
   var msg=document.getElementById('loginMsg');
   if(!login || !pass){ msg.innerText='Please enter Email/Phone and Password.'; return; }
-  if((login==='developer' || login==='developer@kigambo.com') && (pass==='Kigambo@2026' || pass==='dev123')){
-    showDash({name:'Developer',phone:'developer',email:'developer@kigambo.com',role:'dev',coop:'ALL'}); return;
-  }
+  if((login==='developer' || login==='developer@kigambo.com') && (pass==='Kigambo@2026' || pass==='dev123')){ showDash({name:'Developer',phone:'developer',email:'developer@kigambo.com',role:'dev',coop:'ALL'}); return; }
   var admins=getAdmins();
   var found=admins.find(function(a){ return (a.email||'').toLowerCase()===login || (a.phone||'')===login; });
-  if(!found){ msg.innerText='Account not found. Ask Developer to create you, or tap Forgot Password.'; return; }
-  if(found.password!==pass && found.pass!==pass){ msg.innerText='Wrong password. Try again or tap Forgot Password below.'; return; }
+  if(!found){ msg.innerText='Account not found. Ask Developer to create you.'; return; }
+  if(found.password!==pass && found.pass!==pass){ msg.innerText='Wrong password.'; return; }
   var role = found.role==='main' ? 'main' : (found.role==='dev' ? 'dev' : 'coop');
   showDash({name:found.name, phone:found.phone, email:found.email, role:role, coop:found.coop||'KIGAMBO 1'});
 }
@@ -232,7 +183,7 @@ function visibleMembers(){ if(myAdmin && myAdmin.role==='coop'){ return all.filt
 function saveAllAndRender(){ localStorage.setItem('kigambo_members', JSON.stringify(all)); render(); }
 function addActivity(text, coop){ var act=getActivity(); act.push({text:text, coop:coop||(myAdmin?myAdmin.coop:'KIGAMBO 1'), date:new Date().toISOString()}); localStorage.setItem('kigambo_activity', JSON.stringify(act)); }
 
-// ===== CLOUD SYNC - REAL - jsonblob =====
+// ===== CLOUD SYNC v2 - npoint - NO PUT, always creates new doc =====
 function getSyncId(){ return localStorage.getItem('kigambo_sync_id')||''; }
 function setSyncMsg(txt, ok){ var el=document.getElementById('syncMsg'); el.style.color=ok?'#16a34a':'#dc2626'; el.innerText=txt; }
 function copySyncCode(){ var code=getSyncId(); if(!code){ setSyncMsg('No code yet. Tap Sync UP first.', false); return; } if(navigator.clipboard) navigator.clipboard.writeText(code).then(function(){ setSyncMsg('✅ Code copied! Send via WhatsApp to other phone.', true); }); else { prompt('Copy your Sync Code:', code); } }
@@ -247,26 +198,21 @@ function applyCloudData(data){
 }
 async function doSync(){
   var btn=document.getElementById('syncBtn'); var old=btn.innerText; btn.innerText='⏳ Syncing...'; btn.disabled=true;
-  var id=getSyncId(); var data=buildCloudData();
+  var data=buildCloudData();
   try{
-    if(!id){
-      var res=await fetch('https://jsonblob.com/api/jsonBlob', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
-      var loc=res.headers.get('Location') || res.headers.get('location');
-      if(!loc) throw new Error('No Location');
-      id=loc.split('/').pop();
-      localStorage.setItem('kigambo_sync_id', id);
-      document.getElementById('mySyncCode').innerText=id;
-      document.getElementById('syncCodeInput').value=id;
-      setSyncMsg('✅ Cloud Created! Code: '+id+' — Send this code to other phones via WhatsApp.', true);
-    } else {
-      var res2=await fetch('https://jsonblob.com/api/jsonBlob/'+id, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
-      if(!res2.ok) throw new Error('PUT failed '+res2.status);
-      setSyncMsg('✅ Synced UP! Other phones tap Sync DOWN now.', true);
-    }
+    var res=await fetch('https://api.npoint.io', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    if(!res.ok) throw new Error('Server '+res.status);
+    var j=await res.json();
+    var id=j.id || j._id || '';
+    if(!id) throw new Error('No ID returned');
+    localStorage.setItem('kigambo_sync_id', id);
+    document.getElementById('mySyncCode').innerText=id;
+    document.getElementById('syncCodeInput').value=id;
     var now=new Date().toLocaleString(); localStorage.setItem('kigambo_last_sync', now); document.getElementById('lastSyncTime').innerText=now; document.getElementById('netStatus').innerText='✅ Online';
+    setSyncMsg('✅ Cloud Created! NEW Code: '+id+' — Send this NEW code to other phones via WhatsApp.', true);
   } catch(e){
     document.getElementById('netStatus').innerText='❌ Offline / Error';
-    setSyncMsg('❌ Sync failed: '+e.message+' — Check internet, try again. Backup: Download Backup JSON and send via WhatsApp.', false);
+    setSyncMsg('❌ Sync failed: '+e.message+' — Try: 1) Turn data OFF/ON 2) Try again 3) Use Backup JSON via WhatsApp.', false);
   }
   btn.innerText=old; btn.disabled=false;
 }
@@ -275,20 +221,18 @@ async function syncDown(){
   if(!id){ setSyncMsg('Enter Sync Code first (from Phone 1).', false); return; }
   setSyncMsg('⏳ Downloading from Cloud...', true);
   try{
-    var res=await fetch('https://jsonblob.com/api/jsonBlob/'+id);
-    if(!res.ok) throw new Error('Code not found. Check code.');
+    var res=await fetch('https://api.npoint.io/'+id);
+    if(!res.ok) throw new Error('Code not found. Use LATEST code from Phone 1.');
     var data=await res.json();
-    // Merge members by phone to avoid losing local new members
     var cloudMembers=data.members||[];
     var localMembers=getMembers();
-    var map={}; localMembers.forEach(function(m){ map[m.phone]=m; }); cloudMembers.forEach(function(m){ if(!map[m.phone]) map[m.phone]=m; else { // cloud is newer if updatedAt newer - keep cloud version for existing
-        map[m.phone]=m; } });
+    var map={}; localMembers.forEach(function(m){ map[m.phone]=m; }); cloudMembers.forEach(function(m){ map[m.phone]=m; });
     data.members=Object.values(map);
     applyCloudData(data);
     localStorage.setItem('kigambo_sync_id', id);
     document.getElementById('mySyncCode').innerText=id;
     var now=new Date().toLocaleString(); localStorage.setItem('kigambo_last_sync', now); document.getElementById('lastSyncTime').innerText=now;
-    setSyncMsg('✅ Synced DOWN! Got '+data.members.length+' members. Now you are connected.', true);
+    setSyncMsg('✅ Synced DOWN! Got '+data.members.length+' members.', true);
   } catch(e){ setSyncMsg('❌ Download failed: '+e.message, false); }
 }
 async function joinCloud(){
@@ -300,20 +244,17 @@ async function joinCloud(){
 }
 function doRecover(){
   var id=getSyncId();
-  if(!id){ document.getElementById('recMsg').innerText='No Sync Code saved on this phone. Paste Sync Code in dashboard Sync box, or ask Main Admin for code.'; return; }
-  document.getElementById('recMsg').innerText='Trying to recover from Cloud...';
-  fetch('https://jsonblob.com/api/jsonBlob/'+id).then(function(r){ return r.json(); }).then(function(data){
-    if(data.admins){ localStorage.setItem('kigambo_admins', JSON.stringify(data.admins)); document.getElementById('recMsg').style.color='#16a34a'; document.getElementById('recMsg').innerText='✅ Admins recovered from Cloud! Now try Login again.'; }
+  if(!id){ document.getElementById('recMsg').innerText='No Sync Code saved. Paste Sync Code in dashboard first.'; return; }
+  fetch('https://api.npoint.io/'+id).then(function(r){ return r.json(); }).then(function(data){
+    if(data.admins){ localStorage.setItem('kigambo_admins', JSON.stringify(data.admins)); document.getElementById('recMsg').style.color='#16a34a'; document.getElementById('recMsg').innerText='✅ Admins recovered! Try Login again.'; }
     if(data.members){ localStorage.setItem('kigambo_members', JSON.stringify(data.members)); }
   }).catch(function(){ document.getElementById('recMsg').innerText='❌ Recover failed. Check internet + Sync Code.'; });
 }
-
 function render(){
   var vis=visibleMembers();
   var q=(document.getElementById('search').value||'').toLowerCase();
   var f=vis.filter(function(m){ return (m.name||'').toLowerCase().includes(q)||(m.phone||'').includes(q); });
-  var h=f.map(function(m){ return '<div class="member" onclick="openEdit(\''+m.phone+'\')"><b>'+m.name+'</b> - '+m.phone+' - '+(m.coop||'')+' - '+(m.savings||0)+' UGX</div>'; }).join('');
-  document.getElementById('list').innerHTML=h||'No members in your coop';
+  document.getElementById('list').innerHTML=f.map(function(m){ return '<div class="member" onclick="openEdit(\''+m.phone+'\')"><b>'+m.name+'</b> - '+m.phone+' - '+(m.coop||'')+' - '+(m.savings||0)+' UGX</div>'; }).join('')||'No members in your coop';
   var totSav=0, totSh=0, totLoan=0, totCherry=0, totClean=0, totFee=0;
   vis.forEach(function(m){ totSav+=Number(m.savings||0); totSh+=Number(m.shares||0); totLoan+=Number(m.loan||0); totCherry+=Number(m.coffee||0); totClean+=Number(m.cleanCoffee||0); totFee+=Number(m.hullerFee||0); });
   document.getElementById('tMembers').innerText=vis.length;
@@ -430,4 +371,4 @@ function copyOtp(){ alert('Copy OTP'); }
 loadPrices();
 </script>
 </body>
-</html>
+  </html>
