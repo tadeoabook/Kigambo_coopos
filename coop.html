@@ -1,417 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KIGAMBO COOP v3.3 - Member Password + Recovery</title>
-<style>
-*{box-sizing:border-box}
-body{font-family:system-ui,sans-serif;margin:0;background:#f3f0e8;color:#222}
-header{background:#1a5c2a;color:#fff;padding:14px 16px;position:sticky;top:0}
-header h1{margin:0;font-size:20px}
-header p{margin:2px 0 0;opacity:.9;font-size:13px}
-nav{display:flex;gap:6px;overflow-x:auto;padding:10px;background:#fff;border-bottom:1px solid #ddd}
-nav button{white-space:nowrap;padding:9px 12px;border:1px solid #1a5c2a;background:#fff;color:#1a5c2a;border-radius:20px;cursor:pointer;font-weight:600}
-nav button.active{background:#1a5c2a;color:#fff}
-main{padding:14px;max-width:900px;margin:auto}
-section{display:none;background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
-section.active{display:block}
-input,select,textarea{width:100%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:15px}
-label{font-weight:600;font-size:13px}
-button.primary{background:#1a5c2a;color:#fff;border:0;padding:12px;border-radius:8px;width:100%;font-weight:700;cursor:pointer;margin-top:8px}
-button.secondary{background:#eee;border:0;padding:10px;border-radius:8px;width:100%;cursor:pointer;margin-top:6px}
-.card{background:#f9f7f0;border:1px solid #eee;border-radius:10px;padding:12px;margin:8px 0}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{background:#1a5c2a;color:#fff;border-radius:10px;padding:12px;text-align:center}
-.stat b{font-size:22px;display:block}
-.small{font-size:12px;color:#666}
-</style>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-</head>
-<body>
-<header>
-<h1>☕ KIGAMBO COOP</h1>
-<p>KIGAMBO THE GREATER COFFEE FARMERS CO-OPERATIVE SOCIETY LTD • Kyegegwa, Uganda • v3.3 • Sync Code: <b>KIGAMBO-2026</b> • SAME CODE for Admin.html + coop.html</p>
-</header>
-<nav id="nav">
-<button data-t="login" class="active">Login</button>
-<button data-t="dashboard">Dashboard</button>
-<button data-t="members">Members</button>
-<button data-t="huller">Huller Coffee</button>
-<button data-t="loans">Loans 50/50</button>
-<button data-t="receipts">Receipts</button>
-<button data-t="reports">Monthly Reports</button>
-<button data-t="settings">Settings</button>
-</nav>
-<main>
-<!-- LOGIN -->
-<section id="login" class="active">
-<h2>Login - SAME CODE FOR BOTH FILES</h2>
-<p class="small">Member: Phone + Password — sees ONLY own account. Developer/Admin: Real Phone + Password — sees ALL.</p>
-<label>Phone</label>
-<input id="loginPhone" placeholder="e.g. 0745245711">
-<label>Password</label>
-<input id="loginPass" type="password" placeholder="Password">
-<button class="primary" onclick="login()">LOGIN</button>
-<button class="secondary" onclick="show('forgot')">Forgot Password? Recover with Phone/Email + Secret Question</button>
-<div id="loginMsg" class="small"></div>
-<div class="card">
-<b>Developer:</b> Save your REAL Phone + Email in Settings &gt; Developer Contact first.<br>
-Phone: <span id="demoPhone">0745245711</span>
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>KIGAMBO COOP</title><style>body{font-family:Arial;margin:0;background:#f1f5f9} .top{background:#14532d;color:#fff;padding:14px;text-align:center;font-weight:900} .card{background:#fff;margin:12px;padding:14px;border-radius:14px} input,select{width:100%;padding:11px;margin-top:8px;border:1px solid #ddd;border-radius:10px} .btn{width:100%;padding:13px;margin-top:10px;border:none;border-radius:10px;background:#16a34a;color:#fff;font-weight:900;cursor:pointer} .b2{background:#2563eb}.b3{background:#0f172a}.b4{background:#d97706}.b5{background:#dc2626}.hidden{display:none}.member{padding:10px;border-bottom:1px solid #eee;cursor:pointer}.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee;font-size:14px}</style></head><body>
+<div class="top">🌿 KIGAMBO COOP - ONE CODE: KIGAMBO-2026</div>
+<div id="loginBox" class="card"><h2 style="text-align:center">KIGAMBO COOP</h2><p style="text-align:center;font-size:12px;color:#666">Login - Phone/Email + Password</p>
+<select id="loginType"><option value="admin">Admin / Developer</option><option value="member">Member</option></select>
+<input id="loginPhone" placeholder="Email OR Phone - Real One"><input id="loginPass" type="password" placeholder="Your Password"><button class="btn" onclick="login()">Login →</button><p id="loginMsg" style="color:red;text-align:center;font-size:13px"></p>
+<button class="btn b4" onclick="showForgot(true)">🔑 Forgot Password?</button>
+<div id="forgotBox" class="card hidden" style="margin:10px 0 0"><b>Recover Password</b><input id="fLogin" placeholder="Your Real Email OR Phone"><button class="btn b4" onclick="fStep1()">Find My Account</button><div id="fStep2" class="hidden"><p id="fFound"></p><p id="fQ"></p><input id="fAns" placeholder="Secret Answer"><input id="fNew" type="password" placeholder="New Password"><input id="fNew2" type="password" placeholder="Confirm New Password"><button class="btn" onclick="fReset()">Reset - Old Dies ✅</button></div><p id="fMsg" style="text-align:center"></p><button class="btn b3" onclick="showForgot(false)">Cancel</button></div>
+<p style="font-size:11px;text-align:center;color:#999">Dev first login: developer@kigambo.com / Kigambo@2026</p></div>
+
+<div id="dash" class="hidden">
+<div class="card"><b>Dashboard - <span id="who"></span> | <span id="coopName"></span></b><p>Members: <b id="tM">0</b> | Savings: <b id="tS">0</b> | Shares: <b id="tSh">0</b> | Cherry: <b id="tC">0</b>Kg</p>
+<button class="btn b3" onclick="location.reload()">🔒 Logout</button></div>
+
+<div class="card"><b>📝 Register Member - Password REQUIRED</b><input id="rName" placeholder="Full Name"><input id="rPhone" placeholder="Phone 077... REAL"><input id="rEmail" placeholder="Email (optional)"><input id="rVillage" placeholder="Village"><input id="rPass" type="password" placeholder="Member Password - e.g Kisembo123"><select id="rQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select><input id="rA" placeholder="Secret Answer - Must Remember"><button class="btn" onclick="reg()">Register Member ✅</button><p id="regMsg" style="text-align:center"></p></div>
+
+<div class="card"><b>🔍 Members - Tap name to open</b><input id="search" placeholder="Search name/phone" oninput="render()"><div id="list"></div>
+<button class="btn b2" onclick="exportCSV()">📥 Download Excel</button></div>
+
+<div class="card"><b>⚙️ Settings - ONE SYNC CODE FOR ALL</b><p>Sync Code (SAME on both phones): <b>KIGAMBO-2026</b></p><input id="syncCode" value="KIGAMBO-2026"><button class="btn b4" onclick="syncUp()">🔥 Sync UP</button><button class="btn b2" onclick="syncDown()">⬇️ Sync DOWN</button><p id="syncMsg" style="text-align:center"></p><hr>
+<b>👑 Developer - Save REAL Contact</b><input id="devPhone" placeholder="Dev Real Phone"><input id="devEmail" placeholder="Dev Real Email"><select id="devQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option><option>Your favourite colour?</option></select><input id="devA" placeholder="Dev Secret Answer"><button class="btn b2" onclick="saveDev()">💾 Save My Real Contact</button><p id="devMsg" style="text-align:center"></p><hr>
+<b>🔑 Change My Password - Old Dies</b><input id="oldP" type="password" placeholder="Old Password"><input id="newP" type="password" placeholder="New Password"><input id="newP2" type="password" placeholder="Confirm New"><button class="btn b2" onclick="changePass()">Change Password ✅</button><p id="cpMsg" style="text-align:center"></p><hr>
+<b>👑 Create Admin</b><input id="aName" placeholder="Admin Name"><input id="aEmail" placeholder="Admin REAL Email"><input id="aPhone" placeholder="Admin REAL Phone"><input id="aPass" type="password" placeholder="Admin Password"><select id="aCoop"><option>KIGAMBO 1</option><option>KIGAMBO 2</option></select><select id="aQ"><option>Mother's Maiden Name?</option><option>Name of your village?</option><option>Your first school?</option></select><input id="aA" placeholder="Admin Secret Answer"><button class="btn b2" onclick="createAdmin()">Create Admin ✅</button><p id="aMsg" style="text-align:center"></p></div>
+
+<div class="card"><b>📊 Prices</b><label>Share Price</label><input id="shareP" type="number" value="20000"><label>Huller Fee / Kg Clean</label><input id="hullP" type="number" value="500"><button class="btn b4" onclick="savePrice()">Save Prices</button></div>
 </div>
-</section>
-<!-- FORGOT -->
-<section id="forgot">
-<h2>Forgot Password — Recovery</h2>
-<label>Phone OR Email</label>
-<input id="recId" placeholder="Phone or Email">
-<label>Secret Question</label>
-<select id="recQ">
-<option>What is your mother's name?</option>
-<option>What village were you born in?</option>
-<option>What is your first school?</option>
-<option>What is your favourite coffee farm name?</option>
-</select>
-<label>Secret Answer</label>
-<input id="recAns" placeholder="Secret Answer">
-<label>New Password</label>
-<input id="recNew" type="password">
-<button class="primary" onclick="recover()">RESET PASSWORD — Old Dies</button>
-<div id="recMsg"></div>
-<button class="secondary" onclick="show('login')">Back to Login</button>
-</section>
-<!-- DASHBOARD -->
-<section id="dashboard">
-<h2>Dashboard</h2>
-<div class="row">
-<div class="stat"><b id="stMembers">0</b>Members</div>
-<div class="stat"><b id="stHuller">0 kg</b>Clean Coffee</div>
-<div class="stat"><b id="stLoans">0</b>Loans</div>
-<div class="stat"><b id="stCash">0 UGX</b>Cash</div>
-</div>
-<div id="myAccount" class="card"></div>
-<div id="dashList"></div>
-<button class="secondary" onclick="exportJSON()">⬇ Backup JSON</button>
-<label>Import Backup JSON</label>
-<input type="file" onchange="importJSON(event)">
-<p class="small">Sync Code: KIGAMBO-2026 • Firebase: kigambo-coopos</p>
-<p id="syncStatus" class="small">Sync: Local only — click Sync in Settings</p>
-</section>
-<!-- MEMBERS -->
-<section id="members">
-<h2>Members — Register Member</h2>
-<p class="small">MUST have Password + Phone. Member sees only own account after login.</p>
-<label>Full Name</label>
-<input id="mName">
-<label>Phone</label>
-<input id="mPhone" placeholder="074...">
-<label>Village</label>
-<input id="mVillage" placeholder="Kigambo, Kyanyambali, Kyegegwa">
-<label>Member Password</label>
-<input id="mPass" type="password" placeholder="Create Member Password">
-<label>Secret Question</label>
-<select id="mQ">
-<option>What is your mother's name?</option>
-<option>What village were you born in?</option>
-<option>What is your first school?</option>
-<option>What is your favourite coffee farm name?</option>
-</select>
-<label>Secret Answer</label>
-<input id="mAns">
-<label>Shares (UGX) — Price 20000 per share</label>
-<input id="mShares" type="number" value="20000">
-<button class="primary" onclick="addMember()">REGISTER MEMBER</button>
-<h3>All Members (Admin Only)</h3>
-<div id="memberList"></div>
-<h3>Edit Member — Admin Can Change Member Password</h3>
-<label>Select Member Phone</label>
-<input id="editPhone" placeholder="Member phone to edit">
-<label>New Password for Member</label>
-<input id="editPass" type="password">
-<button class="secondary" onclick="adminChangePass()">ADMIN CHANGE MEMBER PASSWORD</button>
-<div id="memberMsg"></div>
-</section>
-<!-- HULLER -->
-<section id="huller">
-<h2>Huller Coffee — 1kg Cherry = 0.6kg Clean</h2>
-<label>Member Phone</label>
-<input id="hPhone">
-<label>Cherry (kg)</label>
-<input id="hCherry" type="number" oninput="calcHuller()">
-<div class="card">Clean Coffee: <b id="hClean">0 kg</b><br>Fee: <b id="hFee">0 UGX</b> @ 500 UGX/kg Cherry</div>
-<button class="primary" onclick="addHuller()">SAVE HULLER JOB + RECEIPT</button>
-<div id="hullerList"></div>
-</section>
-<!-- LOANS -->
-<section id="loans">
-<h2>Loans — 50/50 Rule</h2>
-<p class="small">50% at MIDDLE + 50% at END. Example: Loan 200,000 → 100,000 middle + 100,000 end.</p>
-<label>Member Phone</label>
-<input id="lPhone">
-<label>Loan Amount (UGX)</label>
-<input id="lAmt" type="number" oninput="calcLoan()">
-<div class="card">Middle Payment (50%): <b id="lMid">0</b><br>End Payment (50%): <b id="lEnd">0</b></div>
-<label>Stage</label>
-<select id="lStage">
-<option>START</option>
-<option>MIDDLE - Pay 50%</option>
-<option>END - Pay 50%</option>
-</select>
-<button class="primary" onclick="addLoan()">SAVE LOAN</button>
-<div id="loanList"></div>
-</section>
-<!-- RECEIPTS -->
-<section id="receipts">
-<h2>Receipts</h2>
-<div id="receiptList"></div>
-<button class="secondary" onclick="printReceipts()">Print / Save Receipts</button>
-</section>
-<!-- REPORTS -->
-<section id="reports">
-<h2>Monthly Reports</h2>
-<label>Month</label>
-<input id="repMonth" type="month">
-<button class="primary" onclick="genReport()">GENERATE MONTHLY REPORT</button>
-<div id="reportOut"></div>
-</section>
-<!-- SETTINGS -->
-<section id="settings">
-<h2>Settings</h2>
-<h3>Developer Contact — REAL Phone + REAL Email (No Fake Developer Login)</h3>
-<label>Developer Real Phone</label>
-<input id="devPhone" placeholder="Your real phone">
-<label>Developer Real Email</label>
-<input id="devEmail" placeholder="Your real email">
-<label>Developer Password</label>
-<input id="devPass" type="password" placeholder="Developer password">
-<label>Developer Secret Question</label>
-<select id="devQ">
-<option>What is your mother's name?</option>
-<option>What village were you born in?</option>
-<option>What is your first school?</option>
-</select>
-<label>Developer Secret Answer</label>
-<input id="devAns">
-<button class="primary" onclick="saveDev()">SAVE DEVELOPER CONTACT</button>
-<h3>Prices</h3>
-<label>Share Price (UGX)</label>
-<input id="pShare" type="number" value="20000">
-<label>Huller Price per kg Cherry (UGX)</label>
-<input id="pHuller" type="number" value="500">
-<button class="secondary" onclick="savePrices()">SAVE PRICES</button>
-<h3>Firebase Sync</h3>
-<p class="small">Sync Code: KIGAMBO-2026<br>Project: kigambo-coopos</p>
-<button class="primary" onclick="syncFirebase()">SYNC TO FIREBASE — Code KIGAMBO-2026</button>
-<button class="secondary" onclick="loadFirebase()">LOAD FROM FIREBASE</button>
-<div id="setMsg"></div>
-</section>
-</main>
+
+<div id="pop" class="card hidden" style="position:fixed;inset:10px;overflow:auto;z-index:99"><div style="display:flex;justify-content:space-between"><b id="pName"></b><span onclick="closePop()" style="cursor:pointer;font-size:24px">✕</span></div>
+<div class="row"><span>Phone</span><span id="pPhone"></span></div><div class="row"><span>💰 Savings</span><span id="pSav"></span></div><div class="row"><span>📈 Shares</span><span id="pShares"></span></div><div class="row"><span>🍒 Cherry</span><span id="pCherry"></span></div><div class="row"><span>☕ Clean</span><span id="pClean"></span></div><div class="row"><span>💳 Loan Total</span><span id="pLoan"></span></div><div class="row"><span>✅ Loan Paid</span><span id="pPaid"></span></div><div class="row"><span>⏳ Remaining</span><span id="pRem"></span></div><div class="row"><span>📍 Stage</span><span id="pStage"></span></div>
+<input id="amt" type="number" placeholder="Amount / Kg"><input id="cleanKg" type="number" placeholder="Clean Kg (Huller only)"><label>Loan Interest %</label><input id="lRate" type="number" value="10"><label>Loan Months</label><input id="lMonths" type="number" value="6"><div id="loanPrev" style="background:#ecfdf5;padding:10px;border-radius:10px;margin-top:8px;font-size:13px"></div>
+<button class="btn" onclick="act('savings')">💰 Add Savings</button><button class="btn b4" onclick="act('shares')">📈 Add Shares</button><button class="btn b2" onclick="act('coffee')">🍒 Add Cherry</button><button class="btn b4" onclick="act('huller')">🏭 Process Huller</button><button class="btn" style="background:#ea580c" onclick="act('loan')">💳 Give Loan 50/50</button><button class="btn" style="background:#db2777" onclick="act('repay')">💵 Repay Loan</button><button class="btn b2" onclick="act('repayMid')">✅ Pay 50% MIDDLE</button><hr>
+<b>✏️ Edit Member</b><input id="eName" placeholder="Name"><input id="ePhone" placeholder="Phone"><input id="ePass" type="password" placeholder="Member Password"><input id="eSav" type="number" placeholder="Savings"><input id="eSh" type="number" placeholder="Shares"><input id="eCh" type="number" placeholder="Cherry"><input id="eCl" type="number" placeholder="Clean"><input id="eLoan" type="number" placeholder="Loan Principal"><button class="btn b4" onclick="saveEdit()">💾 Save Edit</button><button class="btn b5" onclick="delMember()">🗑️ Delete Member</button><button class="btn b3" onclick="closePop()">Close</button><p id="popMsg" style="text-align:center"></p></div>
+
+<script type="module">import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";import{getDatabase,ref,set,get}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";const c={apiKey:"AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",authDomain:"kigambo-coopos.firebaseapp.com",databaseURL:"https://kigambo-coopos-default-rtdb.firebaseio.com",projectId:"kigambo-coopos",storageBucket:"kigambo-coopos.firebasestorage.app",messagingSenderId:"711731991766",appId:"1:711731991766:web:2bafe8d4fe922cadc3e577"};try{const a=initializeApp(c);window._fb={db:getDatabase(a),ref,set,get}}catch(e){}</script>
 <script>
-// FIREBASE CONFIG - YOURS
-const firebaseConfig = {
-  apiKey: "AIzaSyDQqWO5diFL03O1GdBa1L_LXI8gK-eSgaQ",
-  authDomain: "kigambo-coopos.firebaseapp.com",
-  databaseURL: "https://kigambo-coopos-default-rtdb.firebaseio.com",
-  projectId: "kigambo-coopos",
-  storageBucket: "kigambo-coopos.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:kigambo"
-};
-let db = null;
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.database();
-} catch(e) {
-  console.log("Firebase init", e);
-}
-const SYNC_CODE = "KIGAMBO-2026";
-let store = JSON.parse(localStorage.getItem("kigambo_v33") || '{"members":[],"huller":[],"loans":[],"receipts":[],"dev":{},"prices":{"share":20000,"huller":500}}');
-let currentUser = null;
-function save() {
-  localStorage.setItem("kigambo_v33", JSON.stringify(store));
-  render();
-}
-function show(id) {
-  document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.t === id));
-  if (id === "dashboard") render();
-}
-document.querySelectorAll("nav button").forEach(b => b.onclick = () => show(b.dataset.t));
-function addMember() {
-  let m = {
-    name: mName.value,
-    phone: mPhone.value,
-    village: mVillage.value,
-    pass: mPass.value,
-    q: mQ.value,
-    ans: mAns.value.toLowerCase(),
-    shares: +mShares.value || 20000,
-    role: "member",
-    created: new Date().toLocaleString()
-  };
-  if (!m.name || !m.phone || !m.pass) { alert("Name + Phone + Password required"); return; }
-  if (store.members.find(x => x.phone === m.phone)) { alert("Member already exists"); return; }
-  store.members.push(m);
-  store.receipts.push({type:"SHARE", phone:m.phone, amount:m.shares, date:new Date().toLocaleString(), desc:"Share Payment - "+m.name});
-  save();
-  memberMsg.textContent = "Member registered: " + m.name;
-  mName.value = mPhone.value = mVillage.value = mPass.value = mAns.value = "";
-}
-function login() {
-  let ph = loginPhone.value.trim();
-  let pw = loginPass.value;
-  let dev = store.dev;
-  if (dev.phone && ph === dev.phone && pw === dev.pass) {
-    currentUser = {...dev, role:"developer"};
-    loginMsg.textContent = "Welcome Developer (Real Contact)";
-    show("dashboard");
-    return;
-  }
-  let m = store.members.find(x => x.phone === ph && x.pass === pw);
-  if (m) {
-    currentUser = {...m, role:"member"};
-    loginMsg.textContent = "Welcome " + m.name + " — you see ONLY your account";
-    show("dashboard");
-    return;
-  }
-  loginMsg.textContent = "Wrong Phone or Password. Use Forgot Password.";
-}
-function recover() {
-  let id = recId.value.trim().toLowerCase();
-  let q = recQ.value;
-  let a = recAns.value.toLowerCase();
-  let target = store.members.find(x => x.phone === id || x.email === id);
-  let isDev = store.dev && (store.dev.phone === id || store.dev.email?.toLowerCase() === id);
-  if (isDev) {
-    if (store.dev.q === q && store.dev.ans?.toLowerCase() === a) {
-      store.dev.pass = recNew.value;
-      save();
-      recMsg.textContent = "Developer password reset. Old dies. Login now.";
-    } else {
-      recMsg.textContent = "Secret answer wrong.";
-    }
-    return;
-  }
-  if (target && target.q === q && target.ans === a) {
-    target.pass = recNew.value;
-    save();
-    recMsg.textContent = "Password reset for " + target.name + ". Old dies. Login now.";
-  } else {
-    recMsg.textContent = "No match — check Phone/Email + Secret Answer.";
-  }
-}
-function adminChangePass() {
-  let m = store.members.find(x => x.phone === editPhone.value.trim());
-  if (!m) { memberMsg.textContent = "Member not found"; return; }
-  if (!currentUser || (currentUser.role !== "developer" && currentUser.role !== "admin")) {
-    memberMsg.textContent = "Only Admin/Developer can change member password. Login as Developer first.";
-    return;
-  }
-  m.pass = editPass.value;
-  save();
-  memberMsg.textContent = "Password changed for " + m.name;
-}
-function calcHuller() {
-  let c = +hCherry.value || 0;
-  let clean = c * 0.6;
-  let fee = c * (store.prices.huller || 500);
-  hClean.textContent = clean.toFixed(1) + " kg";
-  hFee.textContent = fee.toLocaleString() + " UGX";
-}
-function addHuller() {
-  let c = +hCherry.value || 0;
-  let clean = c * 0.6;
-  let fee = c * (store.prices.huller || 500);
-  store.huller.push({phone:hPhone.value, cherry:c, clean, fee, date:new Date().toLocaleString()});
-  store.receipts.push({type:"HULLER", phone:hPhone.value, amount:fee, date:new Date().toLocaleString(), desc:c+"kg Cherry = "+clean.toFixed(1)+"kg Clean"});
-  save();
-  alert("Huller saved: " + clean.toFixed(1) + "kg Clean");
-}
-function calcLoan() {
-  let a = +lAmt.value || 0;
-  lMid.textContent = (a * 0.5).toLocaleString() + " UGX";
-  lEnd.textContent = (a * 0.5).toLocaleString() + " UGX";
-}
-function addLoan() {
-  let a = +lAmt.value || 0;
-  store.loans.push({phone:lPhone.value, amount:a, mid:a*0.5, end:a*0.5, stage:lStage.value, date:new Date().toLocaleString()});
-  store.receipts.push({type:"LOAN", phone:lPhone.value, amount:a, date:new Date().toLocaleString(), desc:"Loan "+lStage.value+" - 50/50"});
-  save();
-  alert("Loan saved 50/50");
-}
-function saveDev() {
-  store.dev = {phone:devPhone.value, email:devEmail.value, pass:devPass.value, q:devQ.value, ans:devAns.value, role:"developer"};
-  save();
-  setMsg.textContent = "Developer Contact Saved — REAL Phone + Email. Use this to login & recover.";
-}
-function savePrices() {
-  store.prices = {share:+pShare.value || 20000, huller:+pHuller.value || 500};
-  save();
-  setMsg.textContent = "Prices saved: Share " + store.prices.share + " Huller " + store.prices.huller;
-}
-function exportJSON() {
-  let blob = new Blob([JSON.stringify(store, null, 2)], {type:"application/json"});
-  let a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "KIGAMBO-BACKUP.json";
-  a.click();
-}
-function importJSON(e) {
-  let f = e.target.files[0];
-  let r = new FileReader();
-  r.onload = () => { store = JSON.parse(r.result); save(); alert("Backup restored"); };
-  r.readAsText(f);
-}
-function syncFirebase() {
-  if (!db) { alert("Firebase not loaded"); return; }
-  db.ref("kigambo/" + SYNC_CODE).set(store).then(() => {
-    syncStatus.textContent = "Synced to Firebase — Code KIGAMBO-2026 ✅";
-    alert("Synced!");
-  });
-}
-function loadFirebase() {
-  if (!db) return;
-  db.ref("kigambo/" + SYNC_CODE).once("value").then(s => {
-    if (s.val()) { store = s.val(); save(); alert("Loaded from Firebase"); }
-  });
-}
-function genReport() {
-  let m = repMonth.value;
-  reportOut.innerHTML = "<div class='card'><b>Monthly Report " + (m || "All") + "</b><br>Members: " + store.members.length + "<br>Huller Jobs: " + store.huller.length + "<br>Loans: " + store.loans.length + "<br>Receipts: " + store.receipts.length + "</div>";
-}
-function printReceipts() { window.print(); }
-function render() {
-  stMembers.textContent = store.members.length;
-  stHuller.textContent = store.huller.reduce((a,b) => a + b.clean, 0).toFixed(1) + " kg";
-  stLoans.textContent = store.loans.length;
-  stCash.textContent = store.receipts.reduce((a,b) => a + b.amount, 0).toLocaleString() + " UGX";
-  if (currentUser && currentUser.role === "member") {
-    let me = store.members.find(x => x.phone === currentUser.phone);
-    myAccount.innerHTML = "<b>MY ACCOUNT — ONLY YOU</b><br>" + (me ? me.name + " • " + me.phone + " • " + me.village + " • Shares " + me.shares + " UGX" : "");
-    dashList.innerHTML = "<div class='card'>Your Huller: " + store.huller.filter(x => x.phone === currentUser.phone).map(x => x.cherry + "kg Cherry → " + x.clean + "kg").join("<br>") + "</div>";
-  } else {
-    myAccount.innerHTML = "<b>ADMIN / DEVELOPER VIEW</b><br>" + (currentUser ? currentUser.phone || currentUser.email : "Not logged in — login as Developer to see all");
-    dashList.innerHTML = "";
-  }
-  memberList.innerHTML = store.members.map(m => "<div class='card'><b>" + m.name + "</b> • " + m.phone + " • " + m.village + "<br>Shares: " + m.shares + " UGX • Secret Q: " + m.q + " • Password: •••••• (Admin can change in Edit)</div>").join("") || "No members yet";
-  hullerList.innerHTML = store.huller.map(h => "<div class='card'>" + h.phone + " • " + h.cherry + "kg Cherry = " + h.clean.toFixed(1) + "kg Clean • " + h.fee + " UGX • " + h.date + "</div>").join("");
-  loanList.innerHTML = store.loans.map(l => "<div class='card'>" + l.phone + " • Loan " + l.amount + " • Middle " + l.mid + " • End " + l.end + " • " + l.stage + "</div>").join("");
-  receiptList.innerHTML = store.receipts.map(r => "<div class='card'><b>" + r.type + "</b> • " + r.phone + " • " + r.amount.toLocaleString() + " UGX<br>" + r.desc + " • " + r.date + "</div>").join("");
-  if (store.dev.phone) {
-    devPhone.value = store.dev.phone;
-    devEmail.value = store.dev.email || "";
-    devQ.value = store.dev.q || devQ.value;
-    devAns.value = store.dev.ans || "";
-    demoPhone.textContent = store.dev.phone;
-  }
-  if (store.prices) {
-    pShare.value = store.prices.share;
-    pHuller.value = store.prices.huller;
-  }
-}
-render();
-</script>
-</body>
-  </html>
+let all=JSON.parse(localStorage.getItem('kigambo_members')||'[]'),cur=null,sel='',fTarget=null,fType='';let admins=JSON.parse(localStorage.getItem('kigambo_admins')||'[]');
+function getP(){try{return JSON.parse(localStorage.getItem('kigambo_prices')||'{}')}catch(e){return{}}}function shareP(){return Number(getP().share)||20000}function hullP(){return Number(getP().huller)||500}
+function savePrice(){localStorage.setItem('kigambo_prices',JSON.stringify({share:Number(document.getElementById('shareP').value)||20000,huller:Number(document.getElementById('hullP').value)||500}));alert('Saved');render()}
+function stage(m){let t=Number(m.loanTotal||0),p=Number(m.loanPaid||0);if(t<=0)return'No Loan';if(p>=t)return'✅ Finished';if(p>=t/2)return'✅ MIDDLE Paid - Wait FINAL';if(p>0)return'⏳ Part Paid';return'⏳ Wait MIDDLE'}
+function login(){let log=document.getElementById('loginPhone').value.trim().toLowerCase(),pw=document.getElementById('loginPass').value.trim(),type=document.getElementById('loginType').value,msg=document.getElementById('loginMsg');if(!log||!pw){msg.innerText='Enter Phone/Email + Password';return}
+if(type=='member'){let m=all.find(x=>x.phone==log||(x.email||'').toLowerCase()==log);if(!m){msg.innerText='Member not found';return}if((m.memberPass||'')!==pw){msg.innerText='Wrong member password';return}cur={name:m.name,phone:m.phone,role:'member',coop:m.coop};showDash();return}
+let devPass=localStorage.getItem('kigambo_dev_pass')||'Kigambo@2026';let devC=JSON.parse(localStorage.getItem('kigambo_dev_contact')||'{}');
+if(log=='developer@kigambo.com'||(devC.email&&log==devC.email)||(devC.phone&&log==devC.phone)){if(pw==devPass){cur={name:'Developer',phone:devC.phone||'dev',role:'dev',coop:'ALL'};showDash();return}else{msg.innerText='Wrong Developer password. Use Forgot.';return}}
+let a=admins.find(x=>(x.email||'').toLowerCase()==log||x.phone==log);if(!a){msg.innerText='Account not found. Use REAL email/phone';return}if(a.password!==pw){msg.innerText='Wrong password. Only CURRENT works';return}cur={name:a.name,phone:a.phone,role:'coop',coop:a.coop};showDash()}
+function showDash(){document.getElementById('loginBox').style.display='none';document.getElementById('dash').classList.remove('hidden');document.getElementById('who').innerText=cur.name+' ('+cur.role+')';document.getElementById('coopName').innerText=cur.coop;let dc=JSON.parse(localStorage.getItem('kigambo_dev_contact')||'{}');if(dc.phone)document.getElementById('devPhone').value=dc.phone;if(dc.email)document.getElementById('devEmail').value=dc.email;if(dc.secA)document.getElementById('devA').value=dc.secA;document.getElementById('shareP').value=shareP();document.getElementById('hullP').value=hullP();render()}
+function showForgot(s){document.getElementById('forgotBox').classList.toggle('hidden',!s);document.getElementById('fStep2').classList.add('hidden')}
+function fStep1(){let log=document.getElementById('fLogin').value.trim().toLowerCase(),msg=document.getElementById('fMsg');let dc=JSON.parse(localStorage.getItem('kigambo_dev_contact')||'{}');if(log=='developer@kigambo.com'||log==dc.email||log==dc.phone||log=='developer'){if(!dc.secQ){msg.innerText='Dev has no secret Q yet. Login old pass and save it.';return}fTarget={name:'Developer'};fType='dev';document.getElementById('fFound').innerText='Found: Developer';document.getElementById('fQ').innerText='❓ '+(dc.secQ||'');document.getElementById('fStep2').classList.remove('hidden');return}
+let a=admins.find(x=>(x.email||'').toLowerCase()==log||x.phone==log);if(a){fTarget=a;fType='admin';document.getElementById('fFound').innerText='Found: '+a.name;document.getElementById('fQ').innerText='❓ '+a.secQ;document.getElementById('fStep2').classList.remove('hidden');return}
+let m=all.find(x=>x.phone==log||(x.email||'').toLowerCase()==log);if(m){fTarget=m;fType='member';document.getElementById('fFound').innerText='Found Member: '+m.name;document.getElementById('fQ').innerText='❓ '+m.secQ;document.getElementById('fStep2').classList.remove('hidden');return}msg.innerText='No account with that Email/Phone'}
+function fReset(){let ans=document.getElementById('fAns').value.trim().toLowerCase(),np=document.getElementById('fNew').value.trim(),cp=document.getElementById('fNew2').value.trim(),msg=document.getElementById('fMsg');if(!fTarget){msg.innerText='Find account first';return}if(np!==cp||np.length<4){msg.innerText='Passwords must match, 4+ chars';return}
+if(fType=='dev'){let dc=JSON.parse(localStorage.getItem('kigambo_dev_contact')||'{}');if(ans!==(dc.secA||'').toLowerCase()){msg.innerText='Wrong Secret Answer';return}localStorage.setItem('kigambo_dev_pass',np);msg.style.color='green';msg.innerText='✅ Dev reset! OLD DEAD. Login with NEW. Now Sync UP.';return}
+if(fType=='admin'){if(ans!==(fTarget.secA||'').toLowerCase()){msg.innerText='Wrong Answer';return}let i=admins.findIndex(x=>x.phone==fTarget.phone);admins[i].password=np;localStorage.setItem('kigambo_admins',JSON.stringify(admins));msg.style.color='green';msg.innerText='✅ Admin reset! OLD DEAD. Sync UP.';return}
+if(fType=='member'){if(ans!==(fTarget.secA||'').toLowerCase()){msg.innerText='Wrong Answer';return}let i=all.findIndex(x=>x.phone==fTarget.phone);all[i].memberPass=np;localStorage.setItem('kigambo_members',JSON.stringify(all));msg.style.color='green';msg.innerText='✅ Member reset! OLD DEAD. Sync UP.';return}}
+function saveDev(){let ph=document.getElementById('devPhone').value.trim(),em=document.getElementById('devEmail').value.trim().toLowerCase(),q=document.getElementById('devQ').value,a=document.getElementById('devA').value.trim();if(!ph||!em||!a){document.getElementById('devMsg').innerText='Enter REAL phone+email+answer';return}localStorage.setItem('kigambo_dev_contact',JSON.stringify({phone:ph,email:em,secQ:q,secA:a}));document.getElementById('devMsg').innerText='✅ Saved! Now you can recover.'}
+function changePass(){let o=document.getElementById('oldP').value.trim(),n=document.getElementById('newP').value.trim(),c=document.getElementById('newP2').value.trim(),msg=document.getElementById('cpMsg');if(n!==c||n.length<4){msg.innerText='New must match, 4+';return}
+if(cur.role=='dev'){if(o!==(localStorage.getItem('kigambo_dev_pass')||'Kigambo@2026')){msg.innerText='Old wrong';return}localStorage.setItem('kigambo_dev_pass',n);msg.innerText='✅ Dev changed! OLD DEAD. Sync UP.';return}
+if(cur.role=='member'){let i=all.findIndex(x=>x.phone==cur.phone);if((all[i].memberPass||'')!==o){msg.innerText='Old wrong';return}all[i].memberPass=n;localStorage.setItem('kigambo_members',JSON.stringify(all));msg.innerText='✅ Member changed! OLD DEAD.';return}
+let i=admins.findIndex(x=>x.phone==cur.phone);if(admins[i].password!==o){msg.innerText='Old wrong';return}admins[i].password=n;localStorage.setItem('kigambo_admins',JSON.stringify(admins));msg.innerText='✅ Changed! OLD DEAD. Sync UP.'}
+function createAdmin(){let n=document.getElementById('aName').value.trim(),e=document.getElementById('aEmail').value.trim().toLowerCase(),p=document.getElementById('aPhone').value.trim(),pw=document.getElementById('aPass').value.trim(),coop=document.getElementById('aCoop').value,q=document.getElementById('aQ').value,a=document.getElementById('aA').value.trim(),msg=document.getElementById('aMsg');if(!n||!e||!p||!pw||!a){msg.innerText='Fill all + Secret Answer';return}admins.push({name:n,email:e,phone:p,password:pw,role:'coop',coop:coop,secQ:q,secA:a});localStorage.setItem('kigambo_admins',JSON.stringify(admins));msg.innerText='✅ Admin '+n+' created! Sync UP.'}
+function reg(){let n=document.getElementById('rName').value.trim(),ph=document.getElementById('rPhone').value.trim(),em=document.getElementById('rEmail').value.trim(),v=document.getElementById('rVillage').value.trim(),pw=document.getElementById('rPass').value.trim(),q=document.getElementById('rQ').value,a=document.getElementById('rA').value.trim(),msg=document.getElementById('regMsg');if(!n||!ph){msg.innerText='Name+Phone needed';return}if(!pw||pw.length<4){msg.innerText='Member Password REQUIRED 4+';return}if(!a){msg.innerText='Secret Answer REQUIRED';return}if(all.find(x=>x.phone==ph)){msg.innerText='Phone exists!';return}let coop=(cur&&cur.role=='coop')?cur.coop:'KIGAMBO 1';all.push({id:'KG-'+Date.now().toString().slice(-6),name:n,phone:ph,email:em,village:v,coop:coop,savings:0,shares:0,coffee:0,cleanCoffee:0,hullerFee:0,loan:0,loanTotal:0,loanPaid:0,loanInterest:0,loanRate:0,loanMonths:0,loanMidAmount:0,loanFinalAmount:0,loanMidMonth:0,memberPass:pw,secQ:q,secA:a});localStorage.setItem('kigambo_members',JSON.stringify(all));msg.style.color='green';msg.innerText='✅ '+n+' registered! Phone '+ph+' + Pass '+pw+' - Sync UP.';render()}
+function render(){let vis=all;if(cur&&cur.role=='coop')vis=all.filter(x=>x.coop==cur.coop);if(cur&&cur.role=='member')vis=all.filter(x=>x.phone==cur.phone);let q=(document.getElementById('search').value||'').toLowerCase();let f=vis.filter(x=>x.name.toLowerCase().includes(q)||x.phone.includes(q));document.getElementById('list').innerHTML=f.map(m=>'<div class="member" onclick="openM(\''+m.phone+'\')"><b>'+m.name+'</b> - '+m.phone+' - '+m.coop+' - '+m.savings+' UGX - '+m.coffee+'Kg</div>').join('')||'No members';let s=0,sh=0,c=0;vis.forEach(m=>{s+=Number(m.savings||0);sh+=Number(m.shares||0);c+=Number(m.coffee||0)});document.getElementById('tM').innerText=vis.length;document.getElementById('tS').innerText=s;document.getElementById('tSh').innerText=sh;document.getElementById('tC').innerText=c}
+function openM(ph){let m=all.find(x=>x.phone==ph);if(!m)return;if(cur&&cur.role=='member'&&m.phone!=cur.phone){alert('Only your account');return}sel=ph;document.getElementById('pName').innerText=m.name;document.getElementById('pPhone').innerText=m.phone;document.getElementById('pSav').innerText=m.savings+' UGX';document.getElementById('pShares').innerText=m.shares;document.getElementById('pCherry').innerText=m.coffee+' Kg';document.getElementById('pClean').innerText=m.cleanCoffee+' Kg';document.getElementById('pLoan').innerText=m.loanTotal;document.getElementById('pPaid').innerText=m.loanPaid;document.getElementById('pRem').innerText=Math.max(0,Number(m.loanTotal||0)-Number(m.loanPaid||0));document.getElementById('pStage').innerText=stage(m);document.getElementById('eName').value=m.name;document.getElementById('ePhone').value=m.phone;document.getElementById('ePass').value=m.memberPass||'';document.getElementById('eSav').value=m.savings||0;document.getElementById('eSh').value=m.shares||0;document.getElementById('eCh').value=m.coffee||0;document.getElementById('eCl').value=m.cleanCoffee||0;document.getElementById('eLoan').value=m.loan||0;document.getElementById('lRate').value=m.loanRate||10;document.getElementById('lMonths').value=m.loanMonths||6;document.getElementById('pop').classList.remove('hidden');document.getElementById('popMsg').innerText=''}
+function closePop(){document.getElementById('pop').classList.add('hidden')}
+function act(type){let m=all.find(x=>x.phone==sel);if(!m)return;if(cur&&cur.role=='member'){alert('Members cannot add money');return}let amt=Number(document.getElementById('amt').value),clean=Number(document.getElementById('cleanKg').value),msg=document.getElementById('popMsg');if(type=='repayMid'){let total=Number(m.loanTotal||0);if(total<=0){msg.innerText='No loan';return}let mid=Number(m.loanMidAmount||Math.round(total/2));if(Number(m.loanPaid||0)>=mid){msg.innerText='MIDDLE already paid';return}m.loanPaid=Number(m.loanPaid||0)+(mid-Number(m.loanPaid||0));msg.innerText='✅ MIDDLE 50% Paid! Remaining '+(total-m.loanPaid);localStorage.setItem('kigambo_members',JSON.stringify(all));render();return}
+if(!amt||amt<=0){msg.innerText='Enter Amount';return}
+if(type=='savings')m.savings=Number(m.savings||0)+amt;
+else if(type=='shares')m.shares=Number(m.shares||0)+amt;
+else if(type=='coffee')m.coffee=Number(m.coffee||0)+amt;
+else if(type=='huller'){if(Number(m.coffee||0)<amt){msg.innerText='Not enough Cherry! Has '+m.coffee+'Kg';return}let cl=clean>0?clean:Math.round(amt*0.6*10)/10;let fee=Math.round(cl*hullP());m.coffee-=amt;m.cleanCoffee=Number(m.cleanCoffee||0)+cl;m.hullerFee=Number(m.hullerFee||0)+fee;msg.innerText='🏭 '+amt+'Kg -> '+cl+'Kg Clean, Fee '+fee}
+else if(type=='loan'){let rate=Number(document.getElementById('lRate').value)||10,months=Number(document.getElementById('lMonths').value)||6;let intr=Math.round(amt*rate*months/100),total=amt+intr,mid=Math.round(total/2);m.loan=Number(m.loan||0)+amt;m.loanRate=rate;m.loanMonths=months;m.loanInterest=Number(m.loanInterest||0)+intr;m.loanTotal=Number(m.loanTotal||0)+total;m.loanMidAmount=mid;m.loanMidMonth=months/2;m.loanFinalAmount=total-mid;msg.innerText='💳 Loan '+amt+' + Intr '+intr+' = Total '+total+' | MIDDLE '+mid}
+else if(type=='repay'){let rem=Math.max(0,Number(m.loanTotal||0)-Number(m.loanPaid||0));let pay=Math.min(amt,rem);m.loanPaid=Number(m.loanPaid||0)+pay;if((Number(m.loanTotal||0)-Number(m.loanPaid||0))<=0){m.loan=0;m.loanTotal=0;m.loanPaid=0;m.loanInterest=0}msg.innerText='💵 Repaid '+pay+' | Remaining '+Math.max(0,Number(m.loanTotal||0)-Number(m.loanPaid||0))}
+localStorage.setItem('kigambo_members',JSON.stringify(all));render();openM(sel);document.getElementById('popMsg').innerText=msg.innerText||'✅ Done'}
+function saveEdit(){let m=all.find(x=>x.phone==sel);if(!m)return;let np=document.getElementById('ePass').value.trim();if(!np||np.length<4){document.getElementById('popMsg').innerText='Member Password 4+ required';return}m.name=document.getElementById('eName').value.trim();m.phone=document.getElementById('ePhone').value.trim();m.memberPass=np;m.savings=Number(document.getElementById('eSav').value)||0;m.shares=Number(document.getElementById('eSh').value)||0;m.coffee=Number(document.getElementById('eCh').value)||0;m.cleanCoffee=Number(document.getElementById('eCl').value)||0;m.loan=Number(document.getElementById('eLoan').value)||0;sel=m.phone;localStorage.setItem('kigambo_members',JSON.stringify(all));render();document.getElementById('popMsg').innerText='✅ Saved!';openM(sel)}
+function delMember(){if(!confirm('Delete '+sel+' ?'))return;all=all.filter(x=>x.phone!=sel);localStorage.setItem('kigambo_members',JSON.stringify(all));closePop();render()}
+function exportCSV(){let csv='Name,Phone,Coop,Savings,Shares,Cherry,Clean,LoanTotal,LoanPaid,Remaining\n';all.forEach(m=>{csv+=m.name+','+m.phone+','+m.coop+','+m.savings+','+m.shares+','+m.coffee+','+m.cleanCoffee+','+m.loanTotal+','+m.loanPaid+','+Math.max(0,Number(m.loanTotal||0)-Number(m.loanPaid||0))+'\n'});let b=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Members.csv';a.click()}
+function getCode(){return(document.getElementById('syncCode').value.trim()||'KIGAMBO-2026').replace(/[^a-zA-Z0-9-_]/g,'-')}
+async function syncUp(){if(!window._fb){document.getElementById('syncMsg').innerText='Firebase not ready';return}try{let data={members:all,admins:admins,devPass:localStorage.getItem('kigambo_dev_pass')||'Kigambo@2026',devContact:JSON.parse(localStorage.getItem('kigambo_dev_contact')||'{}'),prices:{share:shareP(),huller:hullP()},updatedAt:new Date().toISOString(),updatedBy:cur?cur.name:'Admin'};await window._fb.set(window._fb.ref(window._fb.db,'kigambo/'+getCode()),data);document.getElementById('syncMsg').innerText='✅ Synced UP! Code '+getCode()}catch(e){document.getElementById('syncMsg').innerText='❌ '+e.message}}
+async function syncDown(){if(!window._fb)return;try{let s=await window._fb.get(window._fb.ref(window._fb.db,'kigambo/'+getCode()));if(!s.exists()){document.getElementById('syncMsg').innerText='No data for '+getCode();return}let d=s.val();if(d.members)all=d.members;if(d.admins)admins=d.admins;if(d.devPass)localStorage.setItem('kigambo_dev_pass',d.devPass);if(d.devContact)localStorage.setItem('kigambo_dev_contact',JSON.stringify(d.devContact));if(d.prices)localStorage.setItem('kigambo_prices',JSON.stringify(d.prices));localStorage.setItem('kigambo_members',JSON.stringify(all));localStorage.setItem('kigambo_admins',JSON.stringify(admins));document.getElementById('syncMsg').innerText='✅ Synced DOWN! Got '+all.length+' members';render()}catch(e){document.getElementById('syncMsg').innerText='❌ '+e.message}}
+</script></body></html>
